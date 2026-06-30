@@ -224,7 +224,7 @@
         },
         {
           "id": "wave-overview",
-          "description": "整个 wave 的 todos 列表 + blocker 关系。AI 用它看 wave 间并行/依赖关系、判断现在该 claim 哪个。",
+          "description": "整个 wave 的 todos 列表 + blocker 关系。AI 用它看 wave 间并行/依赖关系、判断现在该 claim 哪个。每个 todo 携带 acceptance_criteria 让 AI 提前知道 'done' 的标准。",
           "inputs": {
             "wave": {
               "type": "integer",
@@ -240,6 +240,35 @@
             }
           },
           "output_ref": ".ai/dev_queue.json#/waves",
+          "output_inline_schema": {
+            "type": "array",
+            "description": "wave 列表，每个 wave 含该 wave 的 todos；每个 todo 携带 acceptance_criteria",
+            "items": {
+              "type": "object",
+              "required": ["n", "todos"],
+              "properties": {
+                "n": {"type": "integer"},
+                "todos": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["id"],
+                    "properties": {
+                      "id": {"type": "string"},
+                      "task": {"type": "string"},
+                      "priority": {"enum": ["low", "medium", "high"]},
+                      "status": {"enum": ["pending", "in_progress", "done", "blocked"]},
+                      "blocks": {"type": "array", "items": {"type": "string"}},
+                      "acceptance_criteria": {
+                        "type": "string",
+                        "description": "Free-form text describing what 'done' looks like. Empty string = use task as AC."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
           "max_tokens": 3000,
           "use_cases": [
             "AI 看整个 wave 的并行机会",
@@ -331,7 +360,7 @@
         },
         {
           "id": "todo-detail",
-          "description": "单个 todo 的详细任务：task 描述、suggested_implementation_steps、test_criteria、notes、ref。AI 已经拉到 single-component 后，专注做这一个 todo 时用。",
+          "description": "单个 todo 的详细任务：task 描述、acceptance_criteria、suggested_implementation_steps、test_criteria、notes、ref。AI 已经拉到 single-component 后，专注做这一个 todo 时用。acceptance_criteria 是 'done' 的判定标准（为空时回退到 task）。",
           "inputs": {
             "todo_id": {
               "type": "string",
@@ -350,6 +379,10 @@
               "priority": {"enum": ["low", "medium", "high"]},
               "status": {"enum": ["pending", "in_progress", "blocked"]},
               "blocks": {"type": "array", "items": {"type": "string"}},
+              "acceptance_criteria": {
+                "type": "string",
+                "description": "Free-form text describing what 'done' looks like (given to AI agent as success criteria). Empty string = use task as AC."
+              },
               "suggested_implementation_steps": {"type": "array", "items": {"type": "string"}},
               "test_criteria": {"type": "array", "items": {"type": "string"}},
               "notes": {"type": "string"},
@@ -406,7 +439,7 @@
         },
         {
           "id": "next-todo",
-          "description": "AI agent 启动时拿的『我该干啥』清单：status-report 的 ready_to_claim 字段 + 单个解释（仅 todos.pending，每个简短 1-2 句）。这是 AI 冷启动后看到的第二份文档（第一份是 status-report）。",
+          "description": "AI agent 启动时拿的『我该干啥』清单：status-report 的 ready_to_claim 字段 + 单个解释（仅 todos.pending，每个简短 1-2 句）。这是 AI 冷启动后看到的第二份文档（第一份是 status-report）。每个 todo 携带 acceptance_criteria 让 AI 提前知道 'done' 的标准。",
           "inputs": {
             "limit": {
               "type": "integer",
@@ -428,8 +461,23 @@
             "properties": {
               "ready": {
                 "type": "array",
-                "items": {"type": "object"},
-                "description": "所有可领取 todo 列表（含 id / task / module / component / wave）"
+                "items": {
+                  "type": "object",
+                  "required": ["id", "task"],
+                  "properties": {
+                    "id": {"type": "string"},
+                    "task": {"type": "string"},
+                    "module": {"type": "string"},
+                    "component": {"type": "string"},
+                    "wave": {"type": "integer"},
+                    "priority": {"enum": ["low", "medium", "high"]},
+                    "acceptance_criteria": {
+                      "type": "string",
+                      "description": "Free-form text describing what 'done' looks like. Empty string = use task as AC."
+                    }
+                  }
+                },
+                "description": "所有可领取 todo 列表（含 id / task / module / component / wave / acceptance_criteria）"
               },
               "recommended": {
                 "type": "object",

@@ -12,6 +12,11 @@
       "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
       "description": "本 contract 的 schema 版本号，独立于 struct.json 的 schema_version"
     },
+    "examples": {
+      "type": "array",
+      "description": "本 contract 的 schema 演示示例。每个示例展示一个 Todo 实例或一组场景，给 AI agent 与 bootstrap 实现者参考。",
+      "items": { "$ref": "#/$defs/Todo" }
+    },
     "version": {
       "type": "string",
       "description": "对应 bootstrap.sh / 生成器家族的版本号（git describe 或 semver）"
@@ -161,6 +166,49 @@
         "matches":    { "type": "string", "description": "stderr 正则 / glob" },
         "action":     { "enum": ["abort", "retry", "skip", "warn_and_continue", "prompt_user", "fallback"] },
         "hint":       { "type": "string" }
+      }
+    },
+    "Todo": {
+      "type": "object",
+      "description": "AI agent 要认领/完成的 todo。在本 lifecycle 协议下，每条 todo 由 struct.json::modules[].components[].todos[] 派生而来",
+      "additionalProperties": false,
+      "required": ["id", "task"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "todo 唯一 id（snake_case），与 struct.json 的 Todo.id 对齐；blocks 中引用同一 id"
+        },
+        "task": {
+          "type": "string",
+          "minLength": 1,
+          "description": "todo 要达成的目标（人话描述）"
+        },
+        "priority": {
+          "enum": ["low", "medium", "high"],
+          "default": "medium",
+          "description": "AI 排序依据，high > medium > low"
+        },
+        "status": {
+          "enum": ["pending", "in_progress", "blocked", "done"],
+          "default": "pending",
+          "description": "pending=可领取；in_progress=已被某 agent 领取；blocked=前置 blocker 未完成；done=已完成"
+        },
+        "blocks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "本 todo 完成后才能开始的其它 todo id 列表（构成 blocker DAG）"
+        },
+        "acceptance_criteria": {
+          "type": "string",
+          "description": "Free-form text describing what 'done' looks like (given to AI agent as success criteria). Empty string = use task as AC."
+        },
+        "notes":   { "type": "string", "description": "自由文本，AI 实施时参考" },
+        "ref":     { "type": "string", "description": "外部参考链接或文档路径" },
+        "module":  { "type": "string", "description": "派生字段：所在 module 名（lifecycle 上下文注入）" },
+        "component": { "type": "string", "description": "派生字段：所在 component 名（lifecycle 上下文注入）" },
+        "wave":    { "type": "integer", "minimum": 1, "description": "派生字段：在 blocker DAG 中的 wave 号" }
       }
     }
   },
@@ -404,8 +452,8 @@
         { "name": "format", "type": "enum",    "required": false, "enum": ["human", "json"], "default": "json" }
       ],
       "outputs": {
-        "human": "next todo:\n  id:          tokenizer_1\n  module:      data\n  component:   Tokenizer\n  task:        对接 HuggingFace tokenizers\n  priority:    high\n  blocks:      trainer_1\n  branch:      wave-2/tokenizer-1\n  worktree:    ./.worktrees/tokenizer_1",
-        "machine": "{todo: {id, module, component, task, priority, blocks, refs}, branch, worktree_path}",
+        "human": "next todo:\n  id:          tokenizer_1\n  module:      data\n  component:   Tokenizer\n  task:        对接 HuggingFace tokenizers\n  priority:    high\n  blocks:      trainer_1\n  acceptance : from_pretrained(name) 成功加载 bert-base-uncased；encode/decode round-trip 无损\n  branch:      wave-2/tokenizer-1\n  worktree:    ./.worktrees/tokenizer_1",
+        "machine": "{todo: {id, module, component, task, priority, blocks, acceptance_criteria, refs}, branch, worktree_path}",
         "json_schema_ref": "embedded"
       },
       "exit_codes": { "0": "返回 todo", "1": "无可领取 todo（全部 in_progress / done）", "30": "状态机非法" },
@@ -491,6 +539,37 @@
       "errors": {
         "E_FORCE": { "exit_code": 30, "action": "abort", "hint": "done 回退需要 --force，会丢弃 complete 记录" }
       }
+    }
+  ],
+  "examples": [
+    {
+      "_comment": "示例 1: 包含 acceptance_criteria 的 todo — AI agent 拿到后知道 'done' 的标准",
+      "id": "data_loader_1",
+      "task": "实现文件路径批量加载（CSV/JSONL/Parquet）",
+      "priority": "high",
+      "status": "pending",
+      "blocks": ["data_parser_1"],
+      "acceptance_criteria": "load(path) 返回 List[Row]，CSV/JSONL/Parquet 三种格式各通过 1 个单测；空文件不抛异常；行号列正确"
+    },
+    {
+      "_comment": "示例 2: 简单 todo，acceptance_criteria 为空字符串 — 表示复用 task 字段作为完成标准",
+      "id": "config_validator_1",
+      "task": "实现 config schema 校验（拒绝未声明字段）",
+      "priority": "medium",
+      "status": "pending",
+      "acceptance_criteria": ""
+    },
+    {
+      "_comment": "示例 3: 已完成的 todo + 衍生字段（module/component/wave 由 lifecycle 上下文注入）",
+      "id": "tokenizer_1",
+      "task": "对接 HuggingFace tokenizers",
+      "priority": "high",
+      "status": "done",
+      "blocks": ["trainer_1"],
+      "acceptance_criteria": "from_pretrained(name) 成功加载 bert-base-uncased/gpt2/t5-small 三个模型；encode/decode round-trip 字符串无损",
+      "module": "data",
+      "component": "Tokenizer",
+      "wave": 1
     }
   ]
 }

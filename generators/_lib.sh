@@ -773,3 +773,216 @@ deps_content() {
 
 # 状态输出包装
 status_skip() { printf '  [SKIP] %s\n' "$*"; }
+# ---------- v10: 10 new ASCII animations + template loader ----------
+matrix_rain() {
+    local cols="${1:-$(tput cols 2>/dev/null || echo 60)}"
+    local rows="${2:-12}"
+    local cycles="${3:-3}"
+    local chars='0123456789ABCDEF'
+    for _ in $(seq 1 "$cycles"); do
+        printf '\033[2J\033[H'
+        for r in $(seq 1 "$rows"); do
+            line=""
+            for c in $(seq 1 "$cols"); do
+                ch="${chars:$((RANDOM % ${#chars})):1}"
+                if (( r == 1 )); then line+="\033[1;37m$ch"
+                else line+="\033[0;32m$ch"; fi
+            done
+            echo -e "$line\033[0m"
+        done
+        sleep 0.15
+    done
+    printf '\033[0m'
+}
+
+fire() {
+    local rows="${1:-10}" width="${2:-40}" cycles="${3:-5}"
+    local palette=' .:;+xX#@'
+    for _ in $(seq 1 "$cycles"); do
+        printf '\033[H'
+        for r in $(seq 1 "$rows"); do
+            line=""
+            for c in $(seq 1 "$width"); do
+                idx=$((RANDOM % ${#palette}))
+                ch="${palette:$idx:1}"
+                if (( r > rows * 2 / 3 )); then line+="\033[1;31m$ch"
+                elif (( r > rows / 3 )); then line+="\033[0;33m$ch"
+                else line+="\033[1;33m$ch"; fi
+            done
+            echo -e "$line"
+        done
+        sleep 0.2
+    done
+    printf '\033[0m'
+}
+
+lightning() {
+    local flashes="${1:-5}"
+    for _ in $(seq 1 "$flashes"); do
+        printf '\033[7m'
+        echo "                                                "
+        sleep 0.05
+        printf '\033[0m'
+        sleep 0.3
+        sleep 0.4
+    done
+}
+
+scanline() {
+    local text="${1:-Scanning...}" width="${2:-50}" cycles="${3:-2}"
+    for _ in $(seq 1 "$cycles"); do
+        for i in $(seq 0 "$width"); do
+            line=""
+            for j in $(seq 1 "$width"); do
+                if (( j == i )); then line+="\033[1;32m#\033[0m"
+                elif (( j == i - 1 || j == i + 1 )); then line+="\033[0;32m=\033[0m"
+                else line+=" "; fi
+            done
+            printf '\r  %s %s' "$line" "$text"
+            sleep 0.02
+        done
+        echo ""
+    done
+}
+
+glitch() {
+    local text="${1:-GLITCH}" cycles="${2:-8}"
+    local chars='!@#$%^&*<>?/\\|'
+    for _ in $(seq 1 "$cycles"); do
+        out=""
+        for ((i=0; i<${#text}; i++)); do
+            if (( RANDOM % 4 == 0 )); then
+                idx=$((RANDOM % ${#chars}))
+                out+="\033[1;35m${chars:$idx:1}\033[0m"
+            else
+                out+="\033[0;31m${text:$i:1}\033[0m"
+            fi
+        done
+        printf '\r  %s' "$out"
+        sleep 0.08
+    done
+    printf '\r  \033[1;32m%s\033[0m\n' "$text"
+}
+
+holo() {
+    local text="${1:-SIMPLE_MODEL}" width="${2:-40}"
+    for cycle in $(seq 1 3); do
+        printf '\n'
+        for r in $(seq 1 5); do
+            line=""
+            for c in $(seq 1 "$width"); do
+                ch=" "
+                if (( c >= (width - ${#text}) / 2 && c < (width + ${#text}) / 2 )); then
+                    idx=$((c - (width - ${#text}) / 2))
+                    if (( r == 3 )); then
+                        ch="${text:$idx:1}"
+                        line+="\033[1;36m$ch\033[0m"
+                        continue
+                    fi
+                fi
+                line+="$ch"
+            done
+            printf '  %s\n' "$line"
+        done
+        sleep 0.4
+        printf '\033[5A'
+    done
+    printf '\033[0m\n'
+}
+
+aurora() {
+    local cols="${1:-50}" cycles="${2:-5}"
+    local colors=('1;35' '1;36' '1;32' '1;33' '1;34')
+    for _ in $(seq 1 "$cycles"); do
+        printf '\033[H'
+        for r in 1 2 3 4 5 6 7 8; do
+            line=""
+            for c in $(seq 1 "$cols"); do
+                idx=$((RANDOM % ${#colors[@]}))
+                line+="\033[${colors[$idx]}m~\033[0m"
+            done
+            echo -e "  $line"
+        done
+        sleep 0.3
+    done
+    printf '\033[0m'
+}
+
+snowflake() {
+    local cols="${1:-50}" cycles="${2:-6}"
+    local flakes='*+.~'
+    for _ in $(seq 1 "$cycles"); do
+        printf '\033[H'
+        for r in 1 2 3 4 5 6 7 8 9 10; do
+            line=""
+            for c in $(seq 1 "$cols"); do
+                if (( RANDOM % 7 == 0 )); then
+                    idx=$((RANDOM % ${#flakes}))
+                    line+="\033[1;37m${flakes:$idx:1}\033[0m"
+                else line+=" "; fi
+            done
+            printf '  %s\n' "$line"
+        done
+        sleep 0.4
+    done
+    printf '\033[0m'
+}
+
+typewriter_fast() {
+    local text="$1" delay="${2:-0.01}"
+    for ((i=0; i<${#text}; i++)); do
+        printf '%s' "${text:$i:1}"
+        sleep "$delay"
+    done
+    echo ""
+}
+
+loading_bars() {
+    local n="${1:-5}" width="${2:-30}" duration="${3:-2}"
+    declare -a pcts
+    for i in $(seq 0 $((n - 1))); do pcts[$i]=0; done
+    end=$((SECONDS + duration))
+    while (( SECONDS < end )); do
+        printf '\033[H'
+        for i in $(seq 0 $((n - 1))); do
+            pcts[$i]=$(( (pcts[$i] + RANDOM % 15 + 5) % 110 ))
+            [[ ${pcts[$i]} -gt 100 ]] && pcts[$i]=100
+            filled=$(( pcts[$i] * width / 100 ))
+            empty=$((width - filled))
+            bar=$(printf '█%.0s' $(seq 1 $filled))$(printf '░%.0s' $(seq 1 $empty))
+            printf '  \033[1;36mTask %d\033[0m [%s] \033[1;32m%3d%%\033[0m\n' "$((i+1))" "$bar" "${pcts[$i]}"
+        done
+        sleep 0.15
+    done
+    printf '\033[0m'
+}
+
+rainbow_progress() {
+    local label="${1:-Working}" width="${2:-40}"
+    local colors=('1;31' '1;33' '1;32' '1;36' '1;34' '1;35')
+    for pct in $(seq 0 5 100); do
+        filled=$(( pct * width / 100 ))
+        printf '\r  %s [' "$label"
+        for i in $(seq 0 $((filled - 1))); do
+            color_idx=$((i % ${#colors[@]}))
+            printf '\033[%sm#\033[0m' "${colors[$color_idx]}"
+        done
+        printf '\033[0;37m'
+        for i in $(seq $filled $((width - 1))); do printf ' '; done
+        printf '\033[0m] %3d%%' "$pct"
+        sleep 0.05
+    done
+    echo ""
+}
+
+hologram_intro() {
+    local title="${1:-SIMPLE_MODEL}" subtitle="${2:-AI-Native Project Orchestrator}"
+    scanline "INITIALIZING..." 40 1
+    echo ""
+    holo "$title" 60
+    echo ""
+    typewriter_fast "  $subtitle" 0.02
+    rainbow_progress "BOOT" 50
+}
+
+# 模板系统由 generators/_templates.sh 提供 (Agent 1 创建)

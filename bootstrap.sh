@@ -13,6 +13,13 @@
 #   ./bootstrap.sh --include data,model         # 只处理这些 module
 #   ./bootstrap.sh --force                      # 强制全量重建（忽略增量缓存）
 #   ./bootstrap.sh --from-url <url>             # 远程拉模板（git/https/file）
+#   ./bootstrap.sh --validate                   # 硬约束 schema 校验（无生成）
+#   ./bootstrap.sh --check-imports              # 检查 struct.json imports 链
+#   ./bootstrap.sh --check-impl                 # 检查 generated/ 与 schema 对齐
+#   ./bootstrap.sh --check-all                  # 同时跑 --check-imports + --check-impl
+#   ./bootstrap.sh --migrate 3.0 3.1            # schema 迁移: 3.0 -> 3.1
+#   ./bootstrap.sh --migrate 3.0 3.1 --dry-run  # 预览迁移结果不写盘
+#   ./bootstrap.sh --validate                   # 硬约束 schema 校验
 # ============================================================================
 
 set -euo pipefail
@@ -35,6 +42,13 @@ INIT_CMD=0
 INIT_TEMPLATE=""
 INIT_FROM=""
 INIT_FROM_URL=""
+
+# migrate 子命令专用变量（被 --migrate <from> <to> 触发）
+MIGRATE_CMD=0
+MIGRATE_FROM=""
+MIGRATE_TO=""
+MIGRATE_OUTPUT=""
+MIGRATE_DRY_RUN=0
 
 # AI / viz 类生成器（不需要被 -t 解析成代码语言）
 AI_TARGETS=(agents context queue viz claude)
@@ -74,6 +88,13 @@ while [[ $# -gt 0 ]]; do
         --complete)     COMPLETE_ID="$2"; shift 2 ;;
         --reset)        RESET_ID="$2"; shift 2 ;;
         --validate)     VALIDATE_CMD=1; shift ;;
+        --check-imports) CHECK_IMPORTS_CMD=1; shift ;;
+        --check-impl)    CHECK_IMPL_CMD=1; shift ;;
+        --check-all)     CHECK_IMPORTS_CMD=1; CHECK_IMPL_CMD=1; shift ;;
+        --migrate)      MIGRATE_CMD=1; MIGRATE_FROM="$2"; MIGRATE_TO="$3"; shift 3 ;;
+        --migrate-output) MIGRATE_OUTPUT="$2"; shift 2 ;;
+        --migrate-dry-run) MIGRATE_DRY_RUN=1; shift ;;
+        --dry-run)      MIGRATE_DRY_RUN=1; shift ;;
         -h|--help)      usage 0 ;;
         *)              echo "未知参数: $1" >&2; usage 1 ;;
     esac
@@ -151,6 +172,44 @@ if [[ -n "${RESET_ID:-}" ]]; then bash "$GENERATORS_DIR/agent.sh" reset "$RESET_
 # ---------- Agent 5: validate command (硬约束 schema 校验) ----------
 if [[ "${VALIDATE_CMD:-0}" == "1" ]]; then
     bash "$GENERATORS_DIR/validate.sh"
+    exit $?
+fi
+
+# ---------- Agent 2: schema-aware import + impl checks ----------
+if [[ "${CHECK_IMPORTS_CMD:-0}" == "1" ]]; then
+    if [[ "${JSON_OUT:-0}" == "1" ]]; then
+        bash "$GENERATORS_DIR/check_imports.sh" --json
+    else
+        bash "$GENERATORS_DIR/check_imports.sh"
+    fi
+    rc_imports=$?
+    # 仅当 --check-imports 单独调用时立即退出
+    # 当 --check-all 同时设了两个 flag 时继续跑 impl
+    if [[ "${CHECK_IMPL_CMD:-0}" != "1" ]]; then
+        exit $rc_imports
+    fi
+fi
+if [[ "${CHECK_IMPL_CMD:-0}" == "1" ]]; then
+    if [[ "${JSON_OUT:-0}" == "1" ]]; then
+        bash "$GENERATORS_DIR/check_impl.sh" --json
+    else
+        bash "$GENERATORS_DIR/check_impl.sh"
+    fi
+    rc_impl=$?
+    if [[ "${CHECK_IMPORTS_CMD:-0}" != "1" ]]; then
+        exit $rc_impl
+    fi
+    # --check-all: 把两边的最大退出码作为总退出码
+    [[ $rc_impl -gt ${rc_imports:-0} ]] && exit $rc_impl
+    exit ${rc_imports:-0}
+fi
+
+# ---------- Agent 4: --migrate (struct.json schema 迁移) ----------
+if [[ "${MIGRATE_CMD:-0}" == "1" ]]; then
+    migrate_args=(--from "$MIGRATE_FROM" --to "$MIGRATE_TO" --struct "$STRUCT_FILE")
+    [[ -n "${MIGRATE_OUTPUT:-}" ]] && migrate_args+=(--output "$MIGRATE_OUTPUT")
+    [[ "${MIGRATE_DRY_RUN:-0}" == "1" ]] && migrate_args+=(--dry-run)
+    bash "$GENERATORS_DIR/migrate.sh" "${migrate_args[@]}"
     exit $?
 fi
 
@@ -266,11 +325,11 @@ if [[ -z "$TARGETS" ]]; then
     fi
 fi
 
-# 展开 "all" 为所有可用生成器（排除 subcommand 文件：check / agent / validate / init）
+# 展开 "all" 为所有可用生成器（排除 subcommand 文件：check / agent / validate / init / check_impl / check_imports / migrate）
 if [[ "$TARGETS" == "all" ]]; then
     TARGETS=$(find "$GENERATORS_DIR" -maxdepth 1 -name '*.sh' -type f 2>/dev/null \
               | grep -v _lib.sh \
-              | grep -Ev '/(check|agent|validate|init|git_dispatch|git_merge|explain)\.sh$' \
+              | grep -Ev '/(check|agent|validate|init|git_dispatch|git_merge|explain|check_impl|check_imports|migrate)\.sh$' \
               | xargs -I{} basename {} .sh | sort | paste -sd, -)
 fi
 IFS=',' read -ra TARGET_ARR <<< "$TARGETS"

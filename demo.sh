@@ -68,6 +68,10 @@ run_quiet() {
 # ---------- 0. 准备 ----------
 
 clear
+# shellcheck disable=SC1091
+source "${REPO_ROOT}/generators/_lib.sh"
+hologram_intro "SIMPLE_MODEL" "AI-Native Project Orchestrator v0.5"
+
 section "0. 准备：清理 + 创建临时项目"
 
 note "清理旧 demo 目录"

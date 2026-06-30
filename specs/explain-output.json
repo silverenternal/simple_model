@@ -177,6 +177,10 @@
                 "uniqueItems": true,
                 "description": "本 todo 完成后才能开始的其它 todo id 列表"
               },
+              "acceptance_criteria": {
+                "type": "string",
+                "description": "Free-form text describing what 'done' looks like (given to AI agent as success criteria). Empty string = use task as AC."
+              },
               "suggested_implementation_steps": {
                 "type": "array",
                 "items": {
@@ -226,6 +230,10 @@
               "status": {
                 "enum": ["done"],
                 "description": "固定为 done"
+              },
+              "acceptance_criteria": {
+                "type": "string",
+                "description": "完成时的 acceptance_criteria 快照（写死），AI 可参考当时 'done' 的定义"
               },
               "completed_at": {
                 "type": "string",
