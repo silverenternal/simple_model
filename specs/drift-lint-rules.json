@@ -5,7 +5,10 @@
   "description": "Declarative rule definitions consumed by 'bootstrap drift' and 'bootstrap lint'. Each rule has a jq/JMESPath expression so it can be evaluated from .sh without extra dependencies. Severity controls exit code; enable/disable flags allow per-rule opt-out.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["rule_set_version", "categories"],
+  "required": [
+    "rule_set_version",
+    "categories"
+  ],
   "properties": {
     "rule_set_version": {
       "type": "string",
@@ -19,7 +22,11 @@
       "properties": {
         "severity": {
           "type": "string",
-          "enum": ["error", "warning", "info"],
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
           "default": "warning",
           "description": "Default severity if a rule omits its own."
         },
@@ -30,7 +37,12 @@
         },
         "fail_on": {
           "type": "string",
-          "enum": ["error", "warning", "info", "never"],
+          "enum": [
+            "error",
+            "warning",
+            "info",
+            "never"
+          ],
           "default": "error",
           "description": "Minimum severity that causes the lint command to exit non-zero."
         }
@@ -73,11 +85,20 @@
           "additionalProperties": false,
           "description": "Rules for schema <-> artifact consistency (structural drift detection).",
           "properties": {
-            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "default_severity": {
+              "type": "string",
+              "enum": [
+                "error",
+                "warning",
+                "info"
+              ]
+            },
             "rules": {
               "type": "array",
               "description": "Drift detection rules.",
-              "items": { "$ref": "#/$defs/Rule" }
+              "items": {
+                "$ref": "#/$defs/Rule"
+              }
             }
           }
         },
@@ -86,11 +107,20 @@
           "additionalProperties": false,
           "description": "Schema structure anti-patterns (cycles, dead code, dangling references).",
           "properties": {
-            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "default_severity": {
+              "type": "string",
+              "enum": [
+                "error",
+                "warning",
+                "info"
+              ]
+            },
             "rules": {
               "type": "array",
               "description": "Structural lint rules.",
-              "items": { "$ref": "#/$defs/Rule" }
+              "items": {
+                "$ref": "#/$defs/Rule"
+              }
             }
           }
         },
@@ -99,11 +129,20 @@
           "additionalProperties": false,
           "description": "Complexity thresholds (oversized modules, deep chains, fan-out).",
           "properties": {
-            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "default_severity": {
+              "type": "string",
+              "enum": [
+                "error",
+                "warning",
+                "info"
+              ]
+            },
             "rules": {
               "type": "array",
               "description": "Complexity lint rules.",
-              "items": { "$ref": "#/$defs/Rule" }
+              "items": {
+                "$ref": "#/$defs/Rule"
+              }
             }
           }
         },
@@ -112,11 +151,20 @@
           "additionalProperties": false,
           "description": "Naming and style conventions enforced across modules and components.",
           "properties": {
-            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "default_severity": {
+              "type": "string",
+              "enum": [
+                "error",
+                "warning",
+                "info"
+              ]
+            },
             "rules": {
               "type": "array",
               "description": "Convention rules.",
-              "items": { "$ref": "#/$defs/Rule" }
+              "items": {
+                "$ref": "#/$defs/Rule"
+              }
             }
           }
         }
@@ -127,7 +175,11 @@
     "Rule": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "description", "check"],
+      "required": [
+        "id",
+        "description",
+        "check"
+      ],
       "description": "A single lint or drift rule. The check describes how to evaluate it; the executor maps that to jq/git/stat calls.",
       "properties": {
         "id": {
@@ -143,7 +195,11 @@
         },
         "severity": {
           "type": "string",
-          "enum": ["error", "warning", "info"],
+          "enum": [
+            "error",
+            "warning",
+            "info"
+          ],
           "description": "Severity override for this rule (otherwise inherits from category.default_severity then defaults.severity)."
         },
         "enabled": {
@@ -153,12 +209,20 @@
         "check": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["type"],
+          "required": [
+            "type"
+          ],
           "description": "How the rule is evaluated at runtime.",
           "properties": {
             "type": {
               "type": "string",
-              "enum": ["jmespath", "jq", "stat", "git", "schema"],
+              "enum": [
+                "jmespath",
+                "jq",
+                "stat",
+                "git",
+                "schema"
+              ],
               "description": "Evaluator type: jq/jmespath run against a JSON file, stat checks filesystem, git inspects repo state, schema validates a file."
             },
             "input": {
@@ -172,15 +236,33 @@
             "expected": {
               "description": "Expected value (type matches expression output: string/number/boolean/array).",
               "oneOf": [
-                { "type": "string" },
-                { "type": "number" },
-                { "type": "boolean" },
-                { "type": "array" }
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "array"
+                }
               ]
             },
             "compare": {
               "type": "string",
-              "enum": ["eq", "ne", "gt", "lt", "gte", "lte", "in", "contains", "matches"],
+              "enum": [
+                "eq",
+                "ne",
+                "gt",
+                "lt",
+                "gte",
+                "lte",
+                "in",
+                "contains",
+                "matches"
+              ],
               "description": "Comparison operator applied to (expression result, expected). 'matches' treats both as regex (PCRE/ERE)."
             },
             "schema_ref": {
@@ -208,7 +290,9 @@
         },
         "tags": {
           "type": "array",
-          "items": { "type": "string" },
+          "items": {
+            "type": "string"
+          },
           "description": "Free-form tags for grouping and filtering (e.g. ['schema', 'breaking'])."
         }
       }
@@ -232,7 +316,10 @@
           },
           "remediation": "Re-run 'bootstrap.sh --target all' to refresh generated/, or commit the regenerated files so state.json is updated.",
           "docs_url": "https://jsonsch/simple_model/docs/drift/struct-out-of-date",
-          "tags": ["drift", "schema"],
+          "tags": [
+            "drift",
+            "schema"
+          ],
           "fix": {
             "available": true,
             "strategy": "regenerate",
@@ -251,13 +338,16 @@
           "check": {
             "type": "jq",
             "input": "{{state}}",
-            "expression": "[.outputs[] | select(.path | test(\"^/$\") or .path == \"\" )] | length",
+            "expression": "[.outputs[] | select((.path | test(\"^/$\")) or (.path == \"\"))] | length",
             "compare": "eq",
             "expected": 0
           },
           "remediation": "Run 'bootstrap.sh --target all' to regenerate missing outputs, then verify the script exits 0.",
           "docs_url": "https://jsonsch/simple_model/docs/drift/generated-files-missing",
-          "tags": ["drift", "filesystem"],
+          "tags": [
+            "drift",
+            "filesystem"
+          ],
           "fix": {
             "available": true,
             "strategy": "regenerate",
@@ -281,7 +371,10 @@
           },
           "remediation": "Delete files under generated/ that are not produced by any generator, or update the generator manifest to claim them.",
           "docs_url": "https://jsonsch/simple_model/docs/drift/orphan-generated-files",
-          "tags": ["drift", "filesystem"],
+          "tags": [
+            "drift",
+            "filesystem"
+          ],
           "fix": {
             "available": true,
             "strategy": "remove_orphan",
@@ -311,7 +404,10 @@
           },
           "remediation": "Break the cycle by inverting one of the imports (e.g. introduce an interface module) or merging the two components.",
           "docs_url": "https://jsonsch/simple_model/docs/structure/circular-dependency",
-          "tags": ["structure", "topology"]
+          "tags": [
+            "structure",
+            "topology"
+          ]
         },
         {
           "id": "isolated-component",
@@ -327,7 +423,10 @@
           },
           "remediation": "Either remove the isolated component from struct.json or add it to another component's imports to declare a real dependency.",
           "docs_url": "https://jsonsch/simple_model/docs/structure/isolated-component",
-          "tags": ["structure", "deadcode"],
+          "tags": [
+            "structure",
+            "deadcode"
+          ],
           "fix": {
             "available": true,
             "strategy": "jq_transform",
@@ -357,7 +456,10 @@
           },
           "remediation": "Split the oversized module into 2-3 cohesive sub-modules grouped by responsibility, then update imports.",
           "docs_url": "https://jsonsch/simple_model/docs/complexity/oversized-module",
-          "tags": ["complexity", "size"],
+          "tags": [
+            "complexity",
+            "size"
+          ],
           "fix": {
             "available": true,
             "strategy": "jq_transform",
@@ -382,7 +484,10 @@
           },
           "remediation": "Flatten the chain by extracting shared interfaces, or move the leaf component closer to the layer that actually consumes it.",
           "docs_url": "https://jsonsch/simple_model/docs/complexity/deep-dependency-chain",
-          "tags": ["complexity", "depth"]
+          "tags": [
+            "complexity",
+            "depth"
+          ]
         }
       ]
     },
@@ -403,7 +508,10 @@
           },
           "remediation": "Rename the offending component to PascalCase (e.g. 'tokenizer' -> 'Tokenizer') and update every imports reference.",
           "docs_url": "https://jsonsch/simple_model/docs/convention/inconsistent-naming",
-          "tags": ["convention", "naming"],
+          "tags": [
+            "convention",
+            "naming"
+          ],
           "fix": {
             "available": true,
             "strategy": "jq_transform",

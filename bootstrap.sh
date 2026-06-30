@@ -131,8 +131,18 @@ if [[ -n "${EXPLAIN_COMP:-}" ]]; then
 fi
 
 # === Agent 4: AI agent commands ===
+# 把正确的路径传给 agent.sh：dev_queue.json 和 state.json 都写在 $OUTPUT_DIR 下
+export DEV_QUEUE_FILE="${OUTPUT_DIR}/.ai/dev_queue.json"
+export STATE_FILE="${OUTPUT_DIR}/.bootstrap/state.json"
 if [[ "${STATUS_CMD:-0}" == "1" ]]; then bash "$GENERATORS_DIR/agent.sh" status; exit 0; fi
-if [[ "${NEXT_CMD:-0}" == "1" ]]; then bash "$GENERATORS_DIR/agent.sh" next; exit 0; fi
+if [[ "${NEXT_CMD:-0}" == "1" ]]; then
+    if [[ "${JSON_OUT:-0}" == "1" ]]; then
+        bash "$GENERATORS_DIR/agent.sh" next --json
+    else
+        bash "$GENERATORS_DIR/agent.sh" next
+    fi
+    exit 0
+fi
 if [[ -n "${CLAIM_ID:-}" ]]; then bash "$GENERATORS_DIR/agent.sh" claim "$CLAIM_ID"; exit 0; fi
 if [[ -n "${COMPLETE_ID:-}" ]]; then bash "$GENERATORS_DIR/agent.sh" complete "$COMPLETE_ID"; exit 0; fi
 if [[ -n "${RESET_ID:-}" ]]; then bash "$GENERATORS_DIR/agent.sh" reset "$RESET_ID"; exit 0; fi
@@ -369,3 +379,50 @@ echo " todo 拓扑序长度: $TOTAL_TODOS"
     [[ -f "$OUTPUT_DIR/docs/architecture.html" ]] && echo " [WEB] 甲方展示页: $OUTPUT_DIR/docs/architecture.html"
 }
 echo "============================================================"
+
+# ---------- 写 .ai/state.json (drift 检查用) ----------
+AI_STATE_DIR="${OUTPUT_DIR}/.ai"
+mkdir -p "$AI_STATE_DIR"
+STATE_JSON="${AI_STATE_DIR}/state.json"
+STRUCT_HASH=$(sha256sum "$STRUCT_FILE" | awk '{print $1}')
+
+# 收集本次生成的产物（相对 $OUTPUT_DIR）
+outputs_json="[]"
+if [[ -d "$OUTPUT_DIR" ]]; then
+    outputs_json=$(cd "$OUTPUT_DIR" && find . -type f \
+        ! -path './.ai/state.json' \
+        ! -path './.bootstrap/*' \
+        -printf '%P\n' 2>/dev/null \
+        | jq -R '{path: ("/" + .), size: 0}' \
+        | jq -s '.' || echo "[]")
+fi
+
+# 写 state.json
+jq -n \
+    --arg schema_version "1.0" \
+    --arg at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+    --arg struct_hash "$STRUCT_HASH" \
+    --arg struct_path "${STRUCT_FILE}" \
+    --argjson targets "$(printf '%s\n' "${TARGET_ARR[@]}" | jq -R . | jq -s .)" \
+    --argjson outputs "$outputs_json" \
+    '{
+        schema_version: $schema_version,
+        last_run: {
+            at: $at,
+            targets: $targets,
+            exit_code: 0
+        },
+        struct_hash: $struct_hash,
+        sources: {
+            struct: {
+                path: $struct_path,
+                sha256: $struct_hash
+            }
+        },
+        targets: $targets,
+        outputs: $outputs
+    }' > "$STATE_JSON" 2>/dev/null || {
+        echo "  [WARN] state.json 写入失败（jq 错误），跳过" >&2
+    }
+
+echo " [STATE] drift manifest: $STATE_JSON"

@@ -41,10 +41,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 RULES_FILE="$ROOT_DIR/specs/drift-lint-rules.json"
-STRUCT_FILE="$ROOT_DIR/struct.json"
-STATE_FILE="$ROOT_DIR/generated/.ai/state.json"
-GENERATED_DIR="$ROOT_DIR/generated"
-SCHEMA_FILE="$ROOT_DIR/struct.schema.json"
+# 这些路径都可被环境变量覆盖，让用户从任何 cwd 调用都能跑
+STRUCT_FILE="${STRUCT_FILE:-./struct.json}"
+OUTPUT_DIR="${OUTPUT_DIR:-./generated}"
+STATE_FILE="${STATE_FILE:-${OUTPUT_DIR}/.ai/state.json}"
+GENERATED_DIR="${GENERATED_DIR:-$OUTPUT_DIR}"
+SCHEMA_FILE="${SCHEMA_FILE:-./struct.schema.json}"
 
 MODE=""
 JSON_OUT=0
@@ -52,6 +54,7 @@ FIX_MODE=0
 TOTAL=0
 PASSED=0
 FAILED=0
+SKIPPED=0
 WARNINGS=0
 ERRORS=0
 FIX_APPLIED=0
@@ -439,8 +442,9 @@ run_rule() {
         case "$check_type" in
             jq|jmespath)
                 if [[ -z "$expanded_input" || ! -f "$expanded_input" ]]; then
-                    passed=0
-                    message="input file not found: $expanded_input"
+                    # 输入文件不存在 = SKIP（不是 FAIL）。常见于：state.json 还没生成就跑 drift
+                    passed=2
+                    message="skip: input file not found: $expanded_input (run 'bootstrap.sh --target all' first)"
                 else
                     if actual=$(jq -r "$expression" "$expanded_input" 2>/dev/null); then
                         if compare_values "$compare_op" "$actual" "$expanded_expected"; then
@@ -515,12 +519,13 @@ run_rule() {
             --arg rule_id "$rule_id" \
             --arg severity "$severity" \
             --arg passed_str "$([[ $passed -eq 1 ]] && echo true || echo false)" \
+            --arg skipped_str "$([[ $passed -eq 2 ]] && echo true || echo false)" \
             --arg message "$message" \
             --arg remediation "$(jq -r '.remediation // ""' <<<"$rule_json")" \
             --arg actual "${actual:-}" \
             --arg expected "$expanded_expected" \
             --arg compare_op "$compare_op" \
-            '{rule_id: $rule_id, severity: $severity, passed: ($passed_str == "true"), message: $message, remediation: $remediation, actual: $actual, expected: $expected, compare: $compare_op}' \
+            '{rule_id: $rule_id, severity: $severity, passed: ($passed_str == "true"), skipped: ($skipped_str == "true"), message: $message, remediation: $remediation, actual: $actual, expected: $expected, compare: $compare_op}' \
             >> "$_FINDINGS_FILE"
     ) 9>"$_FINDINGS_FILE_LOCK"
 
@@ -528,6 +533,9 @@ run_rule() {
     if [[ $passed -eq 1 ]]; then
         printf '  [OK]   %s\n' "$rule_id" >&2
         printf 'PASS'
+    elif [[ $passed -eq 2 ]]; then
+        printf '  [SKIP] %s (%s)\n' "$rule_id" "$message" >&2
+        printf 'SKIP'
     else
         printf '  [FAIL] %s: %s\n' "$rule_id" "$message" >&2
         printf 'FAIL'
@@ -669,6 +677,8 @@ main() {
 
         if [[ "$status" == "PASS" ]]; then
             PASSED=$((PASSED + 1))
+        elif [[ "$status" == "SKIP" ]]; then
+            SKIPPED=$((SKIPPED + 1))
         else
             FAILED=$((FAILED + 1))
             local rsev
@@ -728,6 +738,7 @@ main() {
             --argjson total "$TOTAL" \
             --argjson passed "$PASSED" \
             --argjson failed "$FAILED" \
+            --argjson skipped "$SKIPPED" \
             --argjson warnings "$WARNINGS" \
             --argjson errors "$ERRORS" \
             --argjson exit_code "$EXIT_CODE" \
@@ -743,6 +754,7 @@ main() {
                     total_rules: $total,
                     passed: $passed,
                     failed: $failed,
+                    skipped: $skipped,
                     warnings: $warnings,
                     errors: $errors,
                     exit_code: $exit_code,
@@ -791,7 +803,7 @@ remediation: ${f_rem:-<none>}"
 
     echo ""
     echo "============================================================"
-    echo " ${MODE} summary: total=$TOTAL passed=$PASSED failed=$FAILED warnings=$WARNINGS errors=$ERRORS"
+    echo " ${MODE} summary: total=$TOTAL passed=$PASSED failed=$FAILED skipped=$SKIPPED warnings=$WARNINGS errors=$ERRORS"
     echo "============================================================"
     echo ""
 

@@ -210,6 +210,7 @@ waves: $total_waves  current_wave: $current_wave"
 
 # ---------- 子命令：next ----------
 cmd_next() {
+    local json_out="${1:-0}"
     require_queue
 
     # 找第一个 pending + high priority 的 todo（按 wave 顺序，再按 priority）
@@ -222,6 +223,10 @@ cmd_next() {
     ' "$DEV_QUEUE_FILE")
 
     if [[ "$found" == "null" || -z "$found" ]]; then
+        if [[ "$json_out" == "1" ]]; then
+            echo '{"error":"no pending todos"}'
+            exit 1
+        fi
         echo "  [INFO] 没有 pending 的 todo（全部 in_progress 或 done）"
         exit 1
     fi
@@ -234,6 +239,12 @@ cmd_next() {
     meta=$(jq -c --arg id "$todo_id" '
         [.waves[].todos[] | select(.id == $id)][0]
     ' "$DEV_QUEUE_FILE")
+
+    # --json 模式：只输出 JSON 到 stdout，机器友好
+    if [[ "$json_out" == "1" ]]; then
+        echo "$meta"
+        exit 0
+    fi
 
     local task component module blocks priority
     task=$(echo "$meta" | jq -r '.task')
@@ -414,12 +425,21 @@ main() {
     local sub="${1:-}"
     shift || true
 
+    # 全局 --json 标志：仅 next/claim/complete/reset 支持
+    local json_out=0
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --json) json_out=1; shift ;;
+            *) break ;;
+        esac
+    done
+
     case "$sub" in
         status)   cmd_status ;;
-        next)     cmd_next ;;
-        claim)    cmd_claim "${1:-}" ;;
-        complete) cmd_complete "${1:-}" ;;
-        reset)    cmd_reset "${1:-}" ;;
+        next)     cmd_next "$json_out" ;;
+        claim)    cmd_claim "${1:-}" "$json_out" ;;
+        complete) cmd_complete "${1:-}" "$json_out" ;;
+        reset)    cmd_reset "${1:-}" "$json_out" ;;
         -h|--help|"") usage; exit 0 ;;
         *) die "未知子命令: $sub（用 --help 查看用法）" ;;
     esac

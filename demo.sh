@@ -10,6 +10,7 @@
 
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
+REPO_ROOT="$(pwd)"
 
 # 颜色（如果 TTY 支持）
 if [[ -t 1 ]]; then
@@ -23,7 +24,7 @@ else
     C_BOLD=""; C_DIM=""; C_GREEN=""; C_CYAN=""; C_YELLOW=""; C_RESET=""
 fi
 
-DEMO_DIR="./demo-tmp"
+DEMO_DIR="$(pwd)/demo-tmp"
 SCRIPT="./bootstrap.sh"
 
 # ---------- helpers ----------
@@ -53,9 +54,9 @@ note() {
     echo -e "${C_DIM}  # $1${C_RESET}"
 }
 
-# 跑一条命令并显示
+# 跑一条命令并显示（命令头写到 stderr，不污染 stdout 给管道）
 run() {
-    echo -e "${C_YELLOW}\$ $*${C_RESET}"
+    echo -e "${C_YELLOW}\$ $*${C_RESET}" >&2
     "$@"
 }
 
@@ -97,13 +98,13 @@ section "2. visualization: 看项目架构 (给老板/甲方)"
 
 note "生成可视化"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --target viz
+run "${REPO_ROOT}/bootstrap.sh" --target viz
 echo ""
 note "生成的文档和图"
-ls -la "$OLDPWD/$DEMO_DIR/docs/" 2>/dev/null
+ls -la "$DEMO_DIR/generated/docs/" 2>/dev/null || echo "  (no docs dir)"
 echo ""
-echo -e "${C_DIM}  # docs/architecture.html 是单文件，可直接邮件给客户${C_RESET}"
-echo -e "${C_DIM}  # docs/ARCHITECTURE.md 在 GitHub 自动渲染 Mermaid${C_RESET}"
+echo -e "${C_DIM}  # generated/docs/architecture.html 是单文件，可直接邮件给客户${C_RESET}"
+echo -e "${C_DIM}  # generated/docs/ARCHITECTURE.md 在 GitHub 自动渲染 Mermaid${C_RESET}"
 
 pause
 
@@ -115,12 +116,11 @@ section "3. explain: 给 AI agent 一个 component 的全部 context"
 
 note "先跑 generate 生成 .ai/ 上下文"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --target agents,context,queue --no-validate
+run "${REPO_ROOT}/bootstrap.sh" --target agents,context,queue --no-validate
 echo ""
 note "现在 --explain 看看一个 component"
 
-cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --explain LoginPage
+run "${REPO_ROOT}/bootstrap.sh" --explain LoginPage
 echo ""
 echo -e "${C_DIM}  # 这是 markdown 输出，给人类看${C_RESET}"
 echo -e "${C_DIM}  # 加 --json 输出机器可读 JSON，给 AI agent 看${C_RESET}"
@@ -133,7 +133,7 @@ section "4. status: 项目进度 dashboard"
 
 note "看项目状态"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --status
+run "${REPO_ROOT}/bootstrap.sh" --status
 
 pause
 
@@ -143,7 +143,7 @@ section "5. next: AI agent 拿下一个 todo"
 
 note "AI agent 启动时第一件事"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --next --json | jq '{id, priority, task, component, module}'
+run "${REPO_ROOT}/bootstrap.sh" --next --json | jq '{id, priority, task, component, module}'
 echo ""
 echo -e "${C_DIM}  # AI agent 拿到这个 JSON 就能开始干活，不用读其他文件${C_RESET}"
 
@@ -156,14 +156,14 @@ section "6. AI agent 工作流: claim -> 写代码 -> complete"
 note "AI agent 接下这个 task"
 TASK_ID="page_login_submit"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --claim "$TASK_ID"
+run "${REPO_ROOT}/bootstrap.sh" --claim "$TASK_ID"
 
 note "AI agent 写代码... (这里我们跳过实际写代码)"
 sleep 1
 
 note "AI agent 标记完成"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --complete "$TASK_ID"
+run "${REPO_ROOT}/bootstrap.sh" --complete "$TASK_ID"
 echo ""
 echo -e "${C_DIM}  # status 自动从 pending -> in_progress -> done${C_RESET}"
 echo -e "${C_DIM}  # 解锁了下游 todo (unlocked:)${C_RESET}"
@@ -191,17 +191,17 @@ echo ""
 
 note "先跑 lint 看问题"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --lint
+run "${REPO_ROOT}/bootstrap.sh" --lint
 echo ""
 
 note "现在加 --fix 自动修"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --lint --fix
+run "${REPO_ROOT}/bootstrap.sh" --lint --fix
 echo ""
 
 note "再次 lint 看是否修好"
 cd "$DEMO_DIR"
-run "$OLDPWD/bootstrap.sh" --lint | tail -3
+run "${REPO_ROOT}/bootstrap.sh" --lint | tail -3
 
 pause
 
@@ -213,7 +213,7 @@ note "改 struct.json 但不重新生成"
 cd "$DEMO_DIR"
 # touch struct.json 但不改内容 — 触发 drift
 touch struct.json
-run "$OLDPWD/bootstrap.sh" --drift | head -10
+run "${REPO_ROOT}/bootstrap.sh" --drift | head -10 || true   # --drift 故意返回非 0
 
 pause
 
