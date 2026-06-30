@@ -72,6 +72,24 @@ clear
 source "${REPO_ROOT}/generators/_lib.sh"
 hologram_intro "SIMPLE_MODEL" "AI-Native Project Orchestrator v0.5"
 
+# 各步骤前的小动画 (≤0.5 秒)
+step_anim() {
+    case "$1" in
+        0) ;;  # 已经在 hologram_intro 里做过了
+        1) scanline "INITIALIZING..." 35 1 ;;
+        2) holo "ARCHITECTURE" 50 ;;
+        3) lightning 3 ;;
+        4) aurora 40 1 ;;
+        5) glitch "NEXT_TASK" 6 ;;
+        6) typewriter_fast "  AI agent 启动..." 0.01 ;;
+        7) fire 5 25 1 ;;
+        8) snowflake 40 1 ;;
+        9) rainbow_progress "CARGO TEST" 30 ;;
+        10) matrix_rain 30 8 1 ;;
+    esac
+    echo ""
+}
+
 section "0. 准备：清理 + 创建临时项目"
 
 note "清理旧 demo 目录"
@@ -86,6 +104,7 @@ pause
 
 # ---------- 1. 初始化项目 ----------
 
+step_anim 1
 section "1. init: 从模板创建项目"
 
 note "用 web_spa 模板生成新项目"
@@ -98,6 +117,7 @@ pause
 
 # ---------- 2. 看架构 ----------
 
+step_anim 2
 section "2. visualization: 看项目架构 (给老板/甲方)"
 
 note "生成可视化"
@@ -116,6 +136,7 @@ cd "$OLDPWD"
 
 # ---------- 3. explain: AI agent 的杀手锏 ----------
 
+step_anim 3
 section "3. explain: 给 AI agent 一个 component 的全部 context"
 
 note "先跑 generate 生成 .ai/ 上下文"
@@ -133,6 +154,7 @@ pause
 
 # ---------- 4. status dashboard ----------
 
+step_anim 4
 section "4. status: 项目进度 dashboard"
 
 note "看项目状态"
@@ -143,6 +165,7 @@ pause
 
 # ---------- 5. next: AI agent 拿下一个 task ----------
 
+step_anim 5
 section "5. next: AI agent 拿下一个 todo"
 
 note "AI agent 启动时第一件事"
@@ -155,6 +178,7 @@ pause
 
 # ---------- 6. claim + complete: AI agent 工作流 ----------
 
+step_anim 6
 section "6. AI agent 工作流: claim -> 写代码 -> complete"
 
 note "AI agent 接下这个 task"
@@ -176,6 +200,7 @@ pause
 
 # ---------- 7. lint + auto-fix ----------
 
+step_anim 7
 section "7. lint --fix: 自动修复反模式"
 
 note "故意制造一个反模式：加一个孤立 component"
@@ -211,6 +236,7 @@ pause
 
 # ---------- 8. drift ----------
 
+step_anim 8
 section "8. drift: schema ↔ 产物一致性"
 
 note "改 struct.json 但不重新生成"
@@ -223,6 +249,7 @@ pause
 
 # ---------- 9. 真实编译验证 (Rust) ----------
 
+step_anim 9
 section "9. rust: 真实编译验证 (cargo test)"
 
 note "如果想看 Rust 编译（需要 cargo），切换到 ML 例子"
@@ -239,6 +266,7 @@ pause
 
 # ---------- 10. cleanup ----------
 
+step_anim 10
 section "10. 清理"
 
 note "删除 demo 目录"
