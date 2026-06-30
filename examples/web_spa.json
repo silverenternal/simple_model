@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "3.1",
   "description": "前端 SPA 项目：React + Router + 状态管理 + API 客户端",
   "conventions": {
     "modules": "按业务/技术分层划分（pages / state / api / ui-kit）",
@@ -16,18 +16,34 @@
         {
           "name": "Button",
           "description": "基础按钮组件，支持 variant/size/loading",
-          "exports": ["Button", "ButtonProps"],
+          "exports": [
+            "Button",
+            "ButtonProps"
+          ],
           "imports": [],
           "todos": [
-            { "id": "ui_button_variant", "task": "实现 primary/secondary/ghost 三种 variant", "priority": "high" },
-            { "id": "ui_button_loading", "task": "支持 loading 态与禁用态", "priority": "medium" }
+            {
+              "id": "ui_button_variant",
+              "task": "实现 primary/secondary/ghost 三种 variant",
+              "priority": "high"
+            },
+            {
+              "id": "ui_button_loading",
+              "task": "支持 loading 态与禁用态",
+              "priority": "medium"
+            }
           ]
         },
         {
           "name": "Modal",
           "description": "模态对话框组件，支持 Portal 与动画",
-          "exports": ["Modal", "useModal"],
-          "imports": ["Button"]
+          "exports": [
+            "Modal",
+            "useModal"
+          ],
+          "imports": [
+            "Button"
+          ]
         }
       ]
     },
@@ -39,20 +55,40 @@
         {
           "name": "AuthStore",
           "description": "管理登录态、用户信息、token",
-          "exports": ["useAuthStore", "AuthState"],
+          "exports": [
+            "useAuthStore",
+            "AuthState"
+          ],
           "imports": [],
           "todos": [
-            { "id": "state_auth_persist", "task": "用 localStorage 持久化 token", "priority": "high" },
-            { "id": "state_auth_refresh", "task": "实现 token 自动刷新", "priority": "medium", "blocks": ["api_auth_login"] }
+            {
+              "id": "state_auth_persist",
+              "task": "用 localStorage 持久化 token",
+              "priority": "high"
+            },
+            {
+              "id": "state_auth_refresh",
+              "task": "实现 token 自动刷新",
+              "priority": "medium",
+              "blocks": [
+                "api_auth_login"
+              ]
+            }
           ]
         },
         {
           "name": "UIStore",
           "description": "全局 UI 状态（主题 / 侧边栏 / 语言）",
-          "exports": ["useUIStore"],
+          "exports": [
+            "useUIStore"
+          ],
           "imports": [],
           "todos": [
-            { "id": "state_ui_theme", "task": "实现亮/暗主题切换", "priority": "high" }
+            {
+              "id": "state_ui_theme",
+              "task": "实现亮/暗主题切换",
+              "priority": "high"
+            }
           ]
         }
       ]
@@ -65,29 +101,62 @@
         {
           "name": "HttpClient",
           "description": "基于 fetch 的统一 HTTP 客户端",
-          "exports": ["HttpClient", "httpClient"],
+          "exports": [
+            "HttpClient",
+            "httpClient"
+          ],
           "imports": [],
           "todos": [
-            { "id": "api_http_interceptor", "task": "实现请求/响应拦截器", "priority": "high", "blocks": ["api_auth_login"] }
+            {
+              "id": "api_http_interceptor",
+              "task": "实现请求/响应拦截器",
+              "priority": "high",
+              "blocks": [
+                "api_auth_login"
+              ]
+            }
           ]
         },
         {
           "name": "AuthAPI",
           "description": "登录/登出/刷新 token 的 API",
-          "exports": ["AuthAPI"],
-          "imports": ["HttpClient"],
+          "exports": [
+            "AuthAPI"
+          ],
+          "imports": [
+            "HttpClient"
+          ],
           "todos": [
-            { "id": "api_auth_login", "task": "对接 /api/auth/login 等接口", "priority": "high", "blocks": ["page_login_submit"] },
-            { "id": "api_auth_refresh", "task": "实现 silent refresh", "priority": "medium" }
+            {
+              "id": "api_auth_login",
+              "task": "对接 /api/auth/login 等接口",
+              "priority": "high",
+              "blocks": [
+                "page_login_submit"
+              ]
+            },
+            {
+              "id": "api_auth_refresh",
+              "task": "实现 silent refresh",
+              "priority": "medium"
+            }
           ]
         },
         {
           "name": "UserAPI",
           "description": "用户信息查询与修改",
-          "exports": ["UserAPI"],
-          "imports": ["HttpClient"],
+          "exports": [
+            "UserAPI"
+          ],
+          "imports": [
+            "HttpClient"
+          ],
           "todos": [
-            { "id": "api_user_profile", "task": "GET/PUT /api/user/profile", "priority": "high" }
+            {
+              "id": "api_user_profile",
+              "task": "GET/PUT /api/user/profile",
+              "priority": "high"
+            }
           ]
         }
       ]
@@ -100,22 +169,90 @@
         {
           "name": "LoginPage",
           "description": "登录页面",
-          "exports": ["LoginPage"],
-          "imports": ["Button", "Modal", "AuthStore", "AuthAPI"],
+          "exports": [
+            "LoginPage"
+          ],
+          "imports": [
+            "Button",
+            "Modal",
+            "AuthStore",
+            "AuthAPI"
+          ],
           "todos": [
-            { "id": "page_login_submit", "task": "实现表单提交与错误提示", "priority": "high" },
-            { "id": "page_login_validate", "task": "前端表单校验（邮箱/密码）", "priority": "high" }
+            {
+              "id": "page_login_submit",
+              "task": "实现表单提交与错误提示",
+              "priority": "high"
+            },
+            {
+              "id": "page_login_validate",
+              "task": "前端表单校验（邮箱/密码）",
+              "priority": "high"
+            }
           ]
         },
         {
           "name": "DashboardPage",
           "description": "登录后的主页",
-          "exports": ["DashboardPage"],
-          "imports": ["Button", "UIStore", "UserAPI", "AuthStore"],
+          "exports": [
+            "DashboardPage"
+          ],
+          "imports": [
+            "Button",
+            "UIStore",
+            "UserAPI",
+            "AuthStore"
+          ],
           "todos": [
-            { "id": "page_dashboard_widget", "task": "实现信息卡片组件", "priority": "medium" }
+            {
+              "id": "page_dashboard_widget",
+              "task": "实现信息卡片组件",
+              "priority": "medium"
+            }
           ]
         }
+      ]
+    }
+  ],
+  "cross_cutting": [],
+  "phases": [
+    {
+      "phase": "configure",
+      "order": 1,
+      "mode": "sequential",
+      "description": "配置与初始化",
+      "core_components": [
+        [
+          "AuthAPI",
+          "AuthStore",
+          "Button"
+        ]
+      ]
+    },
+    {
+      "phase": "execute",
+      "order": 2,
+      "mode": "parallel",
+      "description": "核心执行",
+      "core_components": [
+        [
+          "DashboardPage",
+          "HttpClient",
+          "LoginPage"
+        ]
+      ]
+    },
+    {
+      "phase": "deliver",
+      "order": 3,
+      "mode": "sequential",
+      "description": "交付与集成",
+      "core_components": [
+        [
+          "Modal",
+          "UIStore",
+          "UserAPI"
+        ]
       ]
     }
   ]

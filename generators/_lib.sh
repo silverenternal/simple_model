@@ -3,17 +3,73 @@
 # 用法: source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 #
 # 提供:
+#   自启动: bootstrap_env (让单个 .sh 也能直接跑)
 #   命名转换: to_snake / to_screaming / to_kebab / to_pascal
 #   计数/查找: module_count / component_count / module_of
 #   迭代器: iter_modules / iter_components
 #   数据访问: read_component / read_module
 #   工具: module_todo_json / emit_dev_order / compute_waves
 
-# ---------- 命名转换 ----------
+# ---------- 自启动 (Bug #10 fix: 单个 .sh 也能跑) ----------
+# 当用户直接执行 `bash generators/python.sh` 而不通过 bootstrap.sh 时，
+# 需要的 env vars (OUTPUT_DIR, STRUCT_FILE, SERVICE_ORDER, DEV_ORDER) 全没设。
+# 这个函数用 cwd 自动推导默认值，让单个 .sh 也能产出文件。
+bootstrap_env() {
+    # 1. STRUCT_FILE — 当前目录或父目录找
+    : "${STRUCT_FILE:=}"
+    if [[ -z "$STRUCT_FILE" ]]; then
+        if [[ -f "./struct.json" ]]; then
+            STRUCT_FILE="./struct.json"
+        elif [[ -f "../struct.json" ]]; then
+            STRUCT_FILE="../struct.json"
+        else
+            echo "[FAIL] 找不到 struct.json（在 ./ 或 ../ 都没有）" >&2
+            return 1
+        fi
+    fi
+
+    # 2. OUTPUT_DIR — 默认 ./generated
+    : "${OUTPUT_DIR:=./generated}"
+
+    # 3. SCHEMA_FILE — 默认跟 struct.json 同目录
+    : "${SCHEMA_FILE:=${STRUCT_FILE%/*}/struct.schema.json}"
+    [[ "$SCHEMA_FILE" == "$STRUCT_FILE" ]] && SCHEMA_FILE="./struct.schema.json"
+    [[ -z "${SCHEMA_FILE:-}" || ! -f "$SCHEMA_FILE" ]] && SCHEMA_FILE=""
+
+    # 4. SERVICE_ORDER / DEV_ORDER — 如果空就现算
+    : "${SERVICE_ORDER:=}"
+    : "${DEV_ORDER:=}"
+    : "${TOTAL_TODOS:=0}"
+    : "${PLAN_ONLY:=0}"
+
+    if [[ -z "$SERVICE_ORDER" ]] && command -v topo_sort_components >/dev/null 2>&1; then
+        SERVICE_ORDER=$(topo_sort_components 2>/dev/null || echo "")
+    fi
+    if [[ -z "$DEV_ORDER" ]] && command -v topo_sort_todos >/dev/null 2>&1; then
+        DEV_ORDER=$(topo_sort_todos 2>/dev/null || echo "")
+        [[ -n "$DEV_ORDER" ]] && TOTAL_TODOS=$(echo "$DEV_ORDER" | wc -w)
+    fi
+
+    # 5. GENERATORS_DIR — _lib.sh 所在目录
+    SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    : "${GENERATORS_DIR:=$SELF_DIR}"
+
+    # 6. Bug #10 fix: 确保 OUTPUT_DIR 存在 (避免单独跑 .sh 时崩)
+    mkdir -p "$OUTPUT_DIR"
+
+    export STRUCT_FILE OUTPUT_DIR SCHEMA_FILE SERVICE_ORDER DEV_ORDER TOTAL_TODOS PLAN_ONLY GENERATORS_DIR
+    return 0
+}
+
+# 自动调用一次（被 source 进来后立即生效）
+bootstrap_env 2>/dev/null || true
+
+# ---------- 命名转换 (纯 bash + sed，无 python3 依赖) ----------
 
 # PascalCase -> snake_case
+# 例: DataLoader -> data_loader; HTTPSConnection -> https_connection; UserAPI -> user_api
 to_snake() {
-    python3 -c "import sys,re; n=sys.argv[1]; s=re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', n); print(re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s).lower())" "$1"
+    echo "$1" | sed -E 's/([A-Z])([A-Z][a-z])/\1_\2/g; s/([a-z0-9])([A-Z])/\1_\2/g' | tr '[:upper:]' '[:lower:]'
 }
 
 # PascalCase -> SCREAMING_SNAKE_CASE
@@ -27,8 +83,16 @@ to_kebab() {
 }
 
 # snake_case -> PascalCase
+# 例: data_loader -> DataLoader
 to_pascal() {
-    python3 -c "import sys; print(''.join(w.capitalize() for w in sys.argv[1].split('_')))" "$1"
+    echo "$1" | sed -E 's/(^|_)([a-z])/\U\2/g'
+}
+
+# ---------- 工具函数 ----------
+
+# 把一个 PascalCase 名字安全地转成 Python 标识符（已经在 snake 里处理）
+to_python_name() {
+    to_snake "$1"
 }
 
 # ---------- 计数 ----------

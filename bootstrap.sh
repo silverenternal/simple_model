@@ -155,7 +155,11 @@ if [[ "${VALIDATE_CMD:-0}" == "1" ]]; then
 fi
 
 # ---------- 依赖检查 ----------
-command -v jq >/dev/null 2>&1 || { echo "[FAIL] 缺少依赖: jq" >&2; exit 1; }
+# 真正必须的：bash (3.2+) + jq (1.6+)
+# 可选但推荐：sha256sum (增量构建) / cargo / ajv (严格校验)
+# 明确不要的：python3 (历史包袱，已用纯 bash + sed 重写)
+command -v jq >/dev/null 2>&1 || { echo "[FAIL] 缺少依赖: jq (请安装 jq 1.6+)" >&2; exit 1; }
+[[ "${BASH_VERSINFO[0]}" -ge 4 ]] || { echo "[FAIL] bash 4.0+ 要求，当前: ${BASH_VERSION}" >&2; exit 1; }
 [[ -f "$STRUCT_FILE" ]] || { echo "[FAIL] 找不到 $STRUCT_FILE" >&2; exit 1; }
 jq empty "$STRUCT_FILE" 2>/dev/null || { echo "[FAIL] $STRUCT_FILE 不是合法 JSON" >&2; exit 1; }
 

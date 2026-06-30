@@ -1,5 +1,5 @@
 {
-  "schema_version": "3.0",
+  "schema_version": "3.1",
   "description": "后端 REST API：分层架构（handler / service / repo / model）",
   "conventions": {
     "modules": "按层划分（handler 路由 / service 业务 / repo 数据访问 / model 实体）",
@@ -11,9 +11,34 @@
       "description": "领域模型 / 数据实体",
       "language": "go",
       "components": [
-        { "name": "User",       "description": "用户实体",         "exports": ["User", "UserID"],       "imports": [] },
-        { "name": "Order",      "description": "订单实体",         "exports": ["Order", "OrderStatus"], "imports": ["User"] },
-        { "name": "OrderItem",  "description": "订单明细",         "exports": ["OrderItem"],            "imports": [] }
+        {
+          "name": "User",
+          "description": "用户实体",
+          "exports": [
+            "User",
+            "UserID"
+          ],
+          "imports": []
+        },
+        {
+          "name": "Order",
+          "description": "订单实体",
+          "exports": [
+            "Order",
+            "OrderStatus"
+          ],
+          "imports": [
+            "User"
+          ]
+        },
+        {
+          "name": "OrderItem",
+          "description": "订单明细",
+          "exports": [
+            "OrderItem"
+          ],
+          "imports": []
+        }
       ]
     },
     {
@@ -21,8 +46,29 @@
       "description": "仓储层：封装数据库访问",
       "language": "go",
       "components": [
-        { "name": "UserRepo",   "description": "用户 CRUD",         "exports": ["UserRepo", "IUserRepo"],   "imports": ["User"] },
-        { "name": "OrderRepo",  "description": "订单 CRUD + 查询",  "exports": ["OrderRepo", "IOrderRepo"], "imports": ["Order", "OrderItem"] }
+        {
+          "name": "UserRepo",
+          "description": "用户 CRUD",
+          "exports": [
+            "UserRepo",
+            "IUserRepo"
+          ],
+          "imports": [
+            "User"
+          ]
+        },
+        {
+          "name": "OrderRepo",
+          "description": "订单 CRUD + 查询",
+          "exports": [
+            "OrderRepo",
+            "IOrderRepo"
+          ],
+          "imports": [
+            "Order",
+            "OrderItem"
+          ]
+        }
       ]
     },
     {
@@ -33,21 +79,56 @@
         {
           "name": "AuthService",
           "description": "JWT 签发与校验、密码 hash",
-          "exports": ["AuthService", "IAuthService"],
-          "imports": ["User", "UserRepo"],
+          "exports": [
+            "AuthService",
+            "IAuthService"
+          ],
+          "imports": [
+            "User",
+            "UserRepo"
+          ],
           "todos": [
-            { "id": "svc_auth_jwt",    "task": "JWT 签发/校验",            "priority": "high" },
-            { "id": "svc_auth_bcrypt", "task": "bcrypt 密码 hash",          "priority": "high", "blocks": ["handler_auth_login"] }
+            {
+              "id": "svc_auth_jwt",
+              "task": "JWT 签发/校验",
+              "priority": "high"
+            },
+            {
+              "id": "svc_auth_bcrypt",
+              "task": "bcrypt 密码 hash",
+              "priority": "high",
+              "blocks": [
+                "handler_auth_login"
+              ]
+            }
           ]
         },
         {
           "name": "OrderService",
           "description": "下单/查询/取消订单",
-          "exports": ["OrderService"],
-          "imports": ["Order", "OrderItem", "OrderRepo", "UserRepo"],
+          "exports": [
+            "OrderService"
+          ],
+          "imports": [
+            "Order",
+            "OrderItem",
+            "OrderRepo",
+            "UserRepo"
+          ],
           "todos": [
-            { "id": "svc_order_create", "task": "事务化创建订单",         "priority": "high", "blocks": ["handler_order_post"] },
-            { "id": "svc_order_cancel", "task": "取消订单并回滚库存",      "priority": "medium" }
+            {
+              "id": "svc_order_create",
+              "task": "事务化创建订单",
+              "priority": "high",
+              "blocks": [
+                "handler_order_post"
+              ]
+            },
+            {
+              "id": "svc_order_cancel",
+              "task": "取消订单并回滚库存",
+              "priority": "medium"
+            }
           ]
         }
       ]
@@ -60,23 +141,93 @@
         {
           "name": "AuthHandler",
           "description": "/api/auth/* 路由",
-          "exports": ["AuthHandler", "RegisterRoutes"],
-          "imports": ["AuthService", "User"],
+          "exports": [
+            "AuthHandler",
+            "RegisterRoutes"
+          ],
+          "imports": [
+            "AuthService",
+            "User"
+          ],
           "todos": [
-            { "id": "handler_auth_login",  "task": "POST /api/auth/login", "priority": "high" },
-            { "id": "handler_auth_signup", "task": "POST /api/auth/signup", "priority": "high" }
+            {
+              "id": "handler_auth_login",
+              "task": "POST /api/auth/login",
+              "priority": "high"
+            },
+            {
+              "id": "handler_auth_signup",
+              "task": "POST /api/auth/signup",
+              "priority": "high"
+            }
           ]
         },
         {
           "name": "OrderHandler",
           "description": "/api/orders/* 路由",
-          "exports": ["OrderHandler", "RegisterRoutes"],
-          "imports": ["OrderService", "Order"],
+          "exports": [
+            "OrderHandler",
+            "RegisterRoutes"
+          ],
+          "imports": [
+            "OrderService",
+            "Order"
+          ],
           "todos": [
-            { "id": "handler_order_post",   "task": "POST /api/orders",   "priority": "high" },
-            { "id": "handler_order_get",    "task": "GET /api/orders/:id", "priority": "high" }
+            {
+              "id": "handler_order_post",
+              "task": "POST /api/orders",
+              "priority": "high"
+            },
+            {
+              "id": "handler_order_get",
+              "task": "GET /api/orders/:id",
+              "priority": "high"
+            }
           ]
         }
+      ]
+    }
+  ],
+  "cross_cutting": [],
+  "phases": [
+    {
+      "phase": "configure",
+      "order": 1,
+      "mode": "sequential",
+      "description": "配置与初始化",
+      "core_components": [
+        [
+          "AuthHandler",
+          "AuthService",
+          "Order"
+        ]
+      ]
+    },
+    {
+      "phase": "execute",
+      "order": 2,
+      "mode": "parallel",
+      "description": "核心执行",
+      "core_components": [
+        [
+          "OrderHandler",
+          "OrderItem",
+          "OrderRepo"
+        ]
+      ]
+    },
+    {
+      "phase": "deliver",
+      "order": 3,
+      "mode": "sequential",
+      "description": "交付与集成",
+      "core_components": [
+        [
+          "OrderService",
+          "User",
+          "UserRepo"
+        ]
       ]
     }
   ]

@@ -8,10 +8,7 @@ LANG="go"
 LANG_DIR="${OUTPUT_DIR}/${LANG}"
 mkdir -p "$LANG_DIR"
 
-# PascalCase -> snake_case
-to_snake() {
-    python3 -c "import sys,re; n=sys.argv[1]; s=re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', n); print(re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s).lower())" "$1"
-}
+# to_snake 来自 _lib.sh (纯 bash 实现)
 
 # 每个 module -> 包目录
 PACKAGE_NAME=$(basename "$LANG_DIR" | tr '[:upper:]' '[:lower:]')
@@ -106,7 +103,9 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
     if [[ "$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")" -gt 0 ]]; then
         todo_file="${m_dir}/todo.json"
         if should_regenerate "$todo_file" "$STRUCT_FILE"; then
-            jq "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {component: \$c.name}]}" "$STRUCT_FILE" \
+            # Bug #8 fix: 每条 todo 都带 module + component 字段
+            m_name_jq=$(jq -r ".modules[$mi].name" "$STRUCT_FILE")
+            jq --arg mod "$m_name_jq" "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {module: \$mod, component: \$c.name}]}" "$STRUCT_FILE" \
                 > "$todo_file"
             mark_generated "$todo_file" "$STRUCT_FILE"
             say "  [OK] go: ${m_name}/todo.json"

@@ -8,15 +8,7 @@ LANG="rust"
 LANG_DIR="${OUTPUT_DIR}/${LANG}"
 mkdir -p "$LANG_DIR/src"
 
-# PascalCase -> snake_case
-to_snake() {
-    python3 -c "import sys,re; n=sys.argv[1]; s=re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', n); print(re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s).lower())" "$1"
-}
-
-# PascalCase -> SCREAMING_SNAKE_CASE
-to_screaming() {
-    echo "$(to_snake "$1" | tr '[:lower:]' '[:upper:]')"
-}
+# to_snake / to_screaming 来自 _lib.sh (纯 bash 实现)
 
 # JSON 字符串数组 -> Rust Vec<String> 字面量
 to_rust_str_vec() {
@@ -152,7 +144,9 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
     if [[ "$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")" -gt 0 ]]; then
         todo_file="${m_dir}/todo.json"
         if should_regenerate "$todo_file" "$STRUCT_FILE"; then
-            jq "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {component: \$c.name}]}" "$STRUCT_FILE" \
+            # Bug #8 fix: 每条 todo 都带 module + component 字段
+            module_name_jq=$(jq -r ".modules[$mi].name" "$STRUCT_FILE")
+            jq --arg mod "$module_name_jq" "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {module: \$mod, component: \$c.name}]}" "$STRUCT_FILE" \
                 > "$todo_file"
             mark_generated "$todo_file" "$STRUCT_FILE"
             say "  [OK] rust: ${m_name}/todo.json"

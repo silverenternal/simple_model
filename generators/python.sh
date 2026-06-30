@@ -6,12 +6,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 LANG="python"
 LANG_DIR="${OUTPUT_DIR}/${LANG}"
+# 布局: $LANG_DIR/<module>/<comp>.py + $LANG_DIR/<module>/__init__.py
+#       $LANG_DIR/base.py
+# 不再嵌 src/ 目录（避免相对 import 深度歧义）
 mkdir -p "$LANG_DIR"
 
-# PascalCase -> snake_case
-to_snake() {
-    python3 -c "import sys,re; n=sys.argv[1]; s=re.sub(r'(.)([A-Z][a-z]+)', r'\1_\2', n); print(re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', s).lower())" "$1"
-}
+# to_snake / to_pascal 来自 _lib.sh (纯 bash 实现)
 
 # 把 JSON 字符串数组 -> Python list literal
 to_py_list() {
@@ -35,7 +35,7 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
     module_dir="${LANG_DIR}/${module_name}"
     mkdir -p "$module_dir"
 
-    # __init__.py
+    # __init__.py — 自动导出所有 component（解决 Bug #4：ImportError）
     init_py="${module_dir}/__init__.py"
     if should_regenerate "$init_py" "$STRUCT_FILE"; then
         {
@@ -43,6 +43,12 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
             echo ""
             echo "${module_desc}"
             echo "\"\"\""
+            # re-export 每个 component，让 from data import DataLoader 能工作
+            while IFS= read -r comp; do
+                [[ -z "$comp" ]] && continue
+                snake_comp=$(to_snake "$comp")
+                echo "from .${snake_comp} import ${comp}  # noqa: F401"
+            done < <(jq -r ".modules[$mi].components[].name" "$STRUCT_FILE")
         } > "$init_py"
         mark_generated "$init_py" "$STRUCT_FILE"
         say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/__init__.py"
@@ -134,7 +140,10 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
     if [[ "$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")" -gt 0 ]]; then
         todo_file="${module_dir}/todo.json"
         if should_regenerate "$todo_file" "$STRUCT_FILE"; then
-            jq "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {component: \$c.name}]}" "$STRUCT_FILE" \
+            # Bug #8 fix: 每条 todo 都带 module + component 字段
+            # 用 $mi 引用外层 module 索引（jq 内部没法直接看到 .modules[$mi].name）
+            module_name_jq=$(jq -r ".modules[$mi].name" "$STRUCT_FILE")
+            jq --arg mod "$module_name_jq" "{module: .modules[$mi].name, description: .modules[$mi].description, todos: [.modules[$mi].components[] | . as \$c | .todos[]? | . + {module: \$mod, component: \$c.name}]}" "$STRUCT_FILE" \
                 > "$todo_file"
             mark_generated "$todo_file" "$STRUCT_FILE"
             say "  [OK] ${module_name}/todo.json"
@@ -184,3 +193,62 @@ else
 fi
 
 echo "  [OK] python 生成完成: $LANG_DIR/"
+
+# 让整个 $LANG_DIR/ 成为一个可导入的 Python package
+PACKAGE_INIT="${LANG_DIR}/__init__.py"
+if should_regenerate "$PACKAGE_INIT" "$STRUCT_FILE"; then
+    {
+        echo "\"\"\"${LANG} — auto-generated package (do not edit)\"\"\""
+        echo "__version__ = \"0.1.0\""
+    } > "$PACKAGE_INIT"
+    mark_generated "$PACKAGE_INIT" "$STRUCT_FILE"
+    say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/__init__.py (package marker)"
+fi
+
+# pyproject.toml — 让 `python -m pip install -e .` 可用
+PYPROJECT="${LANG_DIR}/pyproject.toml"
+if should_regenerate "$PYPROJECT" "$STRUCT_FILE"; then
+    cat > "$PYPROJECT" <<TOML
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "${LANG}"
+version = "0.1.0"
+description = "Auto-generated from struct.json by bootstrap.sh"
+requires-python = ">=3.9"
+dynamic = ["dependencies"]
+
+[tool.setuptools.packages.find]
+include = ["${LANG}*"]
+TOML
+    mark_generated "$PYPROJECT" "$STRUCT_FILE"
+    say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/pyproject.toml"
+fi
+
+# 顶层 README + 父 __init__.py（让 install -e 找到整个项目）
+PARENT_DIR="$(dirname "$LANG_DIR")"
+PARENT_INIT="${PARENT_DIR}/__init__.py"
+if [[ ! -f "$PARENT_INIT" ]]; then
+    echo "# Auto-generated parent package marker" > "$PARENT_INIT"
+fi
+PARENT_PYPROJECT="${PARENT_DIR}/pyproject.toml"
+if [[ ! -f "$PARENT_PYPROJECT" && "$LANG_DIR" != "${OUTPUT_DIR}/${LANG}" ]]; then
+    cat > "$PARENT_PYPROJECT" <<TOML
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "$(basename "$PARENT_DIR")"
+version = "0.1.0"
+description = "Auto-generated project root"
+requires-python = ">=3.9"
+TOML
+fi
+
+echo ""
+echo "  用法:"
+echo "    pip install -e ${LANG_DIR}"
+echo "    python3 -c 'from ${LANG}.data import DataLoader; print(DataLoader)'"

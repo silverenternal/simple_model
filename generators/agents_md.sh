@@ -5,6 +5,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 OUT="$OUTPUT_DIR/AGENTS.md"
+mkdir -p "$OUTPUT_DIR"   # Bug #10 fix: 单独跑时也需要
 
 if [[ "${PLAN_ONLY:-0}" == "1" ]]; then
     echo "  PLAN: $OUT"
