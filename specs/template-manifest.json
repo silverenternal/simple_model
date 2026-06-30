@@ -1,0 +1,284 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/bootstrap/template-manifest.schema.json",
+  "title": "Bootstrap Template Manifest",
+  "description": "脚手架模板清单：定义 `bootstrap init --template <name>` 拉取的模板包，包含模板内的 struct.json、配套文件、依赖插件与交互式引导问题。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["identity", "target", "contents"],
+  "properties": {
+    "remote_fetch": {
+      "type": "object",
+      "description": "v9 P0: 模板支持远程拉取的协议与缓存配置",
+      "additionalProperties": false,
+      "properties": {
+        "supported_protocols": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": ["git+https", "git+ssh", "https", "file"]
+          },
+          "description": "允许的 URL 协议前缀",
+          "default": ["git+https", "git+ssh", "https", "file"]
+        },
+        "cache_dir": {
+          "type": "string",
+          "default": "~/.bootstrap-templates/",
+          "description": "模板缓存根目录（相对或绝对路径，~ 表示 $HOME）"
+        },
+        "cache_ttl_seconds": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 3600,
+          "description": "缓存过期秒数；0 表示每次都重新拉取"
+        },
+        "auth": {
+          "type": "object",
+          "description": "不同协议的认证配置",
+          "additionalProperties": false,
+          "properties": {
+            "git_ssh": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "key_file": {
+                  "type": "string",
+                  "default": "~/.ssh/id_rsa",
+                  "description": "SSH 私钥路径"
+                }
+              }
+            },
+            "https": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "token_env": {
+                  "type": "string",
+                  "description": "从哪个环境变量读 token（如 GITHUB_TOKEN）"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "imports": {
+      "type": "array",
+      "description": "v9 P0: schema 复用字段 —— 本 manifest 继承/引用的其它 struct.json URL 列表，按 merge_strategy 合并",
+      "items": { "$ref": "#/$defs/ImportSpec" }
+    },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$",
+          "description": "模板名（snake_case 或 kebab-case，e.g. web-spa-react）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+          "description": "semver 版本"
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "author": { "type": "string" },
+        "homepage": { "type": "string", "format": "uri" },
+        "tags": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" },
+          "description": "模板标签，用于检索/分类，e.g. [\"frontend\", \"react\", \"spa\"]"
+        }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["audience", "complexity"],
+      "properties": {
+        "audience": {
+          "enum": ["frontend", "backend", "ml", "distributed", "any"],
+          "default": "any",
+          "description": "目标受众/领域"
+        },
+        "complexity": {
+          "enum": ["simple", "medium", "complex"],
+          "default": "medium",
+          "description": "项目复杂度档位"
+        },
+        "estimated_modules": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "预期生成的 module 数量"
+        },
+        "estimated_components": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "预期生成的 component 数量"
+        }
+      }
+    },
+    "contents": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["struct_json"],
+      "properties": {
+        "struct_json": {
+          "type": "string",
+          "minLength": 1,
+          "description": "模板内 struct.json 文件的路径，相对模板根目录"
+        },
+        "supporting_files": {
+          "type": "array",
+          "description": "其他配套文件列表（如 README、CI 配置等）",
+          "items": { "$ref": "#/$defs/SupportingFile" }
+        },
+        "default_overrides": {
+          "type": "object",
+          "description": "生成 struct.json 时可被用户 CLI 参数覆盖的字段映射（key 为 JSON Pointer 路径，value 为默认值）",
+          "additionalProperties": true
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min_bootstrap_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+          "description": "最低 bootstrap 运行时版本"
+        },
+        "schema_versions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+          },
+          "description": "模板兼容的 struct.schema.json 版本列表"
+        },
+        "required_plugins": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/PluginDependency" },
+          "description": "模板依赖的插件列表"
+        }
+      }
+    },
+    "prompts": {
+      "type": "array",
+      "description": "交互式 init 时的引导问题",
+      "items": { "$ref": "#/$defs/Prompt" }
+    }
+  },
+  "$defs": {
+    "SupportingFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "required"],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "相对模板根目录的文件路径"
+        },
+        "required": {
+          "type": "boolean",
+          "default": true,
+          "description": "是否必须随模板一起写入目标项目"
+        },
+        "description": { "type": "string" }
+      }
+    },
+    "PluginDependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "插件名（kebab-case）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+          "description": "插件版本约束（semver）"
+        }
+      }
+    },
+    "Prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "question", "affects"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "问题唯一 id"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "description": "向用户展示的问题文本"
+        },
+        "default": {
+          "description": "默认值（任意 JSON 值：string / number / boolean / array / object）"
+        },
+        "options": {
+          "type": "array",
+          "description": "可选的枚举候选项（每项为字符串）",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "affects": {
+          "type": "string",
+          "pattern": "^(/[^/]+)+$",
+          "description": "该问题回答影响的 struct.json 字段路径（JSON Pointer 形式，如 /modules/0/name）"
+        },
+        "description": {
+          "type": "string",
+          "description": "字段语义说明"
+        }
+      }
+    },
+    "ImportSpec": {
+      "type": "object",
+      "description": "v9 P0: 单条 import 声明 —— 引用一个 struct.json 的 URL/路径，并描述如何合并",
+      "additionalProperties": false,
+      "required": ["source"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "被引用的 struct.json URL 或路径（支持 git+https / git+ssh / https / file / 短名 org/template 由 hub 解析）"
+        },
+        "merge_strategy": {
+          "enum": ["deep_merge", "replace", "extend"],
+          "default": "deep_merge",
+          "description": "合并策略：deep_merge = 递归合并 modules/components；replace = 整个替换；extend = 当前优先，imports 不覆盖现有字段"
+        },
+        "override_paths": {
+          "type": "array",
+          "description": "对哪些 JSON Pointer 路径应用 override（仅 extend/deep_merge 生效），如 [\"modules[].name\"]",
+          "items": {
+            "type": "string",
+            "pattern": "^[^ ].*$"
+          }
+        },
+        "as_module": {
+          "type": "string",
+          "description": "（可选）把 import 的内容作为新 module 注入到本 struct，module name 用此值"
+        },
+        "description": {
+          "type": "string",
+          "description": "人类可读的 import 说明"
+        }
+      }
+    }
+  }
+}

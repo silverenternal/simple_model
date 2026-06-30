@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/bootstrap/plugin-manifest.schema.json",
+  "title": "Bootstrap Plugin Manifest",
+  "description": "第三方插件清单：定义一个插件目录的身份、兼容性、generators、模板、schema 扩展与生命周期钩子。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["identity", "compatibility", "generators"],
+  "properties": {
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "description": "插件名（kebab-case，e.g. kafka-consumer）"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+          "description": "semver 版本"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string",
+          "description": "作者名或组织名"
+        },
+        "homepage": {
+          "type": "string",
+          "format": "uri",
+          "description": "插件主页/仓库 URL"
+        },
+        "license": {
+          "type": "string",
+          "description": "SPDX 许可证标识（可选）"
+        }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_bootstrap_version", "schema_versions"],
+      "properties": {
+        "min_bootstrap_version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+(-[a-zA-Z0-9.]+)?$",
+          "description": "最低 bootstrap 运行时版本（semver）"
+        },
+        "schema_versions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+          },
+          "description": "插件兼容的 struct.schema.json 版本列表"
+        },
+        "depends_on_plugins": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]*$"
+          },
+          "description": "本插件依赖的其他插件名列表"
+        }
+      }
+    },
+    "generators": {
+      "type": "array",
+      "minItems": 1,
+      "description": "插件自带的 generator 文件列表",
+      "items": { "$ref": "#/$defs/Generator" }
+    },
+    "schema_extensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "对 struct.json 的可选扩展（增加新 component 或 todo 定义）",
+      "properties": {
+        "add_components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ComponentExtension" },
+          "description": "插件注入的新 component 定义"
+        },
+        "add_todos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/TodoExtension" },
+          "description": "插件注入的新 todo helper tasks"
+        }
+      }
+    },
+    "templates": {
+      "type": "array",
+      "description": "插件自带的脚手架模板（类似 Maven archetype）",
+      "items": { "$ref": "#/$defs/TemplateRef" }
+    },
+    "hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "生命周期钩子：每个值是将被 shell 执行的命令字符串",
+      "properties": {
+        "pre_generate": {
+          "type": "string",
+          "description": "generator 运行前执行"
+        },
+        "post_generate": {
+          "type": "string",
+          "description": "generator 运行后执行"
+        },
+        "pre_dispatch": {
+          "type": "string",
+          "description": "git dispatch 前执行"
+        },
+        "post_merge": {
+          "type": "string",
+          "description": "git merge 后执行"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Generator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "target_language", "output_path_template"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*\\.[a-z]+$",
+          "description": "generator 文件名（含扩展名），e.g. kafka_consumer.py"
+        },
+        "target_language": {
+          "enum": ["python", "rust", "go", "typescript", "any"],
+          "default": "any",
+          "description": "generator 的目标语言"
+        },
+        "output_path_template": {
+          "type": "string",
+          "minLength": 1,
+          "description": "输出路径模板，支持 {module}、{component}、{snake} 占位符，e.g. src/kafka/{snake}.py"
+        },
+        "trigger_when": {
+          "type": "string",
+          "description": "可选的 JMESPath 表达式，匹配成功时才运行该 generator"
+        },
+        "requires": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]*\\.[a-z]+$"
+          },
+          "description": "依赖的其他 generator 文件名列表（按依赖顺序运行）"
+        },
+        "description": {
+          "type": "string",
+          "description": "generator 用途说明"
+        }
+      }
+    },
+    "ComponentExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["module", "name", "description"],
+      "properties": {
+        "module": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "归属模块名（snake_case）"
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$",
+          "description": "组件名（PascalCase）"
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "exports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "imports": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "TodoExtension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "task", "target_component"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "todo 唯一 id"
+        },
+        "target_component": {
+          "type": "string",
+          "description": "挂载到的 component 名（PascalCase）"
+        },
+        "task": { "type": "string", "minLength": 1 },
+        "priority": { "enum": ["low", "medium", "high"], "default": "medium" },
+        "status": { "enum": ["pending", "in_progress", "done"], "default": "pending" },
+        "blocks": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "TemplateRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "path"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_-]*$",
+          "description": "模板名（snake_case 或 kebab-case）"
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "相对插件目录的路径"
+        },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

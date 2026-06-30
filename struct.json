@@ -1278,11 +1278,6 @@
       "description": "测试体系：单元、集成、回归与质量门禁",
       "components": [
         {
-          "name": "UnitTest",
-          "description": "用于算子、loss、数据变换的单测",
-          "imports": []
-        },
-        {
           "name": "IntegrationTest",
           "description": "用于端到端跑通训练-评估-导出流程",
           "imports": [

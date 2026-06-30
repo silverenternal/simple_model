@@ -1,0 +1,252 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/generic/state.schema.json",
+  "title": "Bootstrap State",
+  "description": ".bootstrap/state.json 的 schema —— 记录每次 bootstrap 运行的元数据、struct.json 哈希、generator 产物、todo 状态、worktree 状态、累计统计。任何写文件 / git 的命令退出前都必须更新本文件。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "last_run", "struct_hash"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "本 state 文件的 schema 版本"
+    },
+    "last_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at", "version"],
+      "properties": {
+        "at":            { "type": "string", "format": "date-time", "description": "ISO-8601 UTC，例 2026-06-30T14:08:21Z" },
+        "version":       { "type": "string", "description": "bootstrap.sh 的版本（git describe / semver）" },
+        "command":       { "type": "string", "description": "上次跑的具体子命令（init/validate/generate/...）" },
+        "argv":          { "type": "array",  "items": { "type": "string" }, "description": "原始命令行（用于审计）" },
+        "exit_code":     { "type": "integer", "description": "上次命令的退出码" },
+        "duration_ms":   { "type": "integer", "minimum": 0, "description": "耗时毫秒" },
+        "user":          { "type": "string", "description": "执行者（$USER@$HOSTNAME）" },
+        "git": {
+          "type": "object",
+          "description": "上次执行时 git 状态快照",
+          "additionalProperties": false,
+          "properties": {
+            "head_sha":      { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+            "branch":        { "type": "string" },
+            "is_clean":      { "type": "boolean" },
+            "remote_url":    { "type": "string" }
+          }
+        }
+      }
+    },
+    "struct_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "struct.json 当前 SHA-256（hex），drift 命令用"
+    },
+    "struct_hash_history": {
+      "type": "array",
+      "description": "最近 N 次 struct.json 哈希切换记录（用于审计 schema 演进）",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "hash"],
+        "properties": {
+          "at":     { "type": "string", "format": "date-time" },
+          "hash":   { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+          "reason": { "type": "string", "description": "什么命令触发了重新哈希（generate/init/...）" }
+        }
+      }
+    },
+    "last_validate": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "最近一次 validate 的结果",
+      "properties": {
+        "at":          { "type": "string", "format": "date-time" },
+        "ok":          { "type": "boolean" },
+        "errors":      { "type": "integer", "minimum": 0 },
+        "warnings":    { "type": "integer", "minimum": 0 },
+        "antipatterns":{ "type": "integer", "minimum": 0 }
+      }
+    },
+    "last_generated": {
+      "type": "object",
+      "description": "key = generator 名（python / rust / go / agents_md / context_json / dev_queue / visualization / git_dispatch / git_merge）；value = 一次 run 的元数据",
+      "additionalProperties": { "$ref": "#/$defs/GeneratorRun" }
+    },
+    "last_dispatched_wave": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "上次 dispatch 出去的 wave 号；0 表示尚未 dispatch"
+    },
+    "last_merged_wave": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "上次 merge 完成的 wave 号"
+    },
+    "todos": {
+      "type": "object",
+      "description": "id → 当前 status 的 mirror（与 .ai/dev_queue.json 同步）",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "at"],
+        "properties": {
+          "status":     { "enum": ["pending", "in_progress", "done", "blocked"] },
+          "at":         { "type": "string", "format": "date-time", "description": "上次状态变化时间" },
+          "agent":      { "type": "string", "description": "当前认领者（claim 时写入，complete 时清空）" },
+          "branch":     { "type": "string", "description": "关联的 git 分支" },
+          "worktree":   { "type": "string", "description": "关联的 worktree 路径" },
+          "commit":     { "type": "string", "pattern": "^[0-9a-f]{7,40}$", "description": "complete 时的 commit" },
+          "summary":    { "type": "string", "description": "complete 时的总结" }
+        }
+      }
+    },
+    "worktrees": {
+      "type": "array",
+      "description": "每个被 dispatch 的 worktree 一条记录",
+      "items": { "$ref": "#/$defs/Worktree" }
+    },
+    "stats": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "累计统计",
+      "properties": {
+        "total_todos":       { "type": "integer", "minimum": 0 },
+        "done":              { "type": "integer", "minimum": 0 },
+        "in_progress":       { "type": "integer", "minimum": 0 },
+        "pending":           { "type": "integer", "minimum": 0 },
+        "blocked":           { "type": "integer", "minimum": 0 },
+        "waves_total":       { "type": "integer", "minimum": 0, "description": "struct.json 当前 waves 总数" },
+        "waves_completed":   { "type": "integer", "minimum": 0, "description": "已 merge 完的 wave 数" },
+        "generators_run":    { "type": "integer", "minimum": 0, "description": "累计 generator 调用次数" },
+        "files_written":     { "type": "integer", "minimum": 0 },
+        "bytes_written":     { "type": "integer", "minimum": 0 }
+      }
+    },
+    "errors": {
+      "type": "array",
+      "description": "最近 N 次失败/告警的滚动日志（status 命令可显示）",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["at", "command", "exit_code", "message"],
+        "properties": {
+          "at":        { "type": "string", "format": "date-time" },
+          "command":   { "type": "string" },
+          "exit_code": { "type": "integer" },
+          "message":   { "type": "string" },
+          "context":   { "type": "object", "additionalProperties": true }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "GeneratorRun": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["at"],
+      "properties": {
+        "at":          { "type": "string", "format": "date-time" },
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "exit_code":   { "type": "integer" },
+        "files": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "本次写入的相对路径列表（相对 $OUTPUT_DIR）"
+        },
+        "file_hashes": {
+          "type": "object",
+          "description": "路径 → SHA-256；用于 drift 命令精确比对",
+          "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        },
+        "bytes":       { "type": "integer", "minimum": 0 },
+        "argv":        { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Worktree": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "branch", "todo_id", "alive"],
+      "properties": {
+        "path":        { "type": "string", "description": "绝对路径或相对 CWD 的路径" },
+        "branch":      { "type": "string", "description": "git 分支名（例 wave-2/tokenizer-1）" },
+        "todo_id":     { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "wave":        { "type": "integer", "minimum": 1 },
+        "agent":       { "type": "string", "description": "认领者" },
+        "alive":       { "type": "boolean", "description": "true = path 存在且 git worktree list 可见" },
+        "created_at":  { "type": "string", "format": "date-time" },
+        "last_seen":   { "type": "string", "format": "date-time", "description": "最近一次 status 命令确认仍存活的时间" },
+        "head_sha":    { "type": "string", "pattern": "^[0-9a-f]{7,40}$" }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "1.0",
+      "last_run": {
+        "at": "2026-06-30T14:08:21Z",
+        "version": "1.2.3",
+        "command": "generate",
+        "argv": ["generate", "--targets", "python,agents_md", "--force"],
+        "exit_code": 0,
+        "duration_ms": 8421,
+        "user": "hugo@workstation-01",
+        "git": { "head_sha": "a1b2c3d4", "branch": "main", "is_clean": true, "remote_url": "git@github.com:foo/bar.git" }
+      },
+      "struct_hash": "9a3f4b1c2d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8",
+      "struct_hash_history": [
+        { "at": "2026-06-30T14:08:21Z", "hash": "9a3f4b1c2d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f8", "reason": "generate" }
+      ],
+      "last_validate": { "at": "2026-06-30T14:08:20Z", "ok": true, "errors": 0, "warnings": 1, "antipatterns": 0 },
+      "last_generated": {
+        "python": {
+          "at": "2026-06-30T14:08:21Z",
+          "duration_ms": 4102,
+          "exit_code": 0,
+          "files": ["python/data/loader.py", "python/data/parser.py", "python/model/backbone.py"],
+          "file_hashes": {
+            "python/data/loader.py": "1111111111111111111111111111111111111111111111111111111111111111",
+            "python/data/parser.py": "2222222222222222222222222222222222222222222222222222222222222222"
+          },
+          "bytes": 142311,
+          "argv": ["python.sh"]
+        },
+        "agents_md": {
+          "at": "2026-06-30T14:08:21Z",
+          "duration_ms": 128,
+          "exit_code": 0,
+          "files": ["AGENTS.md"],
+          "file_hashes": { "AGENTS.md": "3333333333333333333333333333333333333333333333333333333333333333" },
+          "bytes": 8210,
+          "argv": ["agents_md.sh"]
+        }
+      },
+      "last_dispatched_wave": 2,
+      "last_merged_wave": 1,
+      "todos": {
+        "data_loader_1":      { "status": "done",        "at": "2026-06-29T10:00:00Z", "commit": "abcd123" },
+        "tokenizer_1":        { "status": "in_progress", "at": "2026-06-30T13:50:00Z", "agent": "claude-1", "branch": "wave-2/tokenizer-1", "worktree": "./.worktrees/tokenizer_1" },
+        "data_splitter_1":    { "status": "pending",     "at": "2026-06-30T13:00:00Z" }
+      },
+      "worktrees": [
+        {
+          "path": "./.worktrees/tokenizer_1",
+          "branch": "wave-2/tokenizer-1",
+          "todo_id": "tokenizer_1",
+          "wave": 2,
+          "agent": "claude-1",
+          "alive": true,
+          "created_at": "2026-06-30T13:45:00Z",
+          "last_seen": "2026-06-30T14:08:21Z",
+          "head_sha": "deadbeef"
+        }
+      ],
+      "stats": {
+        "total_todos": 27, "done": 5, "in_progress": 3, "pending": 19, "blocked": 0,
+        "waves_total": 4, "waves_completed": 1,
+        "generators_run": 14, "files_written": 142, "bytes_written": 582113
+      },
+      "errors": []
+    }
+  ]
+}

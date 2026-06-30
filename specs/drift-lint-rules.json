@@ -1,0 +1,420 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/simple_model/specs/drift-lint-rules.json",
+  "title": "Bootstrap Drift & Lint Rules",
+  "description": "Declarative rule definitions consumed by 'bootstrap drift' and 'bootstrap lint'. Each rule has a jq/JMESPath expression so it can be evaluated from .sh without extra dependencies. Severity controls exit code; enable/disable flags allow per-rule opt-out.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["rule_set_version", "categories"],
+  "properties": {
+    "rule_set_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Version of this rule set. Bump when adding, removing, or changing semantics of a rule."
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Default severity and enablement for rules that don't override them inline.",
+      "properties": {
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning", "info"],
+          "default": "warning",
+          "description": "Default severity if a rule omits its own."
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Default enablement flag if a rule omits its own."
+        },
+        "fail_on": {
+          "type": "string",
+          "enum": ["error", "warning", "info", "never"],
+          "default": "error",
+          "description": "Minimum severity that causes the lint command to exit non-zero."
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Default file inputs that rules can reference via {{struct}}, {{state}}, {{generated}} placeholders.",
+      "properties": {
+        "struct_file": {
+          "type": "string",
+          "default": "./struct.json",
+          "description": "Path to the project architecture descriptor (the main schema)."
+        },
+        "state_file": {
+          "type": "string",
+          "default": "./generated/.ai/state.json",
+          "description": "Path to the generator-emitted state manifest with hashes and registered outputs."
+        },
+        "generated_dir": {
+          "type": "string",
+          "default": "./generated",
+          "description": "Directory of generated artifacts."
+        },
+        "schema_file": {
+          "type": "string",
+          "default": "./struct.schema.json",
+          "description": "Path to the JSON Schema for struct.json."
+        }
+      }
+    },
+    "categories": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Grouping of rules by concern. Each category has its own severity default.",
+      "properties": {
+        "drift": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Rules for schema <-> artifact consistency (structural drift detection).",
+          "properties": {
+            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "rules": {
+              "type": "array",
+              "description": "Drift detection rules.",
+              "items": { "$ref": "#/$defs/Rule" }
+            }
+          }
+        },
+        "structure": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Schema structure anti-patterns (cycles, dead code, dangling references).",
+          "properties": {
+            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "rules": {
+              "type": "array",
+              "description": "Structural lint rules.",
+              "items": { "$ref": "#/$defs/Rule" }
+            }
+          }
+        },
+        "complexity": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Complexity thresholds (oversized modules, deep chains, fan-out).",
+          "properties": {
+            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "rules": {
+              "type": "array",
+              "description": "Complexity lint rules.",
+              "items": { "$ref": "#/$defs/Rule" }
+            }
+          }
+        },
+        "convention": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Naming and style conventions enforced across modules and components.",
+          "properties": {
+            "default_severity": { "type": "string", "enum": ["error", "warning", "info"] },
+            "rules": {
+              "type": "array",
+              "description": "Convention rules.",
+              "items": { "$ref": "#/$defs/Rule" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "check"],
+      "description": "A single lint or drift rule. The check describes how to evaluate it; the executor maps that to jq/git/stat calls.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]+$",
+          "minLength": 3,
+          "description": "Stable kebab-case id; used in CLI flags (--disable=id) and machine-readable reports."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "description": "One-sentence explanation of what this rule catches."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["error", "warning", "info"],
+          "description": "Severity override for this rule (otherwise inherits from category.default_severity then defaults.severity)."
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Per-rule enable flag (otherwise inherits from defaults.enabled)."
+        },
+        "check": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type"],
+          "description": "How the rule is evaluated at runtime.",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["jmespath", "jq", "stat", "git", "schema"],
+              "description": "Evaluator type: jq/jmespath run against a JSON file, stat checks filesystem, git inspects repo state, schema validates a file."
+            },
+            "input": {
+              "type": "string",
+              "description": "Input file path, supporting placeholders: {{struct}}, {{state}}, {{generated}}, {{schema}}. Defaults to struct.json."
+            },
+            "expression": {
+              "type": "string",
+              "description": "jq or JMESPath expression whose result is compared against expected using 'compare'."
+            },
+            "expected": {
+              "description": "Expected value (type matches expression output: string/number/boolean/array).",
+              "oneOf": [
+                { "type": "string" },
+                { "type": "number" },
+                { "type": "boolean" },
+                { "type": "array" }
+              ]
+            },
+            "compare": {
+              "type": "string",
+              "enum": ["eq", "ne", "gt", "lt", "gte", "lte", "in", "contains", "matches"],
+              "description": "Comparison operator applied to (expression result, expected). 'matches' treats both as regex (PCRE/ERE)."
+            },
+            "schema_ref": {
+              "type": "string",
+              "description": "For check.type=schema: path or URI of a JSON Schema to validate input against."
+            },
+            "glob": {
+              "type": "string",
+              "description": "For check.type=stat: glob pattern of files to test (e.g. '{{generated}}/**/*.py')."
+            },
+            "git_ref": {
+              "type": "string",
+              "description": "For check.type=git: a git ref (branch, tag, commit) or HEAD."
+            }
+          }
+        },
+        "remediation": {
+          "type": "string",
+          "description": "Suggested fix, rendered to humans when the rule fires."
+        },
+        "docs_url": {
+          "type": "string",
+          "format": "uri",
+          "description": "External documentation page explaining the rule in depth."
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Free-form tags for grouping and filtering (e.g. ['schema', 'breaking'])."
+        }
+      }
+    }
+  },
+  "categories_data": {
+    "drift": {
+      "default_severity": "error",
+      "rules": [
+        {
+          "id": "struct-out-of-date",
+          "description": "struct.json content hash does not match the hash recorded in state.json; generated/ is stale relative to the source schema.",
+          "severity": "error",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{state}}",
+            "expression": ".sources.struct.sha256",
+            "compare": "eq",
+            "expected": "{{STRUCT_SHA256}}"
+          },
+          "remediation": "Re-run 'bootstrap.sh --target all' to refresh generated/, or commit the regenerated files so state.json is updated.",
+          "docs_url": "https://jsonsch/simple_model/docs/drift/struct-out-of-date",
+          "tags": ["drift", "schema"],
+          "fix": {
+            "available": true,
+            "strategy": "regenerate",
+            "expression": "bash ${ROOT_DIR}/bootstrap.sh --target all --no-validate",
+            "preview_only": false,
+            "reversible": true,
+            "backup_before": false,
+            "description": "Re-run bootstrap generate to refresh generated/ and update state.json with the new struct hash."
+          }
+        },
+        {
+          "id": "generated-files-missing",
+          "description": "Every output path registered in state.json must exist on disk. Missing files indicate a partial or aborted generation.",
+          "severity": "error",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{state}}",
+            "expression": "[.outputs[] | select(.path | test(\"^/$\") or .path == \"\" )] | length",
+            "compare": "eq",
+            "expected": 0
+          },
+          "remediation": "Run 'bootstrap.sh --target all' to regenerate missing outputs, then verify the script exits 0.",
+          "docs_url": "https://jsonsch/simple_model/docs/drift/generated-files-missing",
+          "tags": ["drift", "filesystem"],
+          "fix": {
+            "available": true,
+            "strategy": "regenerate",
+            "expression": "bash ${ROOT_DIR}/bootstrap.sh --target all --no-validate",
+            "preview_only": false,
+            "reversible": true,
+            "backup_before": false,
+            "description": "Re-run bootstrap generate to recreate any missing generated/ outputs."
+          }
+        },
+        {
+          "id": "orphan-generated-files",
+          "description": "Files under generated/ that are NOT declared in struct.json (directly or transitively) accumulate as orphans and confuse consumers.",
+          "severity": "warning",
+          "enabled": true,
+          "check": {
+            "type": "stat",
+            "glob": "{{generated}}/**/*",
+            "compare": "ne",
+            "expected": "ORPHAN_COUNT"
+          },
+          "remediation": "Delete files under generated/ that are not produced by any generator, or update the generator manifest to claim them.",
+          "docs_url": "https://jsonsch/simple_model/docs/drift/orphan-generated-files",
+          "tags": ["drift", "filesystem"],
+          "fix": {
+            "available": true,
+            "strategy": "remove_orphan",
+            "expression": "remove_orphan_files",
+            "preview_only": false,
+            "reversible": false,
+            "backup_before": false,
+            "description": "Move orphan files (those not declared in state.json) into generated/.orphan-quarantine/<timestamp>/. Or add them to .gitignore via 'echo <path> >> .gitignore'."
+          }
+        }
+      ]
+    },
+    "structure": {
+      "default_severity": "error",
+      "rules": [
+        {
+          "id": "circular-dependency",
+          "description": "A component import cycle (A -> B -> A) makes topological sorting impossible and indicates a layered-boundary violation.",
+          "severity": "error",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{struct}}",
+            "expression": "[.modules[].components[] as $c | {name: $c.name, deps: $c.imports}] | (length - ([.[] | .name] | unique | length))",
+            "compare": "eq",
+            "expected": 0
+          },
+          "remediation": "Break the cycle by inverting one of the imports (e.g. introduce an interface module) or merging the two components.",
+          "docs_url": "https://jsonsch/simple_model/docs/structure/circular-dependency",
+          "tags": ["structure", "topology"]
+        },
+        {
+          "id": "isolated-component",
+          "description": "A component with no imports AND no inbound callers is either dead code or has not yet been wired into the architecture.",
+          "severity": "warning",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{struct}}",
+            "expression": "[.modules[].components[] | select((.imports // [] | length) == 0) | .name] as $leafless | [.. | objects | select(.imports? != null) | .imports[]?] as $importers | ($leafless - [$importers[]?]) | length",
+            "compare": "eq",
+            "expected": 0
+          },
+          "remediation": "Either remove the isolated component from struct.json or add it to another component's imports to declare a real dependency.",
+          "docs_url": "https://jsonsch/simple_model/docs/structure/isolated-component",
+          "tags": ["structure", "deadcode"],
+          "fix": {
+            "available": true,
+            "strategy": "jq_transform",
+            "expression": "remove_isolated_components",
+            "preview_only": false,
+            "reversible": true,
+            "backup_before": true,
+            "description": "Walk modules[].components[] and drop any component that has empty imports[] and is not referenced by any other component's imports[] (orphan). The removed components are returned as 'removed[]' in the preview so the user can review."
+          }
+        }
+      ]
+    },
+    "complexity": {
+      "default_severity": "warning",
+      "rules": [
+        {
+          "id": "oversized-module",
+          "description": "A module carrying more than MAX_COMPONENTS components becomes hard to navigate and usually indicates missing sub-modules.",
+          "severity": "warning",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{struct}}",
+            "expression": "[.modules[] | select((.components | length) > 12) | .name] | length",
+            "compare": "eq",
+            "expected": 0
+          },
+          "remediation": "Split the oversized module into 2-3 cohesive sub-modules grouped by responsibility, then update imports.",
+          "docs_url": "https://jsonsch/simple_model/docs/complexity/oversized-module",
+          "tags": ["complexity", "size"],
+          "fix": {
+            "available": true,
+            "strategy": "jq_transform",
+            "expression": "split_oversized_modules",
+            "preview_only": true,
+            "reversible": true,
+            "backup_before": true,
+            "description": "For modules with >12 components, emit a preview plan that splits them into N sub-modules by grouping components around their imports graph. The split is preview-only because responsibility grouping is a human decision; the auto-fix writes 'generated/.fix-preview/oversized-module-<timestamp>.json' with the suggested split."
+          }
+        },
+        {
+          "id": "deep-dependency-chain",
+          "description": "Longest transitive import chain exceeds MAX_DEPTH, indicating layered coupling that hurts refactorability.",
+          "severity": "warning",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{struct}}",
+            "expression": "([.modules[].components[] | .name] | length) - ([.modules[].components[] | .name] | unique | length) + 0",
+            "compare": "lte",
+            "expected": 8
+          },
+          "remediation": "Flatten the chain by extracting shared interfaces, or move the leaf component closer to the layer that actually consumes it.",
+          "docs_url": "https://jsonsch/simple_model/docs/complexity/deep-dependency-chain",
+          "tags": ["complexity", "depth"]
+        }
+      ]
+    },
+    "convention": {
+      "default_severity": "warning",
+      "rules": [
+        {
+          "id": "inconsistent-naming",
+          "description": "All component names must be PascalCase (leading uppercase, alphanumerics only) to match the generator's symbol mapping.",
+          "severity": "warning",
+          "enabled": true,
+          "check": {
+            "type": "jq",
+            "input": "{{struct}}",
+            "expression": "[.modules[].components[] | select(.name | test(\"^[A-Z][A-Za-z0-9]*$\") | not) | .name] | length",
+            "compare": "eq",
+            "expected": 0
+          },
+          "remediation": "Rename the offending component to PascalCase (e.g. 'tokenizer' -> 'Tokenizer') and update every imports reference.",
+          "docs_url": "https://jsonsch/simple_model/docs/convention/inconsistent-naming",
+          "tags": ["convention", "naming"],
+          "fix": {
+            "available": true,
+            "strategy": "jq_transform",
+            "expression": "rename_to_pascal",
+            "preview_only": false,
+            "reversible": true,
+            "backup_before": true,
+            "description": "Lowercase first letter -> uppercase first letter for every component name (e.g. 'tokenizer' -> 'Tokenizer'), and propagate the rename across every imports[] / depends_on[] / blocks[] reference in struct.json."
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+# pre-push — build rust target and ensure the test binary compiles.
+
+set -euo pipefail
+
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "${PROJECT_ROOT}"
+
+echo "[pre-push] project root: ${PROJECT_ROOT}"
+
+# 1. Generate the rust target (will fail if bootstrap.sh errors).
+if [[ -x "./bootstrap.sh" ]]; then
+    echo "[pre-push] running bootstrap.sh --target rust"
+    ./bootstrap.sh --target rust
+else
+    echo "error: bootstrap.sh not found or not executable" >&2
+    exit 1
+fi
+
+# 2. cargo test --no-run in generated/rust.
+RUST_DIR="${PROJECT_ROOT}/generated/rust"
+if [[ ! -d "${RUST_DIR}" ]]; then
+    echo "error: expected rust output at ${RUST_DIR}" >&2
+    exit 1
+fi
+
+if ! command -v cargo >/dev/null 2>&1; then
+    echo "error: cargo is required for pre-push" >&2
+    exit 1
+fi
+
+echo "[pre-push] running cargo test --no-run in ${RUST_DIR}"
+(
+    cd "${RUST_DIR}"
+    cargo test --no-run
+)
+
+echo "[pre-push] ok"

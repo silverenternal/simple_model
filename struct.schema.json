@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/generic/project.schema.json",
+  "title": "Generic Project Architecture Descriptor",
+  "description": "语言无关、领域无关的项目架构描述：模块、组件、依赖、产物、todo blocker DAG。可用于前端、后端、分布式系统、大模型 agent、嵌入式、CLI 工具等任意工程。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "modules"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$"
+    },
+    "description": {
+      "type": "string",
+      "description": "对整个项目的一句话概述"
+    },
+    "conventions": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "modules": {
+      "type": "array",
+      "minItems": 1,
+      "description": "模块列表：按业务/技术边界划分的一组相关组件的容器（前端的 pages、后端的 services、系统的 worker 等）",
+      "items": { "$ref": "#/$defs/Module" }
+    },
+    "phases": {
+      "type": "array",
+      "description": "可选的执行阶段定义（如部署流水线、构建顺序、CI 阶段）。非所有项目都需要。",
+      "items": { "$ref": "#/$defs/Phase" }
+    },
+    "cross_cutting": {
+      "type": "array",
+      "description": "可选的横切关注点（如 logging/auth/cache/profiling），声明哪些阶段会注入它们",
+      "items": { "$ref": "#/$defs/CrossCutting" }
+    }
+  },
+  "$defs": {
+    "Module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "components"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "模块名（snake_case，目录名由生成器按各自语言约定转换）"
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "language": {
+          "type": "string",
+          "enum": ["python", "rust", "go", "typescript", "javascript", "java", "kotlin", "swift", "cpp", "csharp", "ruby", "any"],
+          "default": "any",
+          "description": "该模块的目标语言；any 表示不限定，由生成器决定"
+        },
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Component" }
+        }
+      }
+    },
+    "Component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$",
+          "description": "组件标识符（PascalCase，作为生成器内部的逻辑名）"
+        },
+        "description": { "type": "string", "minLength": 1 },
+        "exports": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "该组件对外暴露的产物/接口/API/类名/事件名列表"
+        },
+        "imports": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "该组件直接依赖的上游组件名列表（仅一层，不展开传递依赖）"
+        },
+        "optional": {
+          "type": "boolean",
+          "default": false,
+          "description": "true 表示按需启用的扩展组件"
+        },
+        "todos": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Todo" }
+        }
+      }
+    },
+    "Todo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "task"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "todo 唯一 id，用于在 blocks 中被引用"
+        },
+        "task":     { "type": "string", "minLength": 1 },
+        "priority": { "enum": ["low", "medium", "high"], "default": "medium" },
+        "status":   { "enum": ["pending", "in_progress", "done"], "default": "pending" },
+        "blocks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true,
+          "description": "本 todo 完成后才能开始的其它 todo id 列表（构成 blocker DAG）"
+        },
+        "notes": { "type": "string" },
+        "ref":   { "type": "string" }
+      }
+    },
+    "Phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["phase", "order", "mode", "description", "core_components"],
+      "properties": {
+        "phase":           { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "order":           { "type": "integer", "minimum": 1 },
+        "mode":            { "enum": ["sequential", "select_one", "select_subset", "parallel"] },
+        "description":     { "type": "string", "minLength": 1 },
+        "core_components": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "optional_components": { "type": "array", "items": { "type": "string" } },
+        "select_one_of":   { "type": "array", "items": { "type": "string" } },
+        "select_subset_of":{ "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "CrossCutting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "injects_into", "components"],
+      "properties": {
+        "name":            { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "description":     { "type": "string", "minLength": 1 },
+        "injects_into":    { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "components":      { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "default_enabled": { "type": "boolean", "default": true }
+      }
+    }
+  }
+}

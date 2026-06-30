@@ -1,0 +1,496 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/generic/lifecycle.schema.json",
+  "title": "Bootstrap Lifecycle Contract",
+  "description": "标准生命周期命令的完整 contract，定义每条命令的入参、输出、退出码、前置条件、副作用和错误码字典。目标：把散乱的 --target/--plan/--include/--exclude/--no-todo/--no-validate 等 flag 收敛为一套语义清晰的子命令。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "version", "commands"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "本 contract 的 schema 版本号，独立于 struct.json 的 schema_version"
+    },
+    "version": {
+      "type": "string",
+      "description": "对应 bootstrap.sh / 生成器家族的版本号（git describe 或 semver）"
+    },
+    "conventions": {
+      "type": "object",
+      "description": "贯穿所有命令的命名 / 行为约定",
+      "additionalProperties": { "type": "string" },
+      "properties": {
+        "exit_zero": "一切成功",
+        "exit_nonzero": "遇到错误；详细语义见每个命令的 exit_codes",
+        "machine_output": "当 stdout isatty=false 或显式 --json 时，输出为 JSON Line 序列或单个 JSON 文档",
+        "state_writes": "凡修改文件 / git / 输出的命令必须在退出前更新 .bootstrap/state.json",
+        "idempotency": "init / validate / status / drift / lint / plan 应尽量幂等；generate / dispatch / merge 幂等性由 --force 控制",
+        "arg_naming": "所有参数 / 字段用 snake_case，与 struct.json 保持一致",
+        "todo_id_pattern": "^[a-z][a-z0-9_]*$，与 struct.schema.json 的 Todo.id 对齐"
+      }
+    },
+    "global_flags": {
+      "type": "object",
+      "description": "可被任何子命令接受的全局 flag",
+      "additionalProperties": false,
+      "properties": {
+        "--struct":     { "type": "string", "description": "struct.json 路径，默认 ./struct.json" },
+        "--schema":     { "type": "string", "description": "struct.schema.json 路径，默认 ./struct.schema.json" },
+        "--output":     { "type": "string", "description": "产物输出根目录，默认 ./generated" },
+        "--state-dir":  { "type": "string", "description": "状态目录，默认 ./.bootstrap" },
+        "--json":       { "type": "boolean", "description": "强制机器可读 JSON 输出（覆盖默认 human）" },
+        "--quiet":      { "type": "boolean", "description": "抑制非错误的人类可读输出" },
+        "--no-color":   { "type": "boolean", "description": "关闭 ANSI 颜色 / spinner" },
+        "--verbose":    { "type": "boolean", "description": "打印每步详细日志" }
+      }
+    },
+    "exit_code_legend": {
+      "type": "object",
+      "description": "全生命周期命令共用的退出码语义（除非该命令显式 override）",
+      "additionalProperties": { "type": "string" },
+      "properties": {
+        "0":  "成功",
+        "1":  "通用错误（catch-all）",
+        "2":  "参数解析错误",
+        "3":  "依赖缺失（jq/git/python3/ajv 等）",
+        "4":  "struct.json 找不到 / 不可读 / JSON 非法",
+        "5":  "schema 校验失败",
+        "6":  "引用完整性失败（imports / blocks 指向不存在的标识）",
+        "7":  "反模式 lint 命中（仅当 --strict 才用此码）",
+        "8":  "drift 检测到不一致（仅当 --strict 才用此码）",
+        "10": "生成器文件已存在且未传 --force",
+        "20": "git 错误（worktree 创建失败 / 分支冲突 / 推送失败）",
+        "30": "todo 状态机非法转移（pending→done 跳过 in_progress）",
+        "64": "与 bash 习惯对齐：EX_USAGE（参数用法错误）"
+      }
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/Command" }
+    }
+  },
+  "$defs": {
+    "Command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "description", "args", "outputs", "exit_codes", "prerequisites", "side_effects", "errors"],
+      "properties": {
+        "name":           { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "description":    { "type": "string", "minLength": 1 },
+        "category":       { "enum": ["setup", "check", "build", "distribute", "report", "agent"] },
+        "args": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Arg" }
+        },
+        "outputs": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["human", "machine"],
+          "properties": {
+            "human":            { "type": "string", "description": "人类可读输出的模板（带示例）" },
+            "machine":          { "type": "string", "description": "JSON 输出 schema 描述（指向 State 字段或内嵌 $ref）" },
+            "json_schema_ref":  { "type": "string", "description": "该命令机器输出的 JSON Schema 路径或 URL" }
+          }
+        },
+        "exit_codes": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "code -> 一句话语义"
+        },
+        "prerequisites": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "本命令能跑之前必须先跑过的命令名（形成 DAG）；空数组表示无前置"
+        },
+        "side_effects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SideEffect" }
+        },
+        "errors": {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/ErrorRule" },
+          "description": "error_code（命令内局部）-> 处理建议（见 ErrorRule）"
+        },
+        "aliases": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "为方便 shell 记忆的别名（如 status -> st）"
+        },
+        "examples": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "调用示例（一行一条）"
+        }
+      }
+    },
+    "Arg": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type", "required"],
+      "properties": {
+        "name":        { "type": "string", "pattern": "^[a-z][a-z0-9_]*$" },
+        "type":        { "enum": ["string", "integer", "boolean", "array:string", "enum"] },
+        "required":    { "type": "boolean" },
+        "default":     { "description": "缺省值；类型需与 type 一致" },
+        "enum":        { "type": "array", "items": { "type": "string" } },
+        "pattern":     { "type": "string", "description": "string 类型的正则" },
+        "min":         { "type": "integer" },
+        "max":         { "type": "integer" },
+        "description": { "type": "string" }
+      }
+    },
+    "SideEffect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target"],
+      "properties": {
+        "target":     { "type": "string", "description": "被修改的路径 / git 资源 / 状态字段" },
+        "kind":       { "enum": ["file_write", "file_overwrite", "file_delete", "dir_create", "git_worktree", "git_branch", "git_commit", "git_merge", "git_push", "state_field_update", "stdout", "stderr"] },
+        "guard":      { "type": "string", "description": "保护条件：只有满足时才执行（例：--force / todo.status=='pending'）" },
+        "description": { "type": "string" }
+      }
+    },
+    "ErrorRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exit_code", "action"],
+      "properties": {
+        "exit_code":  { "type": "integer" },
+        "matches":    { "type": "string", "description": "stderr 正则 / glob" },
+        "action":     { "enum": ["abort", "retry", "skip", "warn_and_continue", "prompt_user", "fallback"] },
+        "hint":       { "type": "string" }
+      }
+    }
+  },
+  "commands": [
+    {
+      "name": "init",
+      "category": "setup",
+      "description": "在空目录（或覆盖）创建 struct.json；可从 --template 选模板，或交互式引导。",
+      "args": [
+        { "name": "template",     "type": "string",  "required": false, "enum": ["empty", "mvp", "full", "ai_agent"], "default": "empty", "description": "内置模板 id" },
+        { "name": "out",          "type": "string",  "required": false, "default": "./struct.json", "description": "目标 struct.json 路径" },
+        { "name": "force",        "type": "boolean", "required": false, "default": false, "description": "目标已存在时仍覆盖" },
+        { "name": "interactive",  "type": "boolean", "required": false, "default": true, "description": "TTY 下走交互式问答" },
+        { "name": "language",     "type": "string",  "required": false, "enum": ["python", "rust", "go", "typescript", "javascript", "java", "kotlin", "swift", "cpp", "csharp", "ruby", "any"], "default": "any" }
+      ],
+      "outputs": {
+        "human": "Wrote ./struct.json (modules=4, components=18, todos=27) using template=full",
+        "machine": "{ok: true, struct_file, template, modules_count, components_count, todos_count, schema_version}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "成功", "1": "未知模板", "2": "目标已存在且未传 --force", "64": "参数错误" },
+      "prerequisites": [],
+      "side_effects": [
+        { "target": "struct.json",                "kind": "file_write",   "guard": "!exists || force" },
+        { "target": ".bootstrap/state.json",      "kind": "file_write",   "guard": "always" },
+        { "target": ".bootstrap/state.last_run",  "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_TEMPLATE_UNKNOWN": { "exit_code": 1, "action": "abort",  "hint": "用 --template 列出的合法值之一" },
+        "E_FILE_EXISTS":      { "exit_code": 2, "action": "prompt_user", "hint": "重跑加 --force 或换 --out" }
+      },
+      "examples": ["bootstrap init", "bootstrap init --template full --language rust --force"]
+    },
+    {
+      "name": "validate",
+      "category": "check",
+      "description": "用 struct.schema.json 做严格校验 + 引用完整性（imports / blocks 引用必须存在）+ 反模式（重名、空数组、循环依赖）。",
+      "args": [
+        { "name": "strict",  "type": "boolean", "required": false, "default": true, "description": "反模式 lint 是否计入退出码" },
+        { "name": "format",  "type": "enum",    "required": false, "enum": ["human", "json"], "default": "human" }
+      ],
+      "outputs": {
+        "human": "[OK] ajv 严格校验通过\n[OK] 引用完整性通过（components=18, todos=27, broken=0）\n[WARN] 1 反模式: module 'tracking' 没有任何 todo",
+        "machine": "{ok: bool, errors: [{path, code, message}], warnings: [{path, code, message}]}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "全部通过", "5": "schema 校验失败", "6": "引用完整性失败", "7": "反模式命中且 --strict" },
+      "prerequisites": [],
+      "side_effects": [
+        { "target": ".bootstrap/state.last_validate", "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_SCHEMA":         { "exit_code": 5, "action": "abort", "hint": "运行 'bootstrap init --template empty' 重新生成" },
+        "E_BROKEN_REF":     { "exit_code": 6, "action": "abort", "hint": "修正 imports / blocks 指向的标识" },
+        "E_ANTIPATTERN":    { "exit_code": 7, "action": "warn_and_continue", "hint": "查看 --verbose 输出中的具体反模式" }
+      }
+    },
+    {
+      "name": "plan",
+      "category": "check",
+      "description": "dry-run 整个 generate + dispatch 流程：列出将要写的文件、要创建的 worktree、要执行的命令，不实际产生副作用。",
+      "args": [
+        { "name": "targets",        "type": "array:string", "required": false, "description": "默认 all；同旧 --target" },
+        { "name": "include",        "type": "array:string", "required": false, "description": "模块白名单（snake_case）" },
+        { "name": "exclude",        "type": "array:string", "required": false, "description": "模块黑名单" },
+        { "name": "with_dispatch",  "type": "boolean",      "required": false, "default": false, "description": "是否同时 plan dispatch" }
+      ],
+      "outputs": {
+        "human": "PLAN ONLY — 以下是即将生成的文件（不会写盘）:\n  ▶ python\n     generated/python/data/loader.py\n     generated/python/data/parser.py\n  ▶ agents_md\n     generated/AGENTS.md\n  ▶ dev_queue\n     generated/.ai/dev_queue.json (waves=4, todos=27)",
+        "machine": "{plan_id, files: [{generator, path, action}], dispatch: [{wave, todo_id, branch, worktree_path}], stats: {components, todos, waves}}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "5": "struct 校验失败，先跑 validate" },
+      "prerequisites": ["validate"],
+      "side_effects": [],
+      "errors": {
+        "E_NO_STRUCT": { "exit_code": 4, "action": "abort", "hint": "先跑 bootstrap init" }
+      },
+      "examples": ["bootstrap plan", "bootstrap plan --targets python,agents_md", "bootstrap plan --with_dispatch"]
+    },
+    {
+      "name": "generate",
+      "category": "build",
+      "description": "跑所有（或指定）generator：写代码骨架 / AI 上下文 / 任务队列 / 文档。可被 dispatch / merge 链式调用。",
+      "args": [
+        { "name": "targets",      "type": "array:string", "required": false, "description": "默认 all" },
+        { "name": "include",      "type": "array:string", "required": false },
+        { "name": "exclude",      "type": "array:string", "required": false },
+        { "name": "force",        "type": "boolean",      "required": false, "default": false },
+        { "name": "skip_todo",    "type": "boolean",      "required": false, "default": false, "description": "跳过 dev_queue / agents_md 这类 AI 上下文生成器" },
+        { "name": "concurrency",  "type": "integer",      "required": false, "min": 1, "max": 16, "default": 1 }
+      ],
+      "outputs": {
+        "human": "[1/N] python ... [OK] 18 files\n[2/N] agents_md ... [OK] AGENTS.md\n[3/N] dev_queue ... [OK] dev_queue.json (4 waves)",
+        "machine": "{generated: [{generator, files_written, duration_ms, exit}], stats: {files, bytes, duration_ms}}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "全部成功", "1": "至少一个 generator 失败", "10": "已存在且未 --force" },
+      "prerequisites": ["validate"],
+      "side_effects": [
+        { "target": "$OUTPUT_DIR/",                       "kind": "dir_create" },
+        { "target": "$OUTPUT_DIR/<generator>/*",          "kind": "file_write", "guard": "!exists || force" },
+        { "target": "$OUTPUT_DIR/.ai/dev_queue.json",     "kind": "file_overwrite" },
+        { "target": ".bootstrap/state.last_generated",    "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_GEN_FAIL":   { "exit_code": 1, "action": "abort", "hint": "查看上方 generator 的 stderr" },
+        "E_FILE_EXISTS":{ "exit_code": 10, "action": "prompt_user", "hint": "加 --force 或先 rm 旧产物" }
+      },
+      "examples": ["bootstrap generate", "bootstrap generate --targets python,rust --force"]
+    },
+    {
+      "name": "dispatch",
+      "category": "distribute",
+      "description": "读取 .ai/dev_queue.json 的 wave，为 wave 内每个 todo 创建 git worktree + branch，供 AI agent 并行认领。",
+      "args": [
+        { "name": "wave",         "type": "integer", "required": false, "min": 1, "description": "指定 wave；缺省 = 下一个 pending wave" },
+        { "name": "all_waves",    "type": "boolean", "required": false, "default": false, "description": "一次性 dispatch 所有 pending wave" },
+        { "name": "todo",         "type": "string",  "required": false, "pattern": "^[a-z][a-z0-9_]*$", "description": "只 dispatch 单个 todo" },
+        { "name": "base_branch",  "type": "string",  "required": false, "default": "main", "description": "worktree 拉出来的基底分支" },
+        { "name": "worktree_dir", "type": "string",  "required": false, "default": "./.worktrees" },
+        { "name": "force",        "type": "boolean", "required": false, "default": false, "description": "worktree 已存在时重建" }
+      ],
+      "outputs": {
+        "human": "wave=2 dispatched 3 worktrees:\n  todo=tokenizer_1  branch=wave-2/tokenizer-1  path=./.worktrees/tokenizer_1\n  todo=image_processor_1  ...\n  todo=audio_feature_extractor_1  ...",
+        "machine": "{wave, dispatched: [{todo_id, branch, worktree_path, head_sha}], skipped: [{todo_id, reason}]}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "20": "git worktree 创建失败", "30": "todo 状态非法（不在 pending）" },
+      "prerequisites": ["generate"],
+      "side_effects": [
+        { "target": ".worktrees/<todo_id>/",     "kind": "dir_create" },
+        { "target": "branch wave-<n>/<todo>",    "kind": "git_branch" },
+        { "target": "worktree .worktrees/<id>",  "kind": "git_worktree" },
+        { "target": ".ai/dev_queue.json",        "kind": "file_overwrite", "guard": "todo 状态变为 in_progress" },
+        { "target": ".bootstrap/state.worktrees", "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_GIT_WT":     { "exit_code": 20, "action": "retry", "hint": "worktree 路径冲突或 git 索引脏，先 git status" },
+        "E_STATE":      { "exit_code": 30, "action": "abort", "hint": "该 todo 不在 pending/in_progress；用 claim 重新认领" }
+      }
+    },
+    {
+      "name": "merge",
+      "category": "distribute",
+      "description": "把已完成 todo 对应的 branch 合并回基底分支，更新 dev_queue.json 的 status = done，并同步 state.json。",
+      "args": [
+        { "name": "wave",        "type": "integer", "required": false, "description": "只 merge 指定 wave 的 done todo" },
+        { "name": "todo",        "type": "string",  "required": false, "pattern": "^[a-z][a-z0-9_]*$" },
+        { "name": "strategy",    "type": "enum",    "required": false, "enum": ["merge", "squash", "rebase"], "default": "merge" },
+        { "name": "no_delete",   "type": "boolean", "required": false, "default": false, "description": "保留 worktree / branch" },
+        { "name": "push",        "type": "boolean", "required": false, "default": false, "description": "merge 后 push" }
+      ],
+      "outputs": {
+        "human": "merged 3 branches into main:\n  [OK] wave-2/tokenizer-1  (commit abc1234)\n  [OK] wave-2/image_processor-1  (commit def5678)\n  pruned 3 worktrees",
+        "machine": "{merged: [{todo_id, branch, merge_commit, strategy}], pruned: [{todo_id, path}], conflicts: [{todo_id, files}]}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "20": "git merge 冲突", "30": "todo 状态非法（非 done 不可 merge）" },
+      "prerequisites": ["dispatch"],
+      "side_effects": [
+        { "target": "branch <base>",                       "kind": "git_merge" },
+        { "target": ".worktrees/<todo_id>/",               "kind": "file_delete", "guard": "!no_delete" },
+        { "target": "branch wave-<n>/<todo>",              "kind": "git_branch", "guard": "!no_delete" },
+        { "target": ".ai/dev_queue.json",                  "kind": "file_overwrite", "guard": "todo 状态变为 done" },
+        { "target": ".bootstrap/state.stats",              "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_CONFLICT": { "exit_code": 20, "action": "abort", "hint": "手动到 worktree 里 rebase 后再 merge" },
+        "E_STATE":    { "exit_code": 30, "action": "abort", "hint": "只有 status=done 的 todo 可以 merge" }
+      }
+    },
+    {
+      "name": "status",
+      "category": "report",
+      "description": "读 .bootstrap/state.json + .ai/dev_queue.json + git worktree list，打印当前进度（人/机两路）。",
+      "args": [
+        { "name": "format",       "type": "enum", "required": false, "enum": ["human", "json", "tsv"], "default": "human" },
+        { "name": "filter",       "type": "enum", "required": false, "enum": ["all", "pending", "in_progress", "done", "blocked"] },
+        { "name": "show_files",   "type": "boolean", "required": false, "default": false, "description": "json 模式下额外列出每个 generator 的输出文件" }
+      ],
+      "outputs": {
+        "human": "struct_hash: 9a3f...\nlast_run:    2026-06-30T14:08:21Z (v1.2.3)\n\n  wave 1:  5/5 done  [OK]\n  wave 2:  2/3 in_progress  [WIP]  (1 blocked)\n  wave 3:  0/4 pending\n  wave 4:  0/2 pending\n\n  worktrees: 3 alive, 0 dead",
+        "machine": "{struct_hash, last_run, waves: [{n, total, done, in_progress, pending, blocked}], worktrees: {alive, dead}, stats}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "1": "state.json 不可读" },
+      "prerequisites": [],
+      "side_effects": [],
+      "errors": {},
+      "examples": ["bootstrap status", "bootstrap status --format json --filter in_progress"]
+    },
+    {
+      "name": "drift",
+      "category": "check",
+      "description": "对比当前 struct.json 的 SHA-256 与 state.json.struct_hash，若不同则进一步比较每个 module / component / todo 的字段差异，并报告哪些 generator 产物可能已 stale。",
+      "args": [
+        { "name": "strict",   "type": "boolean", "required": false, "default": false, "description": "drift 命中时退出码 != 0" },
+        { "name": "format",   "type": "enum",    "required": false, "enum": ["human", "json"], "default": "human" }
+      ],
+      "outputs": {
+        "human": "[DRIFT] struct.json changed since last generate (hash 9a3f.. → b71c..)\n  affected: modules=2, components=5, todos=3\n  stale generators: python, agents_md\n  run: bootstrap generate --force",
+        "machine": "{drift: bool, old_hash, new_hash, affected: {modules, components, todos}, stale_generators: [string]}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "无 drift", "8": "drift 命中且 --strict" },
+      "prerequisites": ["generate"],
+      "side_effects": [],
+      "errors": {
+        "E_DRIFT": { "exit_code": 8, "action": "warn_and_continue", "hint": "跑 bootstrap generate 重新生成产物" }
+      }
+    },
+    {
+      "name": "lint",
+      "category": "check",
+      "description": "反模式检测：空 modules / 重名 / 循环依赖 / 死代码（无 exports 的 component）/ 必填字段缺失 / todo 永不收敛。",
+      "args": [
+        { "name": "rules",   "type": "array:string", "required": false, "description": "只跑指定 rule；缺省 = 全部" },
+        { "name": "format",  "type": "enum",         "required": false, "enum": ["human", "json"], "default": "human" },
+        { "name": "strict",  "type": "boolean",      "required": false, "default": false }
+      ],
+      "outputs": {
+        "human": "[WARN] anti-patterns: 3\n  AP001 module 'tracking' has 0 todos\n  AP003 cycle: A -> B -> A\n  AP005 todo 'foo_1' has no priority",
+        "machine": "{hits: [{rule, path, message, severity}]}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "无命中", "7": "命中且 --strict" },
+      "prerequisites": ["validate"],
+      "side_effects": [],
+      "errors": {
+        "E_ANTIPATTERN": { "exit_code": 7, "action": "warn_and_continue" }
+      }
+    },
+    {
+      "name": "next",
+      "category": "agent",
+      "description": "AI agent 入口：返回下一个可领取的 todo（status=pending 且 blocker 全部 done），并自动 claim。",
+      "args": [
+        { "name": "wave",   "type": "integer", "required": false, "description": "只在该 wave 内查找" },
+        { "name": "module", "type": "string",  "required": false, "pattern": "^[a-z][a-z0-9_]*$" },
+        { "name": "format", "type": "enum",    "required": false, "enum": ["human", "json"], "default": "json" }
+      ],
+      "outputs": {
+        "human": "next todo:\n  id:          tokenizer_1\n  module:      data\n  component:   Tokenizer\n  task:        对接 HuggingFace tokenizers\n  priority:    high\n  blocks:      trainer_1\n  branch:      wave-2/tokenizer-1\n  worktree:    ./.worktrees/tokenizer_1",
+        "machine": "{todo: {id, module, component, task, priority, blocks, refs}, branch, worktree_path}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "返回 todo", "1": "无可领取 todo（全部 in_progress / done）", "30": "状态机非法" },
+      "prerequisites": ["dispatch"],
+      "side_effects": [
+        { "target": ".ai/dev_queue.json",   "kind": "file_overwrite", "guard": "todo 状态变为 in_progress" },
+        { "target": ".bootstrap/state.todos", "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_NONE_AVAILABLE": { "exit_code": 1, "action": "abort", "hint": "等别的 agent complete，或跑 bootstrap status" }
+      }
+    },
+    {
+      "name": "claim",
+      "category": "agent",
+      "description": "显式认领 todo：把状态从 pending 切到 in_progress，并确保对应 worktree 存在。",
+      "args": [
+        { "name": "todo_id", "type": "string", "required": true, "pattern": "^[a-z][a-z0-9_]*$" },
+        { "name": "agent",   "type": "string", "required": false, "description": "认领者标识（写入 state.json）" }
+      ],
+      "outputs": {
+        "human": "claimed tokenizer_1 → in_progress (agent=claude-1)\n  worktree: ./.worktrees/tokenizer_1",
+        "machine": "{todo_id, status, agent, branch, worktree_path}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "1": "todo 不存在", "30": "状态机非法（已是 done）" },
+      "prerequisites": ["dispatch"],
+      "side_effects": [
+        { "target": ".ai/dev_queue.json",   "kind": "file_overwrite" },
+        { "target": ".bootstrap/state.todos", "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_NOT_FOUND": { "exit_code": 1, "action": "abort", "hint": "跑 bootstrap status --filter pending" }
+      }
+    },
+    {
+      "name": "complete",
+      "category": "agent",
+      "description": "把 todo 状态切到 done：跑测试钩子、commit、准备 merge。",
+      "args": [
+        { "name": "todo_id",  "type": "string",  "required": true, "pattern": "^[a-z][a-z0-9_]*$" },
+        { "name": "summary",  "type": "string",  "required": false, "description": "人类可读的完成总结" },
+        { "name": "no_commit","type": "boolean", "required": false, "default": false, "description": "不自动 git commit" }
+      ],
+      "outputs": {
+        "human": "completed tokenizer_1 → done\n  commit:  abc1234 \"feat(data): 对接 HuggingFace tokenizers\"\n  summary: 接入 BPE/WordPiece/SP 三种后端",
+        "machine": "{todo_id, status, commit, summary, tests_passed}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "1": "todo 不存在", "30": "状态机非法（非 in_progress）" },
+      "prerequisites": ["claim"],
+      "side_effects": [
+        { "target": "branch wave-<n>/<todo>",   "kind": "git_commit", "guard": "!no_commit" },
+        { "target": ".ai/dev_queue.json",       "kind": "file_overwrite" },
+        { "target": ".bootstrap/state.todos",    "kind": "state_field_update" },
+        { "target": ".bootstrap/state.stats",   "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_STATE":     { "exit_code": 30, "action": "abort", "hint": "必须先 claim 才能 complete" },
+        "E_TESTS_FAIL":{ "exit_code": 1,  "action": "abort", "hint": "在 worktree 里跑 pre-commit / 单测" }
+      }
+    },
+    {
+      "name": "reset",
+      "category": "agent",
+      "description": "把 todo 状态回退（done → in_progress → pending），用于 agent 出错需要重做。",
+      "args": [
+        { "name": "todo_id", "type": "string", "required": true, "pattern": "^[a-z][a-z0-9_]*$" },
+        { "name": "to",      "type": "enum",    "required": false, "enum": ["pending", "in_progress"], "default": "pending" },
+        { "name": "force",   "type": "boolean", "required": false, "default": false, "description": "允许把 done 回退到 in_progress" }
+      ],
+      "outputs": {
+        "human": "reset tokenizer_1: done → pending",
+        "machine": "{todo_id, from, to}",
+        "json_schema_ref": "embedded"
+      },
+      "exit_codes": { "0": "ok", "1": "todo 不存在", "30": "状态机非法（done → pending 需 --force）" },
+      "prerequisites": [],
+      "side_effects": [
+        { "target": ".ai/dev_queue.json",   "kind": "file_overwrite" },
+        { "target": ".bootstrap/state.todos", "kind": "state_field_update" }
+      ],
+      "errors": {
+        "E_FORCE": { "exit_code": 30, "action": "abort", "hint": "done 回退需要 --force，会丢弃 complete 记录" }
+      }
+    }
+  ]
+}

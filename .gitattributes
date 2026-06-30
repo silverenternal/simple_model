@@ -1,0 +1,9 @@
+# Mark generated/ as linguist-generated so it doesn't skew language stats
+generated/** linguist-generated=true
+
+# Also mark any generated_* directories the same way
+generated_*/** linguist-generated=true
+generated_*/ linguist-generated=true
+
+# Default text behavior
+* text=auto

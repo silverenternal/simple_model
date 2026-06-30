@@ -1,0 +1,345 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/generic/explain-output.schema.json",
+  "title": "Component Explain Output",
+  "description": "`bootstrap explain <component>` 命令的标准输出。AI agent 拿到这份 JSON 就完全知道：要做什么（task 描述）、改哪个文件（hints.files_to_read/create）、接口合约（interface）、上下游是谁（relations）、已经做完什么（todos.done）。这是 simple_model 的杀手锏：让任何 AI agent 在冷启动时有完整上下文。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["meta", "interface", "todos", "relations", "hints"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "description": "基本身份与生成元信息。AI 用这部分确认自己拿到的是哪个 component 的 explain。",
+      "additionalProperties": false,
+      "required": ["component", "module", "schema_version", "generated_at"],
+      "properties": {
+        "component": {
+          "type": "string",
+          "pattern": "^[A-Z][A-Za-z0-9]*$",
+          "description": "目标 component 名（PascalCase，与 struct.json 一致）"
+        },
+        "module": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "所属 module 名（snake_case）。component = module.Name 是项目图中的稳定地址。"
+        },
+        "schema_version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+          "description": "struct.json 的 schema 版本（来自 struct.json::schema_version），用于兼容判断"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 UTC，explain 生成的时刻。AI 可以借此判断上下文新鲜度。"
+        },
+        "token_estimate": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "AI agent 估计这份文档的 token 数（启发式：4 字符 ≈ 1 token），用于 self-budget 决定要不要再分页请求 bundle"
+        }
+      }
+    },
+    "interface": {
+      "type": "object",
+      "description": "组件的契约：它产出什么、消费什么、应该实现什么方法。AI 实施时据此写代码即可。",
+      "additionalProperties": false,
+      "required": ["exports", "imports", "callable_methods"],
+      "properties": {
+        "exports": {
+          "type": "array",
+          "description": "产出的 artifact 列表（含类型 hint），即 struct.json::exports 展开后每条带类型标注",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "export 名（artiface 名），如 merged_config / model / parsed_dataset"
+              },
+              "type_hint": {
+                "type": "string",
+                "description": "AI 推断的类型（class / dict / list / callable / file_path 等），方便决定 import 怎么写"
+              },
+              "description": {
+                "type": "string",
+                "description": "该 export 的语义描述（一句话说明它是干嘛的）"
+              },
+              "module_of_origin": {
+                "type": "string",
+                "description": "如果是从别的组件搬来的 export，标注原始组件名；缺省表示本组件原创"
+              }
+            }
+          }
+        },
+        "imports": {
+          "type": "array",
+          "description": "依赖的上游组件列表（来自 struct.json::imports），每条带 why 说明",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "上游组件名"
+              },
+              "module": {
+                "type": "string",
+                "description": "上游组件所在 module"
+              },
+              "why": {
+                "type": "string",
+                "description": "为什么需要这个依赖（语义级别，AI 据此写 import 时的注释）"
+              },
+              "specific_symbols": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "具体用到的 symbol 名列表（e.g. ['Tokenizer.from_pretrained', 'Tokenizer.encode']），可空"
+              }
+            }
+          }
+        },
+        "callable_methods": {
+          "type": "array",
+          "description": "推断出的应实现方法签名（AI 据此对照写类方法）",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["name", "signature"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "方法名（snake_case 或 camelCase，按目标语言）"
+              },
+              "signature": {
+                "type": "string",
+                "description": "完整签名字符串，如 'def fit(self, X: np.ndarray, y: np.ndarray) -> None'"
+              },
+              "returns": {
+                "type": "string",
+                "description": "返回值类型描述（任意字符串，给 AI 看的，不是 schema 强制的 type）"
+              },
+              "docstring": {
+                "type": "string",
+                "description": "方法一句话说明（一行 docstring）"
+              },
+              "required": {
+                "type": "boolean",
+                "description": "true 表示这个方法是下游 hard-dependency 必须的，false 表示可选增强"
+              }
+            }
+          }
+        }
+      }
+    },
+    "todos": {
+      "type": "object",
+      "description": "该 component 的待办事项，按 pending/done 分组。AI 默认只能 claim pending 的，done 的是历史只读。",
+      "additionalProperties": false,
+      "required": ["pending", "done"],
+      "properties": {
+        "pending": {
+          "type": "array",
+          "description": "尚未完成的 todo 列表，AI 应从这中间挑选 claim",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "task"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9_]*$",
+                "description": "todo 唯一 id（snake_case），blocks 中引用同一 id"
+              },
+              "task": {
+                "type": "string",
+                "description": "todo 要达成的目标（人话描述）"
+              },
+              "priority": {
+                "enum": ["low", "medium", "high"],
+                "default": "medium",
+                "description": "AI 排序的依据，high > medium > low"
+              },
+              "status": {
+                "enum": ["pending", "in_progress", "blocked"],
+                "default": "pending",
+                "description": "pending=可领取；in_progress=已被某 agent 领取；blocked=虽然 pending 但前置 blocker 未完成（wave > current_wave）"
+              },
+              "blocks": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "uniqueItems": true,
+                "description": "本 todo 完成后才能开始的其它 todo id 列表"
+              },
+              "suggested_implementation_steps": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "AI 推荐的实施步骤（每步一句话，对应一个代码改动）"
+              },
+              "test_criteria": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "通过标准（acceptance criteria），AI 完成 todo 后自查勾选"
+              },
+              "notes": {
+                "type": "string",
+                "description": "struct.json::notes 中保留的自由文本，AI 实施时参考"
+              },
+              "ref": {
+                "type": "string",
+                "description": "struct.json::ref，外部参考链接或文档路径"
+              },
+              "wave": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "在 blocker DAG 中的 wave 号（与 relations.wave 一致）"
+              }
+            }
+          }
+        },
+        "done": {
+          "type": "array",
+          "description": "已完成 todo 的历史记录（只读），AI 参考即可不修改",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "status"],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "todo id"
+              },
+              "task": {
+                "type": "string",
+                "description": "完成时的 task 描述（写死快照）"
+              },
+              "status": {
+                "enum": ["done"],
+                "description": "固定为 done"
+              },
+              "completed_at": {
+                "type": "string",
+                "format": "date-time",
+                "description": "完成时刻"
+              },
+              "agent": {
+                "type": "string",
+                "description": "完成的 agent 标识（e.g. claude-1 / hugo）"
+              },
+              "commit": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{7,40}$",
+                "description": "完成时的 git commit hash"
+              },
+              "summary": {
+                "type": "string",
+                "description": "完成时 AI 写的总结"
+              }
+            }
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "object",
+      "description": "在项目图中的位置，帮助 AI 理解并行性/依赖",
+      "additionalProperties": false,
+      "required": ["upstream_callers", "downstream_callees", "wave"],
+      "properties": {
+        "upstream_callers": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "谁调用了这个 component（完整地址 module.Name 列表）"
+        },
+        "downstream_callees": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "这个 component 调用了谁（直接依赖，下游完整地址列表）"
+        },
+        "wave": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "在 blocker DAG 中的 wave 号；wave=1 是 leaf，可立即开始"
+        },
+        "critical_path": {
+          "type": "boolean",
+          "default": false,
+          "description": "true 表示这个 component 在 critical path（最长依赖链）上，AI 应优先完成以免阻塞全局进度"
+        },
+        "fan_in": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "被多少 component 依赖（入度）"
+        },
+        "fan_out": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "依赖多少 component（出度）"
+        }
+      }
+    },
+    "hints": {
+      "type": "object",
+      "description": "给 AI 的实施建议（project-specific knowledge），AI 据此决定读哪些文件、写哪些文件、避开哪些坑",
+      "additionalProperties": false,
+      "required": ["files_to_read", "files_to_create", "implementation_pattern", "estimated_complexity"],
+      "properties": {
+        "files_to_read": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "建议先读的已有文件相对路径，AI 在实施前应先扫一遍（理解上下文），e.g. ['python/data/loader.py', 'python/data/_base.py']"
+        },
+        "files_to_create": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "应该新建的文件相对路径，AI 据此判断输出物（注意：是 bootstrap generate 应产出的路径，不是 AI 自己写的源码路径）"
+        },
+        "implementation_pattern": {
+          "type": "string",
+          "description": "推荐的设计模式或参考实现描述（一段自由文本，AI 据此选 approach），e.g. 'Singletone + lazy init; 镜像 python/model/registry.py 的写法'"
+        },
+        "common_pitfalls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "常见坑（每条一句话），AI 实施时主动检查避免"
+        },
+        "estimated_complexity": {
+          "enum": ["trivial", "easy", "medium", "hard", "expert"],
+          "default": "medium",
+          "description": "AI 估算的实施难度；expert 意味着可能需要拆 todo 或求 human-in-the-loop"
+        },
+        "conventions_to_follow": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "项目级代码约定（如 '所有 class 必须有 __all__'、'use typed dict for dataclass'），AI 写代码前对齐"
+        },
+        "example_test": {
+          "type": "string",
+          "description": "一段示范测试伪代码或测试名列表，AI 据此自动写测试"
+        }
+      }
+    }
+  }
+}

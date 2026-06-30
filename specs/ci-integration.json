@@ -1,0 +1,416 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/simple_model/specs/ci-integration.json",
+  "title": "Bootstrap CI Pipeline",
+  "description": "CI/CD pipeline definition that any supported CI system can read to run all bootstrap checks (validate, plan, generate, drift, lint, test). Vendor-specific YAML is rendered from this canonical JSON by the renderer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "pipeline"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "Schema version of this CI integration spec, follows semver."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Human-readable metadata about the pipeline definition itself.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Display name for this pipeline (shown in CI dashboards)."
+        },
+        "description": {
+          "type": "string",
+          "description": "Free-form description of what this pipeline validates."
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+          "description": "Pipeline definition version, independent of schema_version."
+        },
+        "targets": {
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "description": "CI systems this pipeline definition knows how to render.",
+          "items": {
+            "type": "string",
+            "enum": ["github-actions", "gitlab-ci", "jenkins", "circleci", "buildkite", "azure-pipelines"],
+            "description": "Supported CI vendor identifier."
+          }
+        },
+        "owner": {
+          "type": "string",
+          "description": "Team or person owning this pipeline config."
+        }
+      }
+    },
+    "pipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "The pipeline itself: ordered stages, each with one or more steps that map to bootstrap.sh subcommands.",
+      "required": ["stages"],
+      "properties": {
+        "stages": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Ordered list of stages executed sequentially by the CI runner.",
+          "items": { "$ref": "#/$defs/Stage" }
+        },
+        "triggers": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Conditions that cause this pipeline to execute.",
+          "properties": {
+            "on_push": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Branch globs that trigger the pipeline on push (e.g. main, release/*)."
+            },
+            "on_pull_request": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Branch globs that trigger the pipeline on pull request."
+            },
+            "on_schedule": {
+              "type": "string",
+              "description": "Standard cron expression for scheduled runs (5-field or 6-field depending on vendor)."
+            },
+            "on_tag": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Tag globs that trigger the pipeline (e.g. v*.*.*)."
+            }
+          }
+        },
+        "artifact_targets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "File path globs to upload as CI artifacts (e.g. generated/, reports/, coverage/)."
+        },
+        "cache_targets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "File path globs to cache between runs (e.g. node_modules/, ~/.cache/jq, .ai/)."
+        },
+        "environment": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Environment variables exported to every step (key=value, both strings)."
+        }
+      }
+    },
+    "renderers": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Per-vendor renderer hints: tells the generator where to write and which template family to use.",
+      "properties": {
+        "github-actions": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "GitHub Actions renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": ".github/workflows/bootstrap.yml",
+              "description": "Path where the generated workflow file is written."
+            },
+            "template_hint": {
+              "type": "string",
+              "description": "Hint string consumed by the generator's template engine (e.g. 'actions/checkout@v4', ubuntu-latest)."
+            },
+            "permissions": {
+              "type": "object",
+              "additionalProperties": { "type": "string" },
+              "description": "GitHub Actions permissions block (contents: read, pull-requests: write, etc.)."
+            }
+          }
+        },
+        "gitlab-ci": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "GitLab CI renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": ".gitlab-ci.yml",
+              "description": "Path where the generated pipeline file is written."
+            },
+            "image": {
+              "type": "string",
+              "description": "Default Docker image for the pipeline (e.g. alpine:3.20)."
+            },
+            "template_hint": {
+              "type": "string",
+              "description": "Hint string for the generator (e.g. 'extends: .bootstrap_template')."
+            }
+          }
+        },
+        "jenkins": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Jenkins renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": "Jenkinsfile",
+              "description": "Path where the generated Jenkinsfile is written."
+            },
+            "agent_label": {
+              "type": "string",
+              "description": "Default Jenkins agent label (e.g. 'linux && docker')."
+            },
+            "template_hint": {
+              "type": "string",
+              "description": "Hint string for the generator (e.g. 'pipeline { agent any; stages { ... } }')."
+            }
+          }
+        },
+        "circleci": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "CircleCI renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": ".circleci/config.yml",
+              "description": "Path where the generated CircleCI config is written."
+            },
+            "orbs": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "CircleCI orbs to include (e.g. 'circleci/jq@1.0')."
+            }
+          }
+        },
+        "buildkite": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Buildkite renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": ".buildkite/pipeline.yml",
+              "description": "Path where the generated Buildkite pipeline is written."
+            }
+          }
+        },
+        "azure-pipelines": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Azure Pipelines renderer configuration.",
+          "properties": {
+            "file_path": {
+              "type": "string",
+              "const": "azure-pipelines.yml",
+              "description": "Path where the generated Azure pipeline is written."
+            },
+            "vm_image": {
+              "type": "string",
+              "description": "Default Azure VM image (e.g. 'ubuntu-latest')."
+            }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "steps"],
+      "description": "A logical group of steps, executed sequentially. Stages run in the order declared in pipeline.stages.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "minLength": 1,
+          "description": "Stable stage identifier used by CI vendors (e.g. 'lint', 'drift', 'test')."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable label for CI dashboards (defaults to name if omitted)."
+        },
+        "depends_on": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string" },
+          "description": "Names of stages that must finish before this stage can start."
+        },
+        "condition": {
+          "type": "string",
+          "description": "Vendor-neutral boolean expression gating stage execution (rendered to vendor if/match). Example: 'branch == \"main\"'."
+        },
+        "steps": {
+          "type": "array",
+          "minItems": 1,
+          "description": "Steps executed in order within this stage.",
+          "items": { "$ref": "#/$defs/Step" }
+        }
+      }
+    },
+    "Step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "command"],
+      "description": "A single shell invocation mapped to one bootstrap.sh subcommand.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "description": "Stable identifier for this step; CI tools use it to reference outputs and to chain steps across stages."
+        },
+        "label": {
+          "type": "string",
+          "description": "Human-readable label shown in CI UIs."
+        },
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The bootstrap subcommand or external command to run. Standard values: bootstrap.sh, validate, plan, generate, drift, lint, test, schema-check."
+        },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Command-line arguments appended after the command (e.g. ['--target', 'all', '--plan'])."
+        },
+        "on_failure": {
+          "type": "string",
+          "enum": ["fail", "warn", "ignore"],
+          "default": "fail",
+          "description": "Behavior when this step exits non-zero: fail = break the pipeline, warn = log and continue, ignore = silent continue."
+        },
+        "outputs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Glob patterns of files produced by this step, registered as CI outputs and addressable by id."
+        },
+        "outputs_format": {
+          "type": "string",
+          "enum": ["json", "text", "junit"],
+          "description": "Format of the primary output file (used by CI test reporters to surface results)."
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Hard timeout for this step; CI kills the job once exceeded."
+        },
+        "required_tools": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "External tools that must be present on PATH (e.g. jq, ajv, git). Renderer injects an install step if missing."
+        },
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Step-local environment variables overriding the pipeline-level environment."
+        }
+      }
+    },
+    "StandardSteps": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Canonical mapping of standard step ids to bootstrap.sh commands, documented here so renderers and humans agree.",
+      "properties": {
+        "validate": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Run basic_validate / ajv against struct.json using struct.schema.json.",
+          "properties": {
+            "id": { "type": "string", "const": "validate" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Default validate-only invocation (no generation, no plan).",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "fail" }
+          }
+        },
+        "plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Dry-run generation: list what each target would produce without writing files.",
+          "properties": {
+            "id": { "type": "string", "const": "plan" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Plan mode invocation across all targets.",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "warn" }
+          }
+        },
+        "generate": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Actually run every generator to refresh generated/.",
+          "properties": {
+            "id": { "type": "string", "const": "generate" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Full generation invocation; targets resolved by metadata.targets.",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "fail" },
+            "outputs": {
+              "type": "array",
+              "description": "Default generated/ outputs uploaded as artifacts.",
+              "items": { "type": "string" }
+            }
+          }
+        },
+        "drift": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Detect drift between struct.json and generated/ state.json (rule: struct-out-of-date).",
+          "properties": {
+            "id": { "type": "string", "const": "drift" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Drift detection invocation.",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "fail" }
+          }
+        },
+        "lint": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Run lint rules from drift-lint-rules.json against struct.json.",
+          "properties": {
+            "id": { "type": "string", "const": "lint" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Lint invocation consuming specs/drift-lint-rules.json.",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "fail" }
+          }
+        },
+        "test": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Run unit / integration / regression tests defined under test/ module.",
+          "properties": {
+            "id": { "type": "string", "const": "test" },
+            "command": { "type": "string", "const": "bootstrap.sh" },
+            "args": {
+              "type": "array",
+              "description": "Test invocation; renderer wraps with whatever test runner the project uses.",
+              "items": { "type": "string" }
+            },
+            "on_failure": { "type": "string", "const": "fail" }
+          }
+        }
+      }
+    }
+  }
+}

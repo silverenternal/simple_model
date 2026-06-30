@@ -1,0 +1,520 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jsonsch/generic/context-bundle.schema.json",
+  "title": "AI Context Bundle Manifest",
+  "description": "AI agent 可主动 query 的『上下文切片』清单 schema。每个 bundle 是一个有名字、按需可拉取的视图——AI 用最小 token 换最相关的信息。AI 在请求时按 bundle.id 拉数据，bootstrap 通过本 manifest 的输出定义拼装响应 JSON。本 manifest 既给 AI 读（让它知道有哪些 bundle 可请求），也给 bootstrap 实现者读（让它知道每个 bundle 的 output_ref/output_inline_schema 该生成什么形状）。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "bundles"],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+      "description": "本 manifest 的 schema 版本，独立于 struct.json 的 schema_version"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "manifest 生成时刻"
+    },
+    "token_budget_defaults": {
+      "type": "object",
+      "description": "全局 token 预算默认值（AI 和 bootstrap 都参考），用于防止一次性拉过多",
+      "additionalProperties": false,
+      "properties": {
+        "per_request_max": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "单次 bundle 请求的最大 token 数（超过则拒绝或分页）"
+        },
+        "per_agent_session_max": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "单 agent 整个 session 累计 token 预算上限"
+        },
+        "warning_threshold_percent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "达到此比例后向 AI 告警（百分比 0-100）"
+        }
+      }
+    },
+    "bundles": {
+      "type": "array",
+      "minItems": 1,
+      "description": "所有 named context bundle 的清单。至少要包含 single-component / wave-overview / dependency-graph / interface-only / todo-detail / status-report / next-todo / diff-context 八个。",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description", "inputs", "output_ref", "max_tokens", "use_cases"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_-]*$",
+            "description": "bundle 名（kebab-case 或 snake_case），AI 在 query 时按此 id 请求，协议如 'GET bundle:single-component?component=DataLoader'"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "description": "bundle 是什么、包含什么、为什么存在（一句话到一段，给 AI 看的）"
+          },
+          "inputs": {
+            "type": "object",
+            "description": "调用此 bundle 需要的参数 schema（key 是参数名，value 是参数 schema）。空对象 {} 表示无入参。",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "值的 JSON Schema type，如 'string' / 'integer' / 'boolean' / 'array'"
+                },
+                "required": {
+                  "type": "boolean",
+                  "description": "true 表示必填，false 或缺省表示可选"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "参数说明"
+                },
+                "default": {
+                  "description": "缺省值（任意类型）"
+                },
+                "enum": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "允许的取值（如果是枚举）"
+                },
+                "pattern": {
+                  "type": "string",
+                  "description": "正则（string 类型时）"
+                },
+                "items": {
+                  "type": "string",
+                  "description": "数组元素类型（如 'string'）"
+                }
+              }
+            }
+          },
+          "output_ref": {
+            "type": "string",
+            "description": "对应到某个 JSON 文件 + JSON Pointer（RFC 6901），例如 'explain-output.json#'（整文件） 或 'explain-output.json#/$defs/interface'（仅 interface 部分）。AI 据此知道响应的形状属于哪个 schema"
+          },
+          "output_inline_schema": {
+            "type": "object",
+            "description": "可选的内联 schema，描述 bundle 实际响应 JSON 的形状（如果 output_ref 不够详细或要组合多个片段时用），本身就是一个 JSON Schema 对象",
+            "additionalProperties": true
+          },
+          "max_tokens": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "这个 bundle 的最大 token 数上界（bootstrap 和 AI 都要尊重），用于 AI 端预算控制"
+          },
+          "use_cases": {
+            "type": "array",
+            "minItems": 1,
+            "description": "应该请求这个 bundle 的场景列表（每条一句话），AI 借此决定何时拉取",
+            "items": {
+              "type": "string"
+            }
+          },
+          "cacheable": {
+            "type": "boolean",
+            "default": true,
+            "description": "true 表示可以缓存（基于 inputs hash + struct.json hash 派生 key）；false 表示必须实时算（如 status-report 依赖运行时状态）"
+          },
+          "cache_ttl_seconds": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "cacheable=true 时建议的 TTL 秒数；缺省 = struct.json 重新生成则失效"
+          },
+          "latency_target_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "目标响应时延毫秒（bootstrap 实现者对照 SLA），缺省 = 500"
+          },
+          "prefetch_priority": {
+            "enum": ["low", "medium", "high", "critical"],
+            "default": "medium",
+            "description": "建议的预取优先级。critical 表示 agent 启动就该先拉（不要再问问题）"
+          },
+          "depends_on_bundles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "此 bundle 推荐同 session 内先拉的其它 bundle id 列表（用于构造上下文依赖图）"
+          },
+          "example_query": {
+            "type": "string",
+            "description": "AI 调用此 bundle 的范例 query 字符串（帮助 AI 学习协议格式），如 'GET bundle:single-component?component=data.DataLoader'"
+          },
+          "version": {
+            "type": "string",
+            "description": "bundle 自身的稳定版本号（与 manifest_version 不同——后者是清单的版本）"
+          }
+        }
+      }
+    },
+    "context_graph": {
+      "type": "object",
+      "description": "bundle 间的推荐拉取顺序（部分有序图），AI 据此构建上下文",
+      "properties": {
+        "entry_points": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "AI 冷启动时推荐的入口 bundle id 列表（agent 不要问问题先拉这些）"
+        },
+        "recommended_chain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "从冷启动到能 claim 一个 todo 的推荐拉取顺序：'status-report' → 'wave-overview' → 'single-component' → 'todo-detail' → 'next-todo'"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "_comment": "下面是一个完整的 bundles manifest 实例，覆盖题目要求的全部 8 个 bundle。bootstrap 实现者直接照这个 instances 生成生成器逻辑，AI 也对照学协议。",
+      "manifest_version": "1.0",
+      "generated_at": "2026-06-30T16:00:00Z",
+      "token_budget_defaults": {
+        "per_request_max": 8000,
+        "per_agent_session_max": 64000,
+        "warning_threshold_percent": 80
+      },
+      "bundles": [
+        {
+          "id": "single-component",
+          "description": "单个 component 的完整说明（meta + interface + todos + relations + hints）。AI claim 一个 todo 前必拉。本质上是 `bootstrap explain <component>` 命令的输出。",
+          "inputs": {
+            "component": {
+              "type": "string",
+              "required": true,
+              "description": "目标 component 名（PascalCase），如 'DataLoader'"
+            },
+            "include_done": {
+              "type": "boolean",
+              "required": false,
+              "default": false,
+              "description": "是否包含已完成 todo（默认 false，省 token）"
+            }
+          },
+          "output_ref": "explain-output.json#",
+          "max_tokens": 4000,
+          "use_cases": [
+            "AI 准备 claim 一个 todo 之前，必须先拉",
+            "AI 写代码到一半想确认某个 export 的类型时",
+            "新 agent 加入 session 接手别人的工作区"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 3600,
+          "latency_target_ms": 200,
+          "prefetch_priority": "high",
+          "depends_on_bundles": ["status-report", "wave-overview"],
+          "example_query": "GET bundle:single-component?component=DataLoader",
+          "version": "1.0"
+        },
+        {
+          "id": "wave-overview",
+          "description": "整个 wave 的 todos 列表 + blocker 关系。AI 用它看 wave 间并行/依赖关系、判断现在该 claim 哪个。",
+          "inputs": {
+            "wave": {
+              "type": "integer",
+              "required": false,
+              "description": "wave 号（缺省 = current_wave）；0 表示所有 wave"
+            },
+            "status_filter": {
+              "type": "string",
+              "required": false,
+              "enum": ["pending", "in_progress", "done", "all"],
+              "default": "pending",
+              "description": "只返回哪些状态的 todo"
+            }
+          },
+          "output_ref": ".ai/dev_queue.json#/waves",
+          "max_tokens": 3000,
+          "use_cases": [
+            "AI 看整个 wave 的并行机会",
+            "判断哪些 wave 已完成"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 300,
+          "latency_target_ms": 200,
+          "prefetch_priority": "high",
+          "depends_on_bundles": ["status-report"],
+          "example_query": "GET bundle:wave-overview?wave=2",
+          "version": "1.0"
+        },
+        {
+          "id": "dependency-graph",
+          "description": "某个 component 的上下游图（谁调用了我/我调用了谁）+ 反向可达性分析。AI 判断改动影响面时用。",
+          "inputs": {
+            "component": {
+              "type": "string",
+              "required": true,
+              "description": "中心 component 名（PascalCase）"
+            },
+            "depth": {
+              "type": "integer",
+              "required": false,
+              "default": 1,
+              "description": "展开层数，1=直接依赖/被依赖，2=包含传递"
+            },
+            "direction": {
+              "type": "string",
+              "required": false,
+              "enum": ["upstream", "downstream", "both"],
+              "default": "both",
+              "description": "方向：上游（被谁调用）、下游（我依赖谁）、双向"
+            }
+          },
+          "output_ref": "explain-output.json#/~/$defs/relations",
+          "output_inline_schema": {
+            "type": "object",
+            "required": ["root", "nodes", "edges"],
+            "properties": {
+              "root": {"type": "string"},
+              "nodes": {
+                "type": "array",
+                "items": {"type": "object"}
+              },
+              "edges": {
+                "type": "array",
+                "items": {"type": "object"}
+              }
+            }
+          },
+          "max_tokens": 2000,
+          "use_cases": [
+            "改了 export 想知道下游谁会挂",
+            "想找一个 leaf（无下游依赖）来做并行实验"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 1800,
+          "latency_target_ms": 300,
+          "prefetch_priority": "medium",
+          "depends_on_bundles": ["single-component"],
+          "example_query": "GET bundle:dependency-graph?component=DataLoader&depth=2&direction=downstream",
+          "version": "1.0"
+        },
+        {
+          "id": "interface-only",
+          "description": "只导出接口签名（interface 片段），不含 todos/hints/relations。AI 写代码需要快速对齐 method 签名、不想被其它信息分心时用。",
+          "inputs": {
+            "component": {
+              "type": "string",
+              "required": true,
+              "description": "目标 component 名"
+            }
+          },
+          "output_ref": "explain-output.json#/$defs/interface",
+          "max_tokens": 1500,
+          "use_cases": [
+            "AI 已经 claim 了 todo 在写代码，反复对齐 method 签名",
+            "Code review 阶段只看 interface 不看 todo"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 3600,
+          "latency_target_ms": 100,
+          "prefetch_priority": "medium",
+          "depends_on_bundles": ["single-component"],
+          "example_query": "GET bundle:interface-only?component=DataLoader",
+          "version": "1.0"
+        },
+        {
+          "id": "todo-detail",
+          "description": "单个 todo 的详细任务：task 描述、suggested_implementation_steps、test_criteria、notes、ref。AI 已经拉到 single-component 后，专注做这一个 todo 时用。",
+          "inputs": {
+            "todo_id": {
+              "type": "string",
+              "required": true,
+              "description": "todo id（snake_case）"
+            }
+          },
+          "output_ref": "explain-output.json#/~/$defs/todos/pending",
+          "output_inline_schema": {
+            "type": "object",
+            "required": ["id", "task", "wave", "priority"],
+            "properties": {
+              "id": {"type": "string"},
+              "task": {"type": "string"},
+              "wave": {"type": "integer"},
+              "priority": {"enum": ["low", "medium", "high"]},
+              "status": {"enum": ["pending", "in_progress", "blocked"]},
+              "blocks": {"type": "array", "items": {"type": "string"}},
+              "suggested_implementation_steps": {"type": "array", "items": {"type": "string"}},
+              "test_criteria": {"type": "array", "items": {"type": "string"}},
+              "notes": {"type": "string"},
+              "ref": {"type": "string"}
+            }
+          },
+          "max_tokens": 1500,
+          "use_cases": [
+            "AI 已经决定 claim 哪个 todo，要一步一步执行",
+            "需要读 notes / ref 字段看实施细节"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 3600,
+          "latency_target_ms": 100,
+          "prefetch_priority": "high",
+          "depends_on_bundles": ["single-component", "wave-overview"],
+          "example_query": "GET bundle:todo-detail?todo_id=data_loader_1",
+          "version": "1.0"
+        },
+        {
+          "id": "status-report",
+          "description": "项目整体进度：total_todos / done / pending / in_progress / waves_completed / current_wave / ready_to_claim 数量。AI 冷启动第一拉。",
+          "inputs": {},
+          "output_ref": ".ai/context.json#/summary",
+          "output_inline_schema": {
+            "type": "object",
+            "required": ["modules", "components", "total_todos", "current_wave"],
+            "properties": {
+              "modules": {"type": "integer"},
+              "components": {"type": "integer"},
+              "total_todos": {"type": "integer"},
+              "pending_todos": {"type": "integer"},
+              "in_progress_todos": {"type": "integer"},
+              "done_todos": {"type": "integer"},
+              "current_wave": {"type": "integer"},
+              "ready_to_claim": {
+                "type": "array",
+                "items": {"type": "object"}
+              }
+            }
+          },
+          "max_tokens": 800,
+          "use_cases": [
+            "AI session 起点，必拉",
+            "周期 status check（间隔若干分钟）",
+            "向 human 汇报进度"
+          ],
+          "cacheable": false,
+          "latency_target_ms": 200,
+          "prefetch_priority": "critical",
+          "depends_on_bundles": [],
+          "example_query": "GET bundle:status-report",
+          "version": "1.0"
+        },
+        {
+          "id": "next-todo",
+          "description": "AI agent 启动时拿的『我该干啥』清单：status-report 的 ready_to_claim 字段 + 单个解释（仅 todos.pending，每个简短 1-2 句）。这是 AI 冷启动后看到的第二份文档（第一份是 status-report）。",
+          "inputs": {
+            "limit": {
+              "type": "integer",
+              "required": false,
+              "default": 5,
+              "description": "最多返回几个候选 todo（不要贪多）"
+            },
+            "priority_filter": {
+              "type": "string",
+              "required": false,
+              "enum": ["low", "medium", "high", "any"],
+              "default": "any",
+              "description": "过滤优先级"
+            }
+          },
+          "output_inline_schema": {
+            "type": "object",
+            "required": ["ready", "recommended"],
+            "properties": {
+              "ready": {
+                "type": "array",
+                "items": {"type": "object"},
+                "description": "所有可领取 todo 列表（含 id / task / module / component / wave）"
+              },
+              "recommended": {
+                "type": "object",
+                "description": "AI agent 推荐优先 claim 的一个 todo（含 suggested_first_step）"
+              }
+            }
+          },
+          "max_tokens": 1200,
+          "use_cases": [
+            "AI 冷启动后不知道干什么，先拉这个",
+            "AI 完成一个 todo 后找下一个"
+          ],
+          "cacheable": false,
+          "latency_target_ms": 200,
+          "prefetch_priority": "critical",
+          "depends_on_bundles": ["status-report"],
+          "example_query": "GET bundle:next-todo?limit=3&priority_filter=high",
+          "version": "1.0"
+        },
+        {
+          "id": "diff-context",
+          "description": "struct.json 改动后的差异摘要：新加的 component、删的 component、改的 todo（含 blocker 重新计算结果）。AI 在 review 一份 struct.json 改动 PR 时拉。",
+          "inputs": {
+            "from_hash": {
+              "type": "string",
+              "required": true,
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "基线 struct.json 的 SHA-256（hex）"
+            },
+            "to_hash": {
+              "type": "string",
+              "required": false,
+              "pattern": "^[0-9a-f]{64}$",
+              "description": "目标 struct.json SHA-256（缺省 = 当前）"
+            },
+            "sections": {
+              "type": "array",
+              "required": false,
+              "items": {"type": "string", "enum": ["modules", "components", "todos", "phases", "cross_cutting"]},
+              "default": ["modules", "components", "todos"],
+              "description": "只 diff 哪些 section"
+            }
+          },
+          "output_inline_schema": {
+            "type": "object",
+            "required": ["from_hash", "to_hash", "summary", "diffs"],
+            "properties": {
+              "from_hash": {"type": "string"},
+              "to_hash": {"type": "string"},
+              "summary": {
+                "type": "object",
+                "properties": {
+                  "modules_added": {"type": "integer"},
+                  "modules_removed": {"type": "integer"},
+                  "components_added": {"type": "integer"},
+                  "components_removed": {"type": "integer"},
+                  "todos_added": {"type": "integer"},
+                  "todos_removed": {"type": "integer"},
+                  "waves_delta": {"type": "integer"}
+                }
+              },
+              "diffs": {
+                "type": "array",
+                "items": {"type": "object"}
+              }
+            }
+          },
+          "max_tokens": 2500,
+          "use_cases": [
+            "Review struct.json 改动 PR",
+            "理解一个 PR 影响了哪些 todo 的 blocker"
+          ],
+          "cacheable": true,
+          "cache_ttl_seconds": 86400,
+          "latency_target_ms": 1000,
+          "prefetch_priority": "medium",
+          "depends_on_bundles": ["status-report"],
+          "example_query": "GET bundle:diff-context?from_hash=abc...&sections=[\"todos\"]",
+          "version": "1.0"
+        }
+      ],
+      "context_graph": {
+        "entry_points": ["status-report", "next-todo"],
+        "recommended_chain": ["status-report", "wave-overview", "next-todo", "single-component", "todo-detail"]
+      }
+    }
+  ]
+}

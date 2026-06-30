@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# pre-commit — sanity-check struct.json and make sure generated/ is up to date.
+
+set -euo pipefail
+
+# Find the project root from .git/hooks/<name> -> up two levels.
+PROJECT_ROOT="$(git rev-parse --show-toplevel)"
+cd "${PROJECT_ROOT}"
+
+echo "[pre-commit] project root: ${PROJECT_ROOT}"
+
+# 1. Validate struct.json with jq (only if it exists and is staged).
+if [[ -f "struct.json" ]]; then
+    if ! command -v jq >/dev/null 2>&1; then
+        echo "error: jq is required for pre-commit validation" >&2
+        exit 1
+    fi
+    echo "[pre-commit] validating struct.json with jq..."
+    if ! jq empty struct.json >/dev/null 2>&1; then
+        echo "error: struct.json is not valid JSON" >&2
+        jq empty struct.json || true
+        exit 1
+    fi
+fi
+
+# 2. Plan / preview regeneration.
+if [[ -x "./bootstrap.sh" ]]; then
+    echo "[pre-commit] running bootstrap.sh --plan --target all --no-validate"
+    ./bootstrap.sh --plan --target all --no-validate
+
+    # 3. Compile-check Rust target.
+    echo "[pre-commit] running bootstrap.sh --target rust --no-validate"
+    ./bootstrap.sh --target rust --no-validate
+else
+    echo "warning: bootstrap.sh not found or not executable; skipping plan/build checks" >&2
+fi
+
+# 4. Check whether generated/ has drift vs. what's committed.
+echo "[pre-commit] checking generated/ drift..."
+# Refresh the working tree view of generated/ relative to HEAD, then
+# compare to current status to see if there are uncommitted changes there.
+drift=$(git status --porcelain -- generated/ || true)
+if [[ -n "${drift}" ]]; then
+    echo "warning: generated/ has uncommitted changes; re-run bootstrap to refresh."
+    echo "  files:"
+    echo "${drift}" | sed 's/^/    /'
+    # Advisory only — don't block the commit.
+fi
+
+echo "[pre-commit] ok"

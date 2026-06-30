@@ -1,0 +1,106 @@
+{
+  "schema_version": "3.0",
+  "description": "大模型 Agent：tool-use + memory + planner + executor",
+  "conventions": {
+    "modules": "按能力划分（planner / tools / memory / runtime）"
+  },
+  "modules": [
+    {
+      "name": "tools",
+      "description": "Agent 可调用的工具集",
+      "language": "python",
+      "components": [
+        {
+          "name": "WebSearchTool",
+          "description": "调用搜索 API 获取外部信息",
+          "exports": ["WebSearchTool", "web_search"],
+          "imports": [],
+          "todos": [
+            { "id": "tool_web_search_api", "task": "对接 Tavily / SerpAPI", "priority": "high" }
+          ]
+        },
+        {
+          "name": "CodeInterpreterTool",
+          "description": "在沙箱中执行 Python 代码",
+          "exports": ["CodeInterpreterTool", "run_python"],
+          "imports": [],
+          "todos": [
+            { "id": "tool_code_sandbox", "task": "对接 E2B / Docker 沙箱", "priority": "high" }
+          ]
+        },
+        {
+          "name": "FileReadTool",
+          "description": "读取本地文件",
+          "exports": ["FileReadTool", "read_file"],
+          "imports": [],
+          "todos": [
+            { "id": "tool_file_read", "task": "支持 PDF / Markdown / 代码文件", "priority": "medium" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "memory",
+      "description": "短期 / 长期记忆",
+      "language": "python",
+      "components": [
+        {
+          "name": "ShortTermMemory",
+          "description": "滑动窗口保留最近 K 轮对话",
+          "exports": ["ShortTermMemory"],
+          "imports": []
+        },
+        {
+          "name": "LongTermMemory",
+          "description": "向量数据库 + 摘要，支持跨会话检索",
+          "exports": ["LongTermMemory", "recall"],
+          "imports": [],
+          "todos": [
+            { "id": "mem_long_embed", "task": "调用 embedding 模型写入向量库", "priority": "high" },
+            { "id": "mem_long_recall", "task": "top-k 检索 + 摘要拼装",         "priority": "high", "blocks": ["planner_decide"] }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "planner",
+      "description": "任务规划与反思",
+      "language": "python",
+      "components": [
+        {
+          "name": "TaskPlanner",
+          "description": "ReAct / Plan-and-Execute 风格的任务分解",
+          "exports": ["TaskPlanner", "Plan", "Step"],
+          "imports": [],
+          "todos": [
+            { "id": "planner_decompose", "task": "调用 LLM 拆解目标为步骤",   "priority": "high" },
+            { "id": "planner_decide",    "task": "根据当前状态选择下一步动作", "priority": "high" }
+          ]
+        },
+        {
+          "name": "Reflector",
+          "description": "检查执行结果，决定是否重试 / 调整计划",
+          "exports": ["Reflector"],
+          "imports": ["TaskPlanner"]
+        }
+      ]
+    },
+    {
+      "name": "runtime",
+      "description": "Agent 运行时编排",
+      "language": "python",
+      "components": [
+        {
+          "name": "AgentRuntime",
+          "description": "主循环：observe → think → act → reflect",
+          "exports": ["AgentRuntime", "Agent"],
+          "imports": ["TaskPlanner", "Reflector", "ShortTermMemory", "LongTermMemory", "WebSearchTool", "CodeInterpreterTool", "FileReadTool"],
+          "todos": [
+            { "id": "rt_main_loop", "task": "实现 observe/think/act/reflect 主循环", "priority": "high" },
+            { "id": "rt_streaming", "task": "支持流式 token 输出与中间步骤回调",    "priority": "medium" }
+          ]
+        }
+      ]
+    }
+  ]
+}

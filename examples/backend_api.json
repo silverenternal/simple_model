@@ -1,0 +1,83 @@
+{
+  "schema_version": "3.0",
+  "description": "后端 REST API：分层架构（handler / service / repo / model）",
+  "conventions": {
+    "modules": "按层划分（handler 路由 / service 业务 / repo 数据访问 / model 实体）",
+    "components": "每个具体的业务类或路由处理器"
+  },
+  "modules": [
+    {
+      "name": "model",
+      "description": "领域模型 / 数据实体",
+      "language": "go",
+      "components": [
+        { "name": "User",       "description": "用户实体",         "exports": ["User", "UserID"],       "imports": [] },
+        { "name": "Order",      "description": "订单实体",         "exports": ["Order", "OrderStatus"], "imports": ["User"] },
+        { "name": "OrderItem",  "description": "订单明细",         "exports": ["OrderItem"],            "imports": [] }
+      ]
+    },
+    {
+      "name": "repo",
+      "description": "仓储层：封装数据库访问",
+      "language": "go",
+      "components": [
+        { "name": "UserRepo",   "description": "用户 CRUD",         "exports": ["UserRepo", "IUserRepo"],   "imports": ["User"] },
+        { "name": "OrderRepo",  "description": "订单 CRUD + 查询",  "exports": ["OrderRepo", "IOrderRepo"], "imports": ["Order", "OrderItem"] }
+      ]
+    },
+    {
+      "name": "service",
+      "description": "业务逻辑层",
+      "language": "go",
+      "components": [
+        {
+          "name": "AuthService",
+          "description": "JWT 签发与校验、密码 hash",
+          "exports": ["AuthService", "IAuthService"],
+          "imports": ["User", "UserRepo"],
+          "todos": [
+            { "id": "svc_auth_jwt",    "task": "JWT 签发/校验",            "priority": "high" },
+            { "id": "svc_auth_bcrypt", "task": "bcrypt 密码 hash",          "priority": "high", "blocks": ["handler_auth_login"] }
+          ]
+        },
+        {
+          "name": "OrderService",
+          "description": "下单/查询/取消订单",
+          "exports": ["OrderService"],
+          "imports": ["Order", "OrderItem", "OrderRepo", "UserRepo"],
+          "todos": [
+            { "id": "svc_order_create", "task": "事务化创建订单",         "priority": "high", "blocks": ["handler_order_post"] },
+            { "id": "svc_order_cancel", "task": "取消订单并回滚库存",      "priority": "medium" }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "handler",
+      "description": "HTTP handler 层（gin / echo）",
+      "language": "go",
+      "components": [
+        {
+          "name": "AuthHandler",
+          "description": "/api/auth/* 路由",
+          "exports": ["AuthHandler", "RegisterRoutes"],
+          "imports": ["AuthService", "User"],
+          "todos": [
+            { "id": "handler_auth_login",  "task": "POST /api/auth/login", "priority": "high" },
+            { "id": "handler_auth_signup", "task": "POST /api/auth/signup", "priority": "high" }
+          ]
+        },
+        {
+          "name": "OrderHandler",
+          "description": "/api/orders/* 路由",
+          "exports": ["OrderHandler", "RegisterRoutes"],
+          "imports": ["OrderService", "Order"],
+          "todos": [
+            { "id": "handler_order_post",   "task": "POST /api/orders",   "priority": "high" },
+            { "id": "handler_order_get",    "task": "GET /api/orders/:id", "priority": "high" }
+          ]
+        }
+      ]
+    }
+  ]
+}
