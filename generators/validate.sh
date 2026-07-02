@@ -13,6 +13,7 @@
 #
 # 退出码: 0 = 全部通过; 1 = 有 error; 2 = 环境错误
 set -euo pipefail
+# _compat_patched
 
 SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
@@ -134,6 +135,8 @@ check_required ".bootstrap/state.json" "$OUTPUT_DIR/.bootstrap/state.json" "$SPE
 echo ""
 echo "[3/3] generated/ — every .json must parse"
 if [[ -d "$OUTPUT_DIR" ]]; then
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    find "$OUTPUT_DIR" -type f -name '*.json' 2>/dev/null > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS= read -r f; do
         [[ -z "$f" ]] && continue
         TOTAL=$((TOTAL + 1))
@@ -145,7 +148,8 @@ if [[ -d "$OUTPUT_DIR" ]]; then
             FAILED=$((FAILED + 1))
             ERRORS+=("$f: not valid JSON")
         fi
-    done < <(find "$OUTPUT_DIR" -type f -name '*.json' 2>/dev/null)
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 else
     echo "  [SKIP] $OUTPUT_DIR 不存在"
 fi

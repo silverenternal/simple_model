@@ -4,6 +4,7 @@
 # 模板: 若 templates/rust/<name>.tpl 存在, 用 render_template 渲染;
 #       否则回退到内联 heredoc (向后兼容)。
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/_templates.sh"
 
@@ -16,10 +17,13 @@ to_rust_str_vec() {
     local arr="$1"
     if [[ "$arr" == "[]" ]]; then echo "Vec::new()"; return; fi
     local items=""
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    echo "$arr" | jq -r '.[]' > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS= read -r s; do
         [[ -z "$s" ]] && continue
         items+="        String::from(\"$s\"),"$'\n'
-    done < <(echo "$arr" | jq -r '.[]')
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
     echo "vec!["$'\n'"${items}    ]"
 }
 
@@ -123,6 +127,8 @@ EOF
             imports_rust=$(to_rust_str_vec "$c_imports")
 
             use_block=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -133,13 +139,17 @@ EOF
                 else
                     use_block+="use crate::${dep_module}::${dep_snake}::${dep};"$'\n'
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             struct_fields=""
+            _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_3}" 2>/dev/null || true
             while IFS= read -r e; do
                 [[ -z "$e" ]] && continue
                 struct_fields+="    pub ${e}: Option<String>,  // ${e}"$'\n'
-            done < <(echo "$c_exports" | jq -r '.[]')
+            done < "${_compat_tmp_3}"
+            rm -f "${_compat_tmp_3}"
 
             struct_field_inits=""
             while IFS= read -r e; do
@@ -157,10 +167,13 @@ EOF
             todo_lines=""
             if [[ "$(echo "$c_todos" | jq 'length')" -gt 0 ]]; then
                 todo_lines="    // TODO:"$'\n'
+                _compat_tmp_4=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"' > "${_compat_tmp_4}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todo_lines+="    //   - ${line}"$'\n'
-                done < <(echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_4}"
+                rm -f "${_compat_tmp_4}"
             fi
 
             ac_block=""
@@ -172,63 +185,33 @@ EOF
                         ac_block+="// ${ac_line}"$'\n'
                     done <<< "$ac_raw"
                 fi
-            fi
-
-            vars_file2=$(mktemp)
-            {
-                printf 'component_name=%s\n' "$(encode_value "${c_name}")"
-                printf 'module_name=%s\n' "$(encode_value "${m_name}")"
-                printf 'snake_name=%s\n' "$(encode_value "${snake}")"
-                printf 'description=%s\n' "$(encode_value "${c_desc}")"
-                printf 'use_block=%s\n' "$(encode_value "${use_block}")"
-                printf 'imports_block=%s\n' "$(encode_value "${use_block}")"
-                printf 'struct_fields=%s\n' "$(encode_value "${struct_fields}")"
-                printf 'struct_field_inits=%s\n' "$(encode_value "${struct_field_inits}")"
-                printf 'exports_const_line=%s\n' "$(encode_value "${exports_const_line}")"
-                printf 'exports_rust=%s\n' "$(encode_value "${exports_rust}")"
-                printf 'imports_rust=%s\n' "$(encode_value "${imports_rust}")"
-                printf 'todos_block=%s\n' "$(encode_value "${todo_lines}")"
-                printf 'acceptance_criteria=%s\n' "$(encode_value "${ac_block}")"
-                printf 'optional_rust=%s\n' "$(encode_value "${c_optional}")"
-            } > "$vars_file2"
-
-            if ! render_to_file "$file" "rust" "component" "$vars_file2"; then
-                # 回退
-                cat > "$file" <<EOF
-//! Component: ${c_name}
-//!
-//! ${c_desc}
-
-use serde::{Deserialize, Serialize};
-use std::any::Any;
-${use_block}
-/// ${c_desc}
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct ${c_name} {
-${struct_fields}    pub optional: bool,
-}
-
-pub const NAME: &str = "${c_name}";
-${exports_const_line}
-${todo_lines}impl ${c_name} {
-    pub fn new() -> Self {
-        Self {
-${struct_field_inits}            optional: ${c_optional},
-        }
-    }
-
-    /// 执行 ${c_name} 的核心逻辑
-    pub fn call(&self) -> Box<dyn Any> {
-        unimplemented!("${c_name}::call() 待实现")
-    }
-}
-
-impl Default for ${c_name} {
-    fn default() -> Self { Self::new() }
-}
-EOF
-            fi
-            rm -f "$vars_file2"
+                echo ""
+                [[ -n "$todo_lines" ]] && echo "$todo_lines"
+                echo "impl ${c_name} {"
+                echo "    pub fn new() -> Self {"
+                echo "        Self {"
+                # 给每个 export 字段初始化
+                _compat_tmp_5=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_5}" 2>/dev/null || true
+                while IFS= read -r e; do
+                    [[ -z "$e" ]] && continue
+                    echo "            ${e}: None,"
+                done < "${_compat_tmp_5}"
+                rm -f "${_compat_tmp_5}"
+                echo "            optional: ${c_optional},"
+                echo "        }"
+                echo "    }"
+                echo ""
+                echo "    /// 执行 ${c_name} 的核心逻辑"
+                echo "    pub fn call(&self) -> Box<dyn Any> {"
+                echo "        unimplemented!(\"${c_name}::call() 待实现\")"
+                echo "    }"
+                echo "}"
+                echo ""
+                echo "impl Default for ${c_name} {"
+                echo "    fn default() -> Self { Self::new() }"
+                echo "}"
+            } > "$file"
             mark_generated "$file" "$STRUCT_FILE"
             say "  [OK] rust: ${m_name}/$(basename "$file")"
         else

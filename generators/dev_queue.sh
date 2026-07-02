@@ -61,27 +61,69 @@ if [[ "${PLAN_ONLY:-0}" == "1" ]]; then
     exit 0
 fi
 
-# ---------- 收集每个 todo 的完整元数据 ----------
-TMP=$(mktemp)
-jq -c '
-    .modules[] as $m | $m.components[] as $c |
-    $c.todos[]? | {
-        id, task, priority: (.priority // "medium"), status: (.status // "pending"),
-        component: $c.name, module: $m.name,
-        blocks: (.blocks // []), notes: (.notes // null), ref: (.ref // null)
-    }
-' "$STRUCT_FILE" > "$TMP"
+# ============================================================
+# 性能优化：单次 jq 调用预计算所有字段，存入关联数组
+# 原方案：~500 次 jq 调用（45 todos × 11 次/todo）
+# 优化后：3 次 jq 调用
+# ============================================================
 
-# 用 awk 一次性构造每个 todo 的紧凑 JSON 行，字段顺序固定
-declare -A META
-while IFS= read -r line; do
-    [[ -z "$line" ]] && continue
-    tid=$(echo "$line" | jq -r '.id')
-    META[$tid]="$line"
-done < "$TMP"
-rm -f "$TMP"
+# ---------- 1. 单次 jq 提取所有 todo 元数据到 TSV ----------
+# 字段顺序: id \t task \t priority \t status \t component \t module \t blocks_str \t notes \t ref
+declare -A Q_TASK Q_PRI Q_STATUS Q_COMP Q_MOD Q_BLOCKS Q_BLOCKS_STR Q_NOTES Q_REF
 
-# ---------- 计算 waves（来自 bootstrap.sh 的 compute_waves）----------
+while IFS=$'\t' read -r id task pri status comp mod blocks_str notes ref; do
+    [[ -z "$id" ]] && continue
+    Q_TASK[$id]="$task"
+    Q_PRI[$id]="$pri"
+    Q_STATUS[$id]="$status"
+    Q_COMP[$id]="$comp"
+    Q_MOD[$id]="$mod"
+    Q_BLOCKS_STR[$id]="$blocks_str"
+    # 纯 bash 构造 JSON 数组，避免 2 次 jq 调用
+    if [[ -z "$blocks_str" ]]; then
+        Q_BLOCKS[$id]="[]"
+    else
+        _bj="[" _bf=1
+        for _b in $blocks_str; do
+            [[ $_bf -eq 0 ]] && _bj+=","
+            _bj+="\"$_b\""
+            _bf=0
+        done
+        Q_BLOCKS[$id]="${_bj}]"
+    fi
+    Q_NOTES[$id]="$notes"
+    Q_REF[$id]="$ref"
+done < <(jq -r '
+    .modules[] as $m | $m.components[] as $c | $c.todos[]? |
+    [
+        .id,
+        .task,
+        (.priority // "medium"),
+        (.status // "pending"),
+        $c.name,
+        $m.name,
+        ((.blocks // []) | join(" ")),
+        (.notes // ""),
+        (.ref // "")
+    ] | @tsv
+' "$STRUCT_FILE")
+
+# ---------- 2. 单次 jq 生成每行 JSON 元数据 ----------
+# 用于 dev_queue.json 的 todos 数组
+# 输出格式: id<tab>json_object (每行一个)
+declare -A Q_JSON_LINE
+while IFS=$'\t' read -r id json_line; do
+    [[ -z "$id" ]] && continue
+    Q_JSON_LINE[$id]="$json_line"
+done < <(jq -r '
+    .modules[] as $m | $m.components[] as $c | $c.todos[]? |
+    .id as $id |
+    {id: $id, task, priority: (.priority // "medium"), status: (.status // "pending"),
+     component: $c.name, module: $m.name, blocks: (.blocks // [])} |
+    ($id + "\t" + tostring)
+' "$STRUCT_FILE")
+
+# ---------- 3. 计算 waves（来自 bootstrap.sh 的 compute_waves）----------
 WAVES_TSV=$(compute_waves "$DEV_ORDER")
 
 # ---------- 按 wave 号聚合 ----------
@@ -104,7 +146,6 @@ done <<< "$WAVES_TSV"
     for wnum in $(echo "$WAVES_TSV" | cut -f1 | sort -un); do
         [[ $first_wave -eq 0 ]] && echo ","
         first_wave=0
-        # wave 内按 priority 排（high > medium > low），其次按 id
         members=$(echo "${WAVE_MEMBERS[$wnum]}" | tr ' ' '\n' | sort)
         todo_count=$(echo "$members" | wc -l)
 
@@ -117,7 +158,7 @@ done <<< "$WAVES_TSV"
             [[ -z "$tid" ]] && continue
             [[ $first_todo -eq 0 ]] && echo ","
             first_todo=0
-            echo "        ${META[$tid]}" | jq '. | {id, task, priority, status, component, module, blocks}'
+            echo "        ${Q_JSON_LINE[$tid]}"
         done <<< "$members"
         echo ""
         echo "      ]"
@@ -153,13 +194,13 @@ say "$AI_DIR/dev_queue.json"
 
         while IFS= read -r tid; do
             [[ -z "$tid" ]] && continue
-            meta="${META[$tid]}"
-            priority=$(echo "$meta" | jq -r '.priority')
-            task=$(echo "$meta" | jq -r '.task')
-            module=$(echo "$meta" | jq -r '.module')
-            component=$(echo "$meta" | jq -r '.component')
-            blocks=$(echo "$meta" | jq -c '.blocks')
-            status=$(echo "$meta" | jq -r '.status')
+            # 直接从关联数组读取，无需 jq
+            priority="${Q_PRI[$tid]}"
+            task="${Q_TASK[$tid]}"
+            module="${Q_MOD[$tid]}"
+            component="${Q_COMP[$tid]}"
+            blocks_str="${Q_BLOCKS_STR[$tid]}"
+            status="${Q_STATUS[$tid]}"
 
             emoji="[MED]"
             [[ "$priority" == "high" ]] && emoji="[HIGH]"
@@ -168,16 +209,15 @@ say "$AI_DIR/dev_queue.json"
             echo "### $emoji \`$tid\` [$priority] — $status"
             echo "- **module / component**: \`$module\` / \`$component\`"
             echo "- **task**: $task"
-            if [[ "$blocks" != "[]" ]]; then
-                blocks_str=$(echo "$blocks" | jq -r '.[]' | tr '\n' ' ')
+            if [[ -n "$blocks_str" ]]; then
                 echo "- **完成后解锁**: \`$blocks_str\`"
             else
                 echo "- **完成后解锁**: (none)"
             fi
-            notes=$(echo "$meta" | jq -r '.notes // ""')
-            ref=$(echo "$meta" | jq -r '.ref // ""')
-            [[ -n "$notes" && "$notes" != "null" ]] && echo "- **notes**: $notes"
-            [[ -n "$ref" && "$ref" != "null" ]] && echo "- **ref**: $ref"
+            notes="${Q_NOTES[$tid]}"
+            ref="${Q_REF[$tid]}"
+            [[ -n "$notes" && "$notes" != "" ]] && echo "- **notes**: $notes"
+            [[ -n "$ref" && "$ref" != "" ]] && echo "- **ref**: $ref"
             echo ""
         done <<< "$members"
     done

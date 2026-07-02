@@ -36,6 +36,7 @@
 # ============================================================================
 
 set -euo pipefail
+# _compat_patched
 
 # ---------- 默认值 ----------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -311,6 +312,8 @@ fix_remove_orphan() {
     fi
 
     local moved=0
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    find "$GENERATED_DIR" -type f 2>/dev/null > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS= read -r f; do
         [[ -z "$f" ]] && continue
         # 跳过 .ai/ state、orphan-quarantine、fix-preview (元数据目录)
@@ -324,7 +327,8 @@ fix_remove_orphan() {
             mv "$f" "$dst"
             moved=$((moved + 1))
         fi
-    done < <(find "$GENERATED_DIR" -type f 2>/dev/null)
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 
     rm -f "$declared_paths_file"
     [[ $moved -gt 0 ]]

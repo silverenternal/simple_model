@@ -2,6 +2,7 @@
 # generators/agents_md.sh — AI 启动入口 AGENTS.md
 # 这是 AI agent 开始会话时应该读的"项目系统提示"
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 OUT="$OUTPUT_DIR/AGENTS.md"
@@ -25,13 +26,16 @@ WAVE1_IDS=$(echo "$WAVES_TSV" | awk -F'\t' '$1==1 {print $2}' | sort)
 
 # ---------- 各 module 状态 ----------
 declare -a MODULE_STATS
+_compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+iter_modules > "${_compat_tmp_1}" 2>/dev/null || true
 while IFS=$'\t' read -r mi mname mdesc; do
     [[ -z "$mi" ]] && continue
     todo_n=$(jq "[.modules[$mi].components // [] | .[].todos // [] | length] | add // 0" "$STRUCT_FILE")
     comp_n=$(jq ".modules[$mi].components // [] | length" "$STRUCT_FILE")
     lang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
     MODULE_STATS+=("$mname|$comp_n|$todo_n|$lang|$mdesc")
-done < <(iter_modules)
+done < "${_compat_tmp_1}"
+rm -f "${_compat_tmp_1}"
 
 # ---------- 写 AGENTS.md ----------
 {
@@ -88,13 +92,17 @@ done < <(iter_modules)
     else
         while IFS= read -r tid; do
             [[ -z "$tid" ]] && continue
-            meta=$(jq -c --arg id "$tid" '
-                [.[] | select(.id == $id)][0]
-                | {task, priority: (.priority // "medium"), module: .module, component: .component}
-            ' <(jq -c '
+            _compat_todos_wave=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            jq -c '
                 [.modules[] | . as $m | (.components // []) | .[] | . as $c |
                  (.todos // []) | .[] | . + {module: $m.name, component: $c.name}]
-            ' "$STRUCT_FILE"))
+            ' "$STRUCT_FILE" > "$_compat_todos_wave" 2>/dev/null || true
+            meta=$(jq -c --arg id "$tid" --rawfile todos "$_compat_todos_wave" '
+                ($todos | fromjson) as $t |
+                [$t[] | select(.id == $id)][0]
+                | {task, priority: (.priority // "medium"), module: .module, component: .component}
+            ' < /dev/null)
+            rm -f "$_compat_todos_wave"
             pri=$(echo "$meta" | jq -r '.priority')
             task=$(echo "$meta" | jq -r '.task')
             mod=$(echo "$meta" | jq -r '.module')

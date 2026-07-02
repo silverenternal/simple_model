@@ -4,6 +4,7 @@
 # 模板: 若 templates/python/<name>.tpl 存在, 用 render_template 渲染;
 #       否则回退到内联 heredoc (向后兼容)。
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/_templates.sh"
 
@@ -60,22 +61,20 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
 
         vars_file=$(mktemp)
         {
-            printf 'module_name=%s\n' "$(encode_value "${module_name}")"
-            printf 'module_description=%s\n' "$(encode_value "${module_desc}")"
-            printf 'exports_lines=%s\n' "$(encode_value "${exports_lines}")"
-        } > "$vars_file"
-
-        if ! render_to_file "$init_py" "python" "module_init" "$vars_file"; then
-            # 回退: 内联 heredoc (向后兼容)
-            cat > "$init_py" <<EOF
-"""Module: ${module_name}
-
-${module_desc}
-"""
-${exports_lines}
-EOF
-        fi
-        rm -f "$vars_file"
+            echo "\"\"\"Module: ${module_name}"
+            echo ""
+            echo "${module_desc}"
+            echo "\"\"\""
+            # re-export 每个 component，让 from data import DataLoader 能工作
+            _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            jq -r ".modules[$mi].components[].name" "$STRUCT_FILE" > "${_compat_tmp_1}" 2>/dev/null || true
+            while IFS= read -r comp; do
+                [[ -z "$comp" ]] && continue
+                snake_comp=$(to_snake "$comp")
+                echo "from .${snake_comp} import ${comp}  # noqa: F401"
+            done < "${_compat_tmp_1}"
+            rm -f "${_compat_tmp_1}"
+        } > "$init_py"
         mark_generated "$init_py" "$STRUCT_FILE"
         say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/__init__.py"
     else
@@ -116,6 +115,8 @@ EOF
 
             # 构建 import 块
             imports_block=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -126,7 +127,8 @@ EOF
                 else
                     imports_block+="from ..${dep_module}.${dep_snake} import ${dep}"$'\n'
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             exports_py=$(echo "$c_exports" | jq -r '. | tostring')
             imports_py=$(echo "$c_imports" | jq -r '. | tostring')
@@ -135,10 +137,13 @@ EOF
             todos_block=""
             if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
                 todos_block="    # TODO:"$'\n'
+                _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [\(.status // "pending")] blocks=\(.blocks // [])"' > "${_compat_tmp_3}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todos_block+="    #   - ${line}"$'\n'
-                done < <(echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [\(.status // "pending")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_3}"
+                rm -f "${_compat_tmp_3}"
             fi
 
             # acceptance_criteria 注释 (合并自 todos)

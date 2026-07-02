@@ -4,6 +4,7 @@
 # 模板: 若 templates/go/<name>.tpl 存在, 用 render_template 渲染;
 #       否则回退到内联 heredoc (向后兼容)。
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/_templates.sh"
 
@@ -41,13 +42,18 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
 
         if should_regenerate "$file" "$STRUCT_FILE"; then
             struct_fields=""
+            _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_1}" 2>/dev/null || true
             while IFS= read -r e; do
                 [[ -z "$e" ]] && continue
                 struct_fields+=$'\t'"${e} interface{} // ${e}"$'\n'
-            done < <(echo "$c_exports" | jq -r '.[]')
+            done < "${_compat_tmp_1}"
+            rm -f "${_compat_tmp_1}"
 
             imports_block=""
             seen_pkgs=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -56,15 +62,19 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
                     imports_block+=$'\t'"\"${PROJECT_NAME:-app}/${dep_module}\""$'\n'
                     seen_pkgs+="|${dep_module}|"
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             todo_block=""
             if [[ "$(echo "$c_todos" | jq 'length')" -gt 0 ]]; then
                 todo_block="// TODO:"$'\n'
+                _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"' > "${_compat_tmp_3}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todo_block+="//   - ${line}"$'\n'
-                done < <(echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_3}"
+                rm -f "${_compat_tmp_3}"
             fi
 
             vars_file=$(mktemp)

@@ -1474,6 +1474,124 @@
         "CanaryDeployer",
         "DriftDetector"
       ]
+    },
+    {
+      "name": "parser",
+      "language": "python",
+      "description": "PDF 解析：文本提取、章节切分、内容清洗",
+      "components": [
+        {
+          "name": "PDFExtractor",
+          "description": "使用 PyMuPDF 提取 PDF 文本和图片",
+          "exports": ["raw_text", "images"],
+          "imports": []
+        },
+        {
+          "name": "ChapterSplitter",
+          "description": "基于正则的中文章节标题检测与切分",
+          "exports": ["chapters"],
+          "imports": ["PDFExtractor"]
+        },
+        {
+          "name": "ContentCleaner",
+          "description": "文本清洗：页眉页脚去除、乱码检测、断行合并",
+          "exports": ["clean_text"],
+          "imports": ["ChapterSplitter"]
+        }
+      ]
+    },
+    {
+      "name": "ai",
+      "language": "python",
+      "description": "AI 分析：GLM API 调用、章节分析、复习资料生成",
+      "components": [
+        {
+          "name": "GLMClient",
+          "description": "封装 GLM-4.6V HTTP API 调用，处理认证、重试、错误",
+          "exports": ["api_response"],
+          "imports": []
+        },
+        {
+          "name": "ChapterAnalyzer",
+          "description": "将章节文本发送给 GLM-4.6V，提取知识点、重点、难点",
+          "exports": ["knowledge_points"],
+          "imports": ["GLMClient"]
+        },
+        {
+          "name": "ReviewGenerator",
+          "description": "基于知识点生成复习资料，采用分次调用策略避免 JSON 截断",
+          "exports": ["review_materials"],
+          "imports": ["ChapterAnalyzer"]
+        }
+      ]
+    },
+    {
+      "name": "backend",
+      "language": "python",
+      "description": "FastAPI 后端：文件上传、PDF 处理、结果查询、历史记录",
+      "components": [
+        {
+          "name": "StorageManager",
+          "description": "文件存储管理：上传目录、输出目录、base64 编码记录",
+          "exports": ["file_paths"],
+          "imports": []
+        },
+        {
+          "name": "FileRouter",
+          "description": "FastAPI 路由：PDF 上传、文件列表、base64 下载",
+          "exports": ["upload_response"],
+          "imports": ["StorageManager"]
+        },
+        {
+          "name": "ProcessRouter",
+          "description": "FastAPI 路由：PDF 处理、结果查询、章节详情、任务元信息",
+          "exports": ["process_result"],
+          "imports": ["StorageManager", "PDFExtractor", "ChapterSplitter", "ContentCleaner", "GLMClient", "ChapterAnalyzer", "ReviewGenerator"]
+        },
+        {
+          "name": "HistoryRouter",
+          "description": "FastAPI 路由：历史任务列表、任务元信息查询",
+          "exports": ["history_list"],
+          "imports": ["StorageManager"]
+        }
+      ]
+    },
+    {
+      "name": "frontend",
+      "language": "typescript",
+      "description": "TypeScript 前端：上传、章节列表、复习资料查看、历史记录",
+      "components": [
+        {
+          "name": "APIClient",
+          "description": "HTTP 客户端：封装所有后端 API 调用",
+          "exports": ["api_responses"],
+          "imports": []
+        },
+        {
+          "name": "UploadPanel",
+          "description": "拖拽上传面板：PDF 文件选择与上传",
+          "exports": ["file_id"],
+          "imports": ["APIClient"]
+        },
+        {
+          "name": "ChapterList",
+          "description": "章节目录列表：展示章节、选中状态",
+          "exports": ["selected_chapter"],
+          "imports": ["APIClient"]
+        },
+        {
+          "name": "ReviewViewer",
+          "description": "复习资料查看器：知识点、闪卡、练习题、Markdown 渲染",
+          "exports": [],
+          "imports": ["APIClient"]
+        },
+        {
+          "name": "HistoryPanel",
+          "description": "历史记录面板：展示已完成任务列表，支持点击回看",
+          "exports": ["selected_task"],
+          "imports": ["APIClient"]
+        }
+      ]
     }
   ],
   "cross_cutting": [

@@ -11,6 +11,7 @@
 # 与 lifecycle.json#commands.init 对齐；退出码遵守 exit_code_legend。
 
 set -euo pipefail
+# _compat_patched
 
 # ---------- 加载动画库 ----------
 # shellcheck disable=SC1091
@@ -293,16 +294,21 @@ list_templates() {
     local -a sources=()
 
     # 从 examples/*.json
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    find "$REPO_ROOT/examples" -maxdepth 1 -name '*.json' -type f 2>/dev/null | sort > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS= read -r f; do
         local n
         n=$(basename "$f" .json)
         local d
         d=$(jq -r '.description // "(no description)"' "$f" 2>/dev/null || echo "(invalid json)")
         names+=("$n"); descs+=("$d"); sources+=("examples")
-    done < <(find "$REPO_ROOT/examples" -maxdepth 1 -name '*.json' -type f 2>/dev/null | sort)
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 
     # 从 ./templates/*/
     if [[ -d "$REPO_ROOT/templates" ]]; then
+        _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        find "$REPO_ROOT/templates" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort > "${_compat_tmp_2}" 2>/dev/null || true
         while IFS= read -r d; do
             local n
             n=$(basename "$d")
@@ -312,11 +318,14 @@ list_templates() {
                 desc=$(jq -r '.identity.description // "(no description)"' "$m" 2>/dev/null || echo "(invalid manifest)")
             fi
             names+=("$n"); descs+=("$desc"); sources+=("templates/")
-        done < <(find "$REPO_ROOT/templates" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+        done < "${_compat_tmp_2}"
+        rm -f "${_compat_tmp_2}"
     fi
 
     # 从 ~/.bootstrap-templates/*/
     if [[ -d "$HOME/.bootstrap-templates" ]]; then
+        _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        find "$HOME/.bootstrap-templates" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort > "${_compat_tmp_3}" 2>/dev/null || true
         while IFS= read -r d; do
             local n
             n=$(basename "$d")
@@ -326,7 +335,8 @@ list_templates() {
                 desc=$(jq -r '.identity.description // "(user template)"' "$m" 2>/dev/null || echo "(invalid manifest)")
             fi
             names+=("$n"); descs+=("$desc"); sources+=("~/.bootstrap-templates/")
-        done < <(find "$HOME/.bootstrap-templates" -maxdepth 1 -mindepth 1 -type d 2>/dev/null | sort)
+        done < "${_compat_tmp_3}"
+        rm -f "${_compat_tmp_3}"
     fi
 
     if [[ ${#names[@]} -eq 0 ]]; then

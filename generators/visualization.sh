@@ -11,6 +11,7 @@
 #   - 底部：wave 时间轴（按 blocker DAG 切波）
 #   - 全部 inline JS/CSS，仅 Mermaid 走 CDN
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 DOCS_DIR="$OUTPUT_DIR/docs"
@@ -97,32 +98,50 @@ build_data_blob() {
     echo "  classDef optional fill:#f5f5f5,stroke:#9e9e9e,stroke-dasharray: 5 5"
     echo ""
 
+    # 模块节点
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
         echo "  ${mname}[\"[MOD] ${mname}\"]:::module"
-        echo "  click ${mname} callModuleClick"
-    done < <(iter_modules)
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 
+    # 组件到模块的边
+    _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_3}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
+        _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        iter_components "$mi" > "${_compat_tmp_2}" 2>/dev/null || true
         while IFS=$'\t' read -r ci cname cdesc; do
             style=":::component"
             opt=$(jq -r ".modules[$mi].components[$ci].optional // false" "$STRUCT_FILE")
             [[ "$opt" == "true" ]] && style=":::optional"
             echo "  ${cname}[\"[CFG] ${cname}\"]${style}"
             echo "  ${mname} --> ${cname}"
-            echo "  click ${cname} callOnClick"
-        done < <(iter_components "$mi")
-    done < <(iter_modules)
+        done < "${_compat_tmp_2}"
+        rm -f "${_compat_tmp_2}"
+    done < "${_compat_tmp_3}"
+    rm -f "${_compat_tmp_3}"
 
     echo ""
+    _compat_tmp_6=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_6}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
+        _compat_tmp_5=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        iter_components "$mi" > "${_compat_tmp_5}" 2>/dev/null || true
         while IFS=$'\t' read -r ci cname cdesc; do
             imports_json=$(jq -c ".modules[$mi].components[$ci].imports // .modules[$mi].components[$ci].depends_on // []" "$STRUCT_FILE")
+            _compat_tmp_4=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$imports_json" | jq -r '.[]' > "${_compat_tmp_4}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 echo "  ${cname} -.uses.-> ${dep}"
-            done < <(echo "$imports_json" | jq -r '.[]')
-        done < <(iter_components "$mi")
-    done < <(iter_modules)
+            done < "${_compat_tmp_4}"
+            rm -f "${_compat_tmp_4}"
+        done < "${_compat_tmp_5}"
+        rm -f "${_compat_tmp_5}"
+    done < "${_compat_tmp_6}"
+    rm -f "${_compat_tmp_6}"
 } > "$DOCS_DIR/module-graph.mmd"
 say "$DOCS_DIR/module-graph.mmd"
 
@@ -222,12 +241,15 @@ say "$DOCS_DIR/todo-blocker.mmd"
     echo ""
     echo "| Module | Components | Todos | Language | Description |"
     echo "|---|---:|---:|---|---|"
+    _compat_tmp_7=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_7}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
         cn=$(component_count "$mi")
         tn=$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")
         lang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
         echo "| \`${mname}\` | $cn | $tn | $lang | $mdesc |"
-    done < <(iter_modules)
+    done < "${_compat_tmp_7}"
+    rm -f "${_compat_tmp_7}"
     echo ""
     echo "---"
     echo ""
@@ -621,39 +643,18 @@ header.app-header .meta { color: var(--text-dim); font-size: 12px; margin-left: 
     </div>
   </aside>
 
-  <section class="panel-center">
-    <div class="diagram-toolbar">
-      <div class="section-title">Module / Component Graph (click a node)</div>
-      <div class="legend">
-        <span><span class="dot" style="background:#e1f5ff;border:1px solid #01579b"></span>module</span>
-        <span><span class="dot" style="background:#fff9c4;border:1px solid #f57f17"></span>component</span>
-        <span><span class="dot" style="background:#f5f5f5;border:1px dashed #9e9e9e"></span>optional</span>
-      </div>
-    </div>
-    <div class="mermaid-host">
-      <div class="mermaid" id="graph-mermaid">
-HTML_DATA_END
-
-# 注入 Mermaid graph
-cat "$MMD_GRAPH" | sed 's|</script>|</scr"+"ipt>|g' >> "$STAGE"
-
-cat >> "$STAGE" <<'HTML_AFTER_GRAPH'
-      </div>
-    </div>
-  </section>
-
-  <aside class="panel-right" id="detail-panel">
-    <div class="detail-empty">Click a component (in the graph or the list) to see details.</div>
-  </aside>
-
-  <section class="panel-bottom">
-    <div class="section-title">Wave Timeline (parallel-ready todo waves)</div>
-    <div class="wave-timeline" id="wave-timeline">
-      <!-- filled by JS -->
-    </div>
-  </section>
-
-</main>
+    echo "<h2>[MOD] Module Inventory</h2>"
+    echo "<table><tr><th>Module</th><th>Components</th><th>Todos</th><th>Language</th><th>Description</th></tr>"
+    _compat_tmp_8=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_8}" 2>/dev/null || true
+    while IFS=$'\t' read -r mi mname mdesc; do
+        cn=$(component_count "$mi")
+        tn=$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")
+        lang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
+        echo "<tr><td><code>${mname}</code></td><td>$cn</td><td>$tn</td><td>$lang</td><td>${mdesc}</td></tr>"
+    done < "${_compat_tmp_8}"
+    rm -f "${_compat_tmp_8}"
+    echo "</table>"
 
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <script>

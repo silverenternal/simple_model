@@ -8,6 +8,7 @@
 #
 # 零 Python 依赖；只用 bash + jq。
 set -euo pipefail
+# _compat_patched
 
 # 解析自身所在目录（兼容直接执行 和 source）
 if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
@@ -93,6 +94,8 @@ UPSTREAM=$(jq -r --arg c "$COMPONENT" '
 
 # downstream_callees = 当前 component imports 了谁（完整地址 module.Name）
 declare -a down_lines=()
+_compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+echo "$COMP_JSON" | jq -r '(.imports // .depends_on // [])[]' > "${_compat_tmp_1}" 2>/dev/null || true
 while IFS= read -r d; do
     [[ -z "$d" ]] && continue
     dm=$(module_of "$d")
@@ -102,7 +105,8 @@ while IFS= read -r d; do
     else
         down_lines+=("$d")
     fi
-done < <(echo "$COMP_JSON" | jq -r '(.imports // .depends_on // [])[]')
+done < "${_compat_tmp_1}"
+rm -f "${_compat_tmp_1}"
 
 if [[ ${#down_lines[@]} -gt 0 ]]; then
     DOWNSTREAM_LIST=$(printf '%s\n' "${down_lines[@]}" | jq -R '.' | jq -s 'unique')
@@ -159,13 +163,16 @@ EXPORTS_JSON=$(echo "$COMP_JSON" | jq -c '
 
 # ---------- imports（每条带 module）----------
 declare -a imp_arr=()
+_compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+echo "$COMP_JSON" | jq -r '(.imports // .depends_on // [])[]' > "${_compat_tmp_2}" 2>/dev/null || true
 while IFS= read -r d; do
     [[ -z "$d" ]] && continue
     dm=$(module_of "$d")
     [[ -z "$dm" ]] && dm=""
     imp_arr+=("$(jq -c -n --arg n "$d" --arg m "$dm" --arg w "needed by $COMPONENT per struct.json" \
         '{name:$n, module:$m, why:$w, specific_symbols:[]}')")
-done < <(echo "$COMP_JSON" | jq -r '(.imports // .depends_on // [])[]')
+done < "${_compat_tmp_2}"
+rm -f "${_compat_tmp_2}"
 if [[ ${#imp_arr[@]} -gt 0 ]]; then
     IMPORTS_JSON=$(printf '%s\n' "${imp_arr[@]}" | jq -s '.')
 else
@@ -188,7 +195,12 @@ FTR_IMPORTS=$(echo "$IMPORTS_JSON" | jq -c '
         (.[] | ("struct.json#" + .name))
     ]
 ')
-FILES_TO_READ=$(jq -c -s 'add | unique' <(echo "$FTR_FIRST") <(echo "$FTR_IMPORTS"))
+_compat_ftr1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+echo "$FTR_FIRST" > "$_compat_ftr1"
+_compat_ftr2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+echo "$FTR_IMPORTS" > "$_compat_ftr2"
+FILES_TO_READ=$(jq -c -s 'add | unique' "$_compat_ftr1" "$_compat_ftr2")
+rm -f "$_compat_ftr1" "$_compat_ftr2"
 
 # files_to_create
 FILES_TO_CREATE=$(jq -c -n --arg mod "$MODULE" --arg comp "$COMPONENT" '
