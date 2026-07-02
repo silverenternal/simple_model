@@ -34,6 +34,24 @@ else
     echo "warning: bootstrap.sh not found; skipping --validate" >&2
 fi
 
+# 2a. Schema-aware cross-component import check.
+if [[ -x "./bootstrap.sh" ]]; then
+    echo "[pre-commit] running bootstrap.sh --check-imports"
+    if ! ./bootstrap.sh --check-imports; then
+        echo "error: schema import violations" >&2
+        exit 1
+    fi
+fi
+
+# 2b. Schema-aware generated/ ↔ struct.json alignment check.
+if [[ -x "./bootstrap.sh" ]]; then
+    echo "[pre-commit] running bootstrap.sh --check-impl"
+    if ! ./bootstrap.sh --check-impl; then
+        echo "error: AI impl doesn't match schema" >&2
+        exit 1
+    fi
+fi
+
 # 3. Plan / preview regeneration.
 if [[ -x "./bootstrap.sh" ]]; then
     echo "[pre-commit] running bootstrap.sh --plan --target all --no-validate"

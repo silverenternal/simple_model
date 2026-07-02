@@ -5,70 +5,83 @@
 #   - 每个 component: export interface + export class
 #   - 每个 module 一个目录: <module>/index.ts 重导出所有 component
 #   - 顶层: tsconfig.json (strict, ES2022) + package.json (ESM)
+# 模板: 若 templates/typescript/<name>.tpl 存在, 用 render_template 渲染;
+#       否则回退到内联 heredoc (向后兼容)。
 set -euo pipefail
 # _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/_templates.sh"
 
 LANG="typescript"
 LANG_DIR="${OUTPUT_DIR}/${LANG}"
 mkdir -p "$LANG_DIR"
 
-# ---------- 顶层文件: tsconfig.json ----------
+# ---------- 顶层: tsconfig.json ----------
 PKG_NAME=$(basename "$OUTPUT_DIR")
 TSCONFIG_FILE="${LANG_DIR}/tsconfig.json"
 if should_regenerate "$TSCONFIG_FILE" "$STRUCT_FILE"; then
-    {
-        echo "{"
-        echo "  \"compilerOptions\": {"
-        echo "    \"target\": \"ES2022\","
-        echo "    \"module\": \"ESNext\","
-        echo "    \"moduleResolution\": \"Bundler\","
-        echo "    \"lib\": [\"ES2022\", \"DOM\", \"DOM.Iterable\"],"
-        echo "    \"strict\": true,"
-        echo "    \"noImplicitAny\": true,"
-        echo "    \"strictNullChecks\": true,"
-        echo "    \"esModuleInterop\": true,"
-        echo "    \"skipLibCheck\": true,"
-        echo "    \"forceConsistentCasingInFileNames\": true,"
-        echo "    \"declaration\": true,"
-        echo "    \"declarationMap\": true,"
-        echo "    \"sourceMap\": true,"
-        echo "    \"resolveJsonModule\": true,"
-        echo "    \"isolatedModules\": true,"
-        echo "    \"outDir\": \"./dist\","
-        echo "    \"rootDir\": \".\""
-        echo "  },"
-        echo "  \"include\": [\"./**/*.ts\"],"
-        echo "  \"exclude\": [\"node_modules\", \"dist\"]"
-        echo "}"
-    } > "$TSCONFIG_FILE"
+    if ! render_to_file "$TSCONFIG_FILE" "typescript" "tsconfig" "/dev/null"; then
+        cat > "$TSCONFIG_FILE" <<'TSJSON'
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "outDir": "./dist",
+    "rootDir": "."
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+TSJSON
+    fi
     mark_generated "$TSCONFIG_FILE" "$STRUCT_FILE"
     say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/tsconfig.json"
 else
     say "  [SKIP] ${LANG_DIR#$OUTPUT_DIR/}/tsconfig.json (unchanged)"
 fi
 
-# ---------- 顶层文件: package.json ----------
+# ---------- 顶层: package.json ----------
 PACKAGE_FILE="${LANG_DIR}/package.json"
 if should_regenerate "$PACKAGE_FILE" "$STRUCT_FILE"; then
+    package_name=$(echo "$PKG_NAME" | tr '[:upper:]' '[:lower:]')
+    vars_file=$(mktemp)
     {
-        echo "{"
-        echo "  \"name\": \"$(echo "$PKG_NAME" | tr '[:upper:]' '[:lower:]')\","
-        echo "  \"version\": \"0.1.0\","
-        echo "  \"description\": \"Auto-generated TypeScript scaffold\","
-        echo "  \"type\": \"module\","
-        echo "  \"main\": \"./dist/index.js\","
-        echo "  \"types\": \"./dist/index.d.ts\","
-        echo "  \"scripts\": {"
-        echo "    \"build\": \"tsc\","
-        echo "    \"typecheck\": \"tsc --noEmit\","
-        echo "    \"clean\": \"rm -rf dist\""
-        echo "  },"
-        echo "  \"devDependencies\": {"
-        echo "    \"typescript\": \"^5.4.0\""
-        echo "  }"
-        echo "}"
-    } > "$PACKAGE_FILE"
+        printf 'package_name=%s\n' "$(encode_value "${package_name}")"
+    } > "$vars_file"
+    if ! render_to_file "$PACKAGE_FILE" "typescript" "package" "$vars_file"; then
+        cat > "$PACKAGE_FILE" <<PKGJSON
+{
+  "name": "${package_name}",
+  "version": "0.1.0",
+  "description": "Auto-generated TypeScript scaffold",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
+PKGJSON
+    fi
+    rm -f "$vars_file"
     mark_generated "$PACKAGE_FILE" "$STRUCT_FILE"
     say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/package.json"
 else
@@ -83,7 +96,6 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
     module_lang=$(echo "$module_json" | jq -r '.language // "any"')
     module_desc=$(echo "$module_json" | jq -r '.description')
 
-    # per-module language 过滤
     if [[ "$module_lang" != "any" && "$module_lang" != "$LANG" ]]; then
         say "跳过 ${module_name}（language=${module_lang}，不是 ${LANG}）"
         continue
@@ -92,7 +104,6 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
     module_dir="${LANG_DIR}/${module_name}"
     mkdir -p "$module_dir"
 
-    # 每个 component 一个 snake_case.ts 文件
     component_count=$(jq ".modules[$mi].components // [] | length" "$STRUCT_FILE")
     for ci in $(seq 0 $((component_count - 1))); do
         c_name=$(jq -r ".modules[$mi].components[$ci].name" "$STRUCT_FILE")
@@ -101,14 +112,19 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
         c_imports=$(jq -c ".modules[$mi].components[$ci].imports // .modules[$mi].components[$ci].depends_on // []" "$STRUCT_FILE")
         c_optional=$(jq -r ".modules[$mi].components[$ci].optional // false" "$STRUCT_FILE")
         c_todos_json=$(jq -c ".modules[$mi].components[$ci].todos // []" "$STRUCT_FILE")
+        c_files=$(jq -c ".modules[$mi].components[$ci].files // []" "$STRUCT_FILE")
 
         snake=$(to_snake "$c_name")
-        file="${module_dir}/${snake}.ts"
 
-        # ---------- 增量构建判断 ----------
-        # sources = STRUCT_FILE（一切信息都来自 struct.json）
+        # 多文件支持
+        if [[ "$(echo "$c_files" | jq 'length')" -gt 0 ]]; then
+            file_0=$(echo "$c_files" | jq -r '.[0]')
+            file="${module_dir}/${file_0}"
+        else
+            file="${module_dir}/${snake}.ts"
+        fi
+
         if should_regenerate "$file" "$STRUCT_FILE"; then
-            # 构建 import 块（同模块相对路径 / 跨模块 ../../<module>/<snake>）
             imports_block=""
             _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
             echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_1}" 2>/dev/null || true
@@ -125,7 +141,6 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
             done < "${_compat_tmp_1}"
             rm -f "${_compat_tmp_1}"
 
-            # exports 数组 -> TS 字面量（用于 JSDoc 注释）
             exports_list=""
             _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
             echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
@@ -135,7 +150,6 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
             done < "${_compat_tmp_2}"
             rm -f "${_compat_tmp_2}"
 
-            # todos JSDoc 注释
             todos_block=""
             if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
                 todos_block=" *"$'\n'" * TODO:"$'\n'
@@ -148,7 +162,33 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
                 rm -f "${_compat_tmp_3}"
             fi
 
-            cat > "$file" <<EOF
+            ac_block=""
+            if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
+                ac_raw=$(echo "$c_todos_json" | jq -r '.[] | select(.acceptance_criteria) | "* acceptance: \(.acceptance_criteria)"')
+                if [[ -n "$ac_raw" ]]; then
+                    while IFS= read -r ac_line; do
+                        [[ -z "$ac_line" ]] && continue
+                        ac_block+=" ${ac_line}"$'\n'
+                    done <<< "$ac_raw"
+                fi
+            fi
+
+            vars_file=$(mktemp)
+            {
+                printf 'component_name=%s\n' "$(encode_value "${c_name}")"
+                printf 'module_name=%s\n' "$(encode_value "${module_name}")"
+                printf 'snake_name=%s\n' "$(encode_value "${snake}")"
+                printf 'description=%s\n' "$(encode_value "${c_desc}")"
+                printf 'exports_list=%s\n' "$(encode_value "${exports_list}")"
+                printf 'imports_block=%s\n' "$(encode_value "${imports_block}")"
+                printf 'todos_block=%s\n' "$(encode_value "${todos_block}")"
+                printf 'acceptance_criteria=%s\n' "$(encode_value "${ac_block}")"
+                printf 'optional_ts=%s\n' "$(encode_value "${c_optional}")"
+            } > "$vars_file"
+
+            if ! render_to_file "$file" "typescript" "component" "$vars_file"; then
+                # 回退
+                cat > "$file" <<EOF
 /**
  * Component: ${c_name} (module: ${module_name})
  *
@@ -186,14 +226,74 @@ export class ${c_name} implements ${c_name}Options {
 
 export default ${c_name};
 EOF
+            fi
+            rm -f "$vars_file"
             mark_generated "$file" "$STRUCT_FILE"
-            say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/${snake}.ts"
+            say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/$(basename "$file")"
         else
-            say "  [SKIP] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/${snake}.ts (unchanged)"
+            say "  [SKIP] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/$(basename "$file") (unchanged)"
+        fi
+
+        # 多文件模式下的 test stub
+        if [[ "$(echo "$c_files" | jq 'length')" -gt 1 ]]; then
+            test_filename=$(echo "$c_files" | jq -r '.[1] // "test_'${snake}'.ts"')
+            tests_dir="${module_dir}/tests"
+            mkdir -p "$tests_dir"
+            test_path="${tests_dir}/${test_filename}"
+            if should_regenerate "$test_path" "$STRUCT_FILE"; then
+                test_functions=""
+                todos_block_ts=""
+                if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
+                    while IFS= read -r todo; do
+                        [[ -z "$todo" ]] && continue
+                        todo_id=$(echo "$todo" | jq -r '.id')
+                        todo_task=$(echo "$todo" | jq -r '.task')
+                        todo_ac=$(echo "$todo" | jq -r '.acceptance_criteria // ""')
+                        todos_block_ts+=" * TODO ${todo_id}: ${todo_task}"$'\n'
+                        if [[ -n "${todo_ac}" && "${todo_ac}" != "null" && "${todo_ac}" != "" ]]; then
+                            todos_block_ts+=" *   acceptance: ${todo_ac}"$'\n'
+                        fi
+                        test_functions+="  it(\"should ${todo_task}\", () => {"$'\n'
+                        if [[ -n "${todo_ac}" && "${todo_ac}" != "null" && "${todo_ac}" != "" ]]; then
+                            test_functions+="    // acceptance: ${todo_ac}"$'\n'
+                        fi
+                        test_functions+="    // TODO: replace with real assertion"$'\n'
+                        test_functions+="    expect(true).toBe(true);"$'\n'
+                        test_functions+="  });"$'\n'$'\n'
+                    done < <(echo "$c_todos_json" | jq -c '.[]')
+                fi
+
+                vars_file2=$(mktemp)
+                {
+                    printf 'component_name=%s\n' "$(encode_value "${c_name}")"
+                    printf 'module_name=%s\n' "$(encode_value "${module_name}")"
+                    printf 'snake_name=%s\n' "$(encode_value "${snake}")"
+                    printf 'todos_block=%s\n' "$(encode_value "${todos_block_ts}")"
+                    printf 'test_functions=%s\n' "$(encode_value "${test_functions}")"
+                } > "$vars_file2"
+
+                if ! render_to_file "$test_path" "typescript" "test_stub" "$vars_file2"; then
+                    cat > "$test_path" <<EOF
+/**
+ * Auto-generated test stubs for ${c_name} (module: ${module_name})
+ */
+import { describe, it, expect } from "vitest";
+import { ${c_name} } from "../${snake}";
+
+describe("${c_name}", () => {
+${test_functions}});
+EOF
+                fi
+                rm -f "$vars_file2"
+                mark_generated "$test_path" "$STRUCT_FILE"
+                say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/tests/${test_filename}"
+            else
+                say "  [SKIP] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/tests/${test_filename} (unchanged)"
+            fi
         fi
     done
 
-    # ---------- module 的 index.ts（重导出所有 component）----------
+    # ---------- module 的 index.ts ----------
     index_file="${module_dir}/index.ts"
     if should_regenerate "$index_file" "$STRUCT_FILE"; then
         {
@@ -208,8 +308,14 @@ EOF
             cc=$(jq ".modules[$mi].components // [] | length" "$STRUCT_FILE")
             for ci in $(seq 0 $((cc - 1))); do
                 c_name=$(jq -r ".modules[$mi].components[$ci].name" "$STRUCT_FILE")
+                c_files_inner=$(jq -c ".modules[$mi].components[$ci].files // []" "$STRUCT_FILE")
                 snake=$(to_snake "$c_name")
-                echo "export { ${c_name} } from \"./${snake}\";"
+                if [[ "$(echo "$c_files_inner" | jq 'length')" -gt 0 ]]; then
+                    export_filename=$(echo "$c_files_inner" | jq -r '.[0]')
+                else
+                    export_filename="${snake}.ts"
+                fi
+                echo "export { ${c_name} } from \"./${export_filename%.ts}\";"
             done
         } > "$index_file"
         mark_generated "$index_file" "$STRUCT_FILE"
@@ -231,7 +337,7 @@ EOF
     fi
 done
 
-# ---------- 顶层 src/index.ts（重导出所有 module）----------
+# ---------- 顶层 src/index.ts ----------
 TOP_INDEX="${LANG_DIR}/index.ts"
 if should_regenerate "$TOP_INDEX" "$STRUCT_FILE"; then
     {
@@ -240,7 +346,6 @@ if should_regenerate "$TOP_INDEX" "$STRUCT_FILE"; then
         echo " * Auto-generated by bootstrap.sh"
         echo " */"
         echo ""
-        # 只导出 language 匹配的 module
         for mi in $(seq 0 $((N_MODULES - 1))); do
             mlang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
             [[ "$mlang" != "any" && "$mlang" != "$LANG" ]] && continue
@@ -254,11 +359,10 @@ else
     say "  [SKIP] ${LANG_DIR#$OUTPUT_DIR/}/index.ts (unchanged)"
 fi
 
-# ---------- 用 tsc 做类型校验（如果可用）----------
+# ---------- tsc 校验 ----------
 if command -v tsc >/dev/null 2>&1; then
     echo ""
     say "  ▶ tsc --noEmit ..."
-    # 在 package.json 所在目录运行；需要安装 typescript 才能解析依赖
     if (cd "$LANG_DIR" && tsc --noEmit --pretty false 2>&1); then
         say "  [OK] tsc --noEmit 通过"
     else

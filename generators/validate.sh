@@ -82,6 +82,22 @@ echo "[1/3] struct.json — top-level required fields"
 check_required "struct.json::schema_version" "$STRUCT_FILE" "$SCHEMA_FILE"
 check_required "struct.json::modules"      "$STRUCT_FILE" "$SCHEMA_FILE"
 
+# schema_version 时髦性检查 (建议升级提示)
+if [[ -f "$STRUCT_FILE" ]] && command -v jq >/dev/null 2>&1; then
+    CURRENT_SV=$(jq -r '.schema_version // ""' "$STRUCT_FILE" 2>/dev/null)
+    # 已知的迁移路径 / 当前推荐版本（与 generators/migrate.sh 保持一致）
+    LATEST_KNOWN="3.2"
+    if [[ -n "$CURRENT_SV" ]] && [[ "$CURRENT_SV" != "$LATEST_KNOWN" ]]; then
+        # 顺序比较 (X.Y); 只在 CURRENT_SV 已知且更老时提示
+        case "$CURRENT_SV" in
+            3.0|3.1)
+                echo "  [INFO] struct.json schema_version=$CURRENT_SV 比当前推荐 $LATEST_KNOWN 旧"
+                echo "         建议执行迁移：Run './bootstrap.sh --migrate $CURRENT_SV $LATEST_KNOWN' to upgrade."
+                ;;
+        esac
+    fi
+fi
+
 # 模块/组件名格式校验（PascalCase + 全小写 + snake_case）
 if [[ -f "$STRUCT_FILE" ]]; then
     TOTAL=$((TOTAL + 1))

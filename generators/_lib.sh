@@ -773,3 +773,247 @@ deps_content() {
 
 # 状态输出包装
 status_skip() { printf '  [SKIP] %s\n' "$*"; }
+# ---------- v11: 10 rock-solid ASCII animations ----------
+# 设计原则 (适合任何终端 — xterm / Ghostty / WezTerm / iTerm / VSCode):
+#   1. **只用单行覆盖 (\r)** 或 **纯滚动 (\n)** — 不再用相对光标移动
+#   2. **每帧结束必有 \033[0m 复位颜色**
+#   3. **绝不 \033[2J 清屏** — 永远不要再用
+#   4. **绝对定位只用于单行内** (\033[0G 等价 \r)
+#   5. NO_ANIM=1 或 TERM=dumb 或非 TTY → 输出占位文字，无 ANSI 噪声
+#
+# 配色: 深蓝 256-color (高级感 + 适合深色终端):
+#   DARK   = 24  (深海军蓝, RGB ~000070)
+#   MID    = 33  (皇家蓝, RGB ~0080ff)
+#   BRIGHT = 39  (道奇蓝, RGB ~00afff)
+#   CYAN   = 51  (青蓝, RGB ~00ffff)
+#   LIGHT  = 75  (天蓝, RGB ~5fd7ff)
+#   BOLD_BRIGHT = 加粗 + 39 (1;38;5;39m)
+
+# _anim_safe — 决定是否跑动画
+# 返回 0 = 可以跑；非 0 = 跳过（动画函数自己处理占位文字）
+_anim_safe() {
+    [[ -n "${NO_ANIM:-}" ]] && return 1
+    [[ ! -t 1 ]] && return 1
+    [[ "${TERM:-}" == "dumb" ]] && return 1
+    return 0
+}
+
+# 1. matrix_rain — 数字雨改为深蓝流 (海军蓝 + 道奇蓝高亮)
+matrix_rain() {
+    _anim_safe || { printf '  [MATRIX RAIN]\n'; return 0; }
+    local cols="${1:-60}" cycles="${2:-8}"
+    local chars='0123456789ABCDEF$#@%&'
+    for _ in $(seq 1 "$cycles"); do
+        line="  "
+        for c in $(seq 1 "$cols"); do
+            ch="${chars:$((RANDOM % ${#chars})):1}"
+            # 首字符白蓝高亮；少数字符道奇蓝；其余深蓝
+            if (( c == 1 )); then
+                line+=$'\033[38;5;75m'"$ch"           # 天蓝 head
+            elif (( RANDOM % 8 == 0 )); then
+                line+=$'\033[1;38;5;39m'"$ch"          # bold 道奇蓝 sparkle
+            else
+                line+=$'\033[38;5;24m'"$ch"            # 海军蓝 body
+            fi
+        done
+        printf '%b\033[0m\n' "$line"
+        sleep 0.1
+    done
+}
+
+# 2. fire — 改成"寒焰" (蓝色火焰 — 更高级感)
+fire() {
+    _anim_safe || { printf '  [FIRE]\n'; return 0; }
+    local width="${1:-40}" cycles="${2:-10}"
+    local palette=' .:;+xX#@'
+    for _ in $(seq 1 "$cycles"); do
+        line="  "
+        for c in $(seq 1 "$width"); do
+            idx=$((RANDOM % ${#palette}))
+            ch="${palette:$idx:1}"
+            # 蓝焰: 从浅到深
+            r=$((RANDOM % 3))
+            if (( r == 0 )); then line+=$'\033[1;38;5;75m'"$ch"   # bold 天蓝 (火焰顶端)
+            elif (( r == 1 )); then line+=$'\033[38;5;51m'"$ch"  # 青蓝 (中段)
+            else line+=$'\033[38;5;33m'"$ch"                   # 皇家蓝 (底部)
+            fi
+        done
+        printf '%b\033[0m\n' "$line"
+        sleep 0.15
+    done
+}
+
+# 3. lightning — 单行整行反色闪烁 (深蓝底 + 浅蓝字)
+lightning() {
+    _anim_safe || { printf '  [LIGHTNING]\n'; return 0; }
+    local flashes="${1:-5}"
+    local cols=$(tput cols 2>/dev/null || echo 80)
+    local blank
+    blank=$(printf '%*s' "$cols" "")
+    for _ in $(seq 1 "$flashes"); do
+        printf '\r\033[38;5;24;48;5;75m  *** LIGHTNING ***\033[0m\033[K'  # 深蓝字 + 天蓝底
+        sleep 0.08
+        printf '\r%s\033[K' "$blank"
+        sleep 0.3
+    done
+    printf '\r%s\033[0m\n' "$blank"
+}
+
+# 4. scanline — 单行扫描 (海军蓝 + 道奇蓝)
+scanline() {
+    _anim_safe || { printf '  [SCAN]\n'; return 0; }
+    local text="${1:-Scanning}" width="${2:-50}" cycles="${3:-2}"
+    for _ in $(seq 1 "$cycles"); do
+        for i in $(seq 0 "$width"); do
+            line="  "
+            for j in $(seq 1 "$width"); do
+                if (( j == i )); then line+=$'\033[1;38;5;75m#'                  # 头: bold 天蓝
+                elif (( j == i - 1 || j == i + 1 )); then line+=$'\033[38;5;39m=' # 邻: 道奇蓝
+                else line+=" "; fi
+            done
+            printf '\r%s\033[0m %s' "$line" "$text"
+            sleep 0.02
+        done
+        printf '\n'
+    done
+    printf '\033[0m'
+}
+
+# 5. glitch — 单行抖动 (皇家蓝 + 道奇蓝)
+glitch() {
+    _anim_safe || { printf '  [GLITCH]\n'; return 0; }
+    local text="${1:-GLITCH}" cycles="${2:-8}"
+    local chars='!@#$%^&*<>?/\\|'
+    for _ in $(seq 1 "$cycles"); do
+        out="  "
+        for ((i=0; i<${#text}; i++)); do
+            if (( RANDOM % 4 == 0 )); then
+                idx=$((RANDOM % ${#chars}))
+                out+=$'\033[1;38;5;39m'"${chars:$idx:1}"$'\033[0m'   # bold 道奇蓝
+            else
+                out+=$'\033[38;5;33m'"${text:$i:1}"$'\033[0m'         # 皇家蓝
+            fi
+        done
+        printf '\r%s' "$out"
+        sleep 0.08
+    done
+    printf '\r  \033[1;38;5;75m%s\033[0m\n' "$text"
+}
+
+# 6. holo — 5 个深蓝变体 (海军→皇家→道奇→青蓝→天蓝)
+holo() {
+    _anim_safe || { printf '  [HOLO]\n'; return 0; }
+    local text="${1:-SIMPLE_MODEL}" width="${2:-40}"
+    local colors=('38;5;24' '38;5;33' '38;5;39' '38;5;51' '38;5;75')
+    # 中心位置
+    local pad=$(( (width - ${#text}) / 2 ))
+    [[ $pad -lt 0 ]] && pad=0
+    local prefix
+    prefix=$(printf '%*s' "$pad" "")
+    # 每个 color 一行
+    for color in "${colors[@]}"; do
+        printf '%s  \033[%sm%s\033[0m\n' "$prefix" "$color" "$text"
+        sleep 0.2
+    done
+}
+
+# 7. aurora — 蓝系极光 (海军+皇家+道奇+青蓝+天蓝)
+aurora() {
+    _anim_safe || { printf '  [AURORA]\n'; return 0; }
+    local cols="${1:-50}" cycles="${2:-8}"
+    local colors=('38;5;24' '38;5;33' '38;5;39' '38;5;51' '38;5;75')
+    for _ in $(seq 1 "$cycles"); do
+        line="  "
+        for c in $(seq 1 "$cols"); do
+            idx=$((RANDOM % ${#colors[@]}))
+            line+=$'\033['"${colors[$idx]}"$'m~'
+        done
+        printf '%b\033[0m\n' "$line"
+        sleep 0.12
+    done
+}
+
+# 8. snowflake — 天蓝/浅蓝雪花 (深海里飘的冰晶感)
+snowflake() {
+    _anim_safe || { printf '  [SNOWFLAKE]\n'; return 0; }
+    local cols="${1:-50}" cycles="${2:-8}"
+    local flakes='*+.~'
+    for _ in $(seq 1 "$cycles"); do
+        line="  "
+        for c in $(seq 1 "$cols"); do
+            if (( RANDOM % 7 == 0 )); then
+                idx=$((RANDOM % ${#flakes}))
+                line+=$'\033[38;5;75m'"${flakes:$idx:1}"$'\033[0m'   # 天蓝雪花
+            else line+=" "; fi
+        done
+        printf '%s\n' "$line"
+        sleep 0.12
+    done
+}
+
+# 9. typewriter_fast — 单行打字机 (无颜色)
+typewriter_fast() {
+    _anim_safe || { printf '%s\n' "$1"; return 0; }
+    local text="$1" delay="${2:-0.01}"
+    for ((i=0; i<${#text}; i++)); do
+        printf '%s' "${text:$i:1}"
+        sleep "$delay"
+    done
+    echo ""
+}
+
+# 10. rainbow_progress — 蓝系渐变进度条 (深→浅: 24→33→39→51→75)
+rainbow_progress() {
+    _anim_safe || { printf '  %s [done]\n' "$1"; return 0; }
+    local label="${1:-Working}" width="${2:-40}"
+    local colors=('38;5;24' '38;5;33' '38;5;39' '38;5;51' '38;5;75')
+    for pct in 0 10 20 30 40 50 60 70 80 90 100; do
+        filled=$(( pct * width / 100 ))
+        printf '\r  %s [' "$label"
+        for i in $(seq 0 $((filled - 1))); do
+            color_idx=$((i % ${#colors[@]}))
+            printf '\033[%sm#\033[0m' "${colors[$color_idx]}"
+        done
+        printf '\033[38;5;24m'
+        for i in $(seq $filled $((width - 1))); do printf ' '; done
+        printf '\033[0m] %3d%%' "$pct"
+        sleep 0.04
+    done
+    printf '\033[0m\n'
+}
+
+# 11. loading_bars — 多条进度条 (单行，用 \r 覆盖)
+loading_bars() {
+    _anim_safe || { printf '  [LOADING]\n'; return 0; }
+    local n="${1:-5}" width="${2:-15}" duration="${3:-2}"
+    declare -a pcts
+    for i in $(seq 0 $((n - 1))); do pcts[$i]=0; done
+    end=$((SECONDS + duration))
+    while (( SECONDS < end )); do
+        printf '\r'
+        for i in $(seq 0 $((n - 1))); do
+            pcts[$i]=$(( (pcts[$i] + RANDOM % 15 + 5) % 110 ))
+            [[ ${pcts[$i]} -gt 100 ]] && pcts[$i]=100
+            filled=$(( pcts[$i] * width / 100 ))
+            empty=$((width - filled))
+            bar=$(printf '█%.0s' $(seq 1 $filled 2>/dev/null))$(printf '░%.0s' $(seq 1 $empty 2>/dev/null))
+            printf '\033[1;38;5;75mT%d\033[0m[\033[38;5;39m%s\033[0m]' "$((i+1))" "$bar"
+        done
+        printf '\033[0m'
+        sleep 0.15
+    done
+    printf '\n'
+}
+
+# 12. hologram_intro — 综合 4 个单行动画 (扫描 + 全息 + 打字 + 进度条)
+hologram_intro() {
+    local title="${1:-SIMPLE_MODEL}" subtitle="${2:-AI-Native Project Orchestrator}"
+    scanline "INITIALIZING..." 40 1
+    echo ""
+    holo "$title" 50
+    echo ""
+    typewriter_fast "  $subtitle" 0.02
+    rainbow_progress "BOOT" 50
+}
+
+# 模板系统由 generators/_templates.sh 提供 (Agent 1 创建)
