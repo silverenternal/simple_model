@@ -18,6 +18,7 @@
 # ============================================================================
 
 set -euo pipefail
+# _compat_patched
 
 # ---------- 默认值 ----------
 WAVE=1
@@ -100,14 +101,17 @@ detect_struct_file() {
     local candidates=()
     [[ -f "$GIT_ROOT/struct.json" ]] && candidates+=("$GIT_ROOT/struct.json")
     # examples/ 下的所有 .json
-    while IFS= read -r f; do
-        [[ -n "$f" ]] && candidates+=("$f")
-    done < <(find "$GIT_ROOT" -maxdepth 3 -name '*.json' \
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    find "$GIT_ROOT" -maxdepth 3 -name '*.json' \
              -not -path '*/.git/*' \
              -not -path '*/generated/*' \
              -not -path '*/generated_*/*' \
              -not -path '*/.ai/*' \
-             2>/dev/null | sort)
+             2>/dev/null | sort > "${_compat_tmp_1}" 2>/dev/null || true
+    while IFS= read -r f; do
+        [[ -n "$f" ]] && candidates+=("$f")
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 
     # 取 dev_queue 的 todo_id 个数和 module/component 总数做指纹
     local q_total
@@ -438,7 +442,10 @@ while IFS= read -r todo_line; do
     SUMMARY_PATH+=("$WT_PATH")
     SUMMARY_TODO+=("$TID")
     SUMMARY_STATUS+=("created")
-done < <(echo "$WAVE_DATA" | jq -c '.todos[]')
+_compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+echo "$WAVE_DATA" | jq -c '.todos[]' > "${_compat_tmp_2}" 2>/dev/null || true
+done < "${_compat_tmp_2}"
+rm -f "${_compat_tmp_2}"
 
 # ---------- Dispatch summary 表格 ----------
 echo ""

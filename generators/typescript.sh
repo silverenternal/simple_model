@@ -6,6 +6,7 @@
 #   - 每个 module 一个目录: <module>/index.ts 重导出所有 component
 #   - 顶层: tsconfig.json (strict, ES2022) + package.json (ESM)
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 LANG="typescript"
@@ -109,6 +110,8 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
         if should_regenerate "$file" "$STRUCT_FILE"; then
             # 构建 import 块（同模块相对路径 / 跨模块 ../../<module>/<snake>）
             imports_block=""
+            _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_1}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -119,23 +122,30 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
                 else
                     imports_block+="import { ${dep} } from \"../${dep_module}/${dep_snake}\";"$'\n'
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_1}"
+            rm -f "${_compat_tmp_1}"
 
             # exports 数组 -> TS 字面量（用于 JSDoc 注释）
             exports_list=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r e; do
                 [[ -z "$e" ]] && continue
                 exports_list+=" *   - ${e}"$'\n'
-            done < <(echo "$c_exports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             # todos JSDoc 注释
             todos_block=""
             if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
                 todos_block=" *"$'\n'" * TODO:"$'\n'
+                _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [status=\(.status // "pending")] blocks=\(.blocks // [])"' > "${_compat_tmp_3}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todos_block+=" *   - ${line}"$'\n'
-                done < <(echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [status=\(.status // "pending")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_3}"
+                rm -f "${_compat_tmp_3}"
             fi
 
             cat > "$file" <<EOF

@@ -2,6 +2,7 @@
 # generators/visualization.sh — 架构可视化（甲方展示用）
 # 输出 docs/ARCHITECTURE.md + docs/*.mmd + docs/architecture.html
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 DOCS_DIR="$OUTPUT_DIR/docs"
@@ -25,32 +26,50 @@ fi
     echo ""
 
     # 模块节点
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
         echo "  ${mname}[\"[MOD] ${mname}\"]:::module"
-    done < <(iter_modules)
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
 
     # 组件到模块的边
+    _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_3}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
+        _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        iter_components "$mi" > "${_compat_tmp_2}" 2>/dev/null || true
         while IFS=$'\t' read -r ci cname cdesc; do
             style=":::component"
             opt=$(jq -r ".modules[$mi].components[$ci].optional // false" "$STRUCT_FILE")
             [[ "$opt" == "true" ]] && style=":::optional"
             echo "  ${cname}[\"[CFG] ${cname}\"]${style}"
             echo "  ${mname} --> ${cname}"
-        done < <(iter_components "$mi")
-    done < <(iter_modules)
+        done < "${_compat_tmp_2}"
+        rm -f "${_compat_tmp_2}"
+    done < "${_compat_tmp_3}"
+    rm -f "${_compat_tmp_3}"
 
     # 组件依赖边
     echo ""
+    _compat_tmp_6=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_6}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
+        _compat_tmp_5=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+        iter_components "$mi" > "${_compat_tmp_5}" 2>/dev/null || true
         while IFS=$'\t' read -r ci cname cdesc; do
             imports_json=$(jq -c ".modules[$mi].components[$ci].imports // .modules[$mi].components[$ci].depends_on // []" "$STRUCT_FILE")
+            _compat_tmp_4=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$imports_json" | jq -r '.[]' > "${_compat_tmp_4}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 echo "  ${cname} -.uses.-> ${dep}"
-            done < <(echo "$imports_json" | jq -r '.[]')
-        done < <(iter_components "$mi")
-    done < <(iter_modules)
+            done < "${_compat_tmp_4}"
+            rm -f "${_compat_tmp_4}"
+        done < "${_compat_tmp_5}"
+        rm -f "${_compat_tmp_5}"
+    done < "${_compat_tmp_6}"
+    rm -f "${_compat_tmp_6}"
 } > "$DOCS_DIR/module-graph.mmd"
 say "$DOCS_DIR/module-graph.mmd"
 
@@ -154,12 +173,15 @@ PROJ_DESC=$(jq -r '.description // ""' "$STRUCT_FILE")
     echo ""
     echo "| Module | Components | Todos | Language | Description |"
     echo "|---|---:|---:|---|---|"
+    _compat_tmp_7=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_7}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
         cn=$(component_count "$mi")
         tn=$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")
         lang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
         echo "| \`${mname}\` | $cn | $tn | $lang | $mdesc |"
-    done < <(iter_modules)
+    done < "${_compat_tmp_7}"
+    rm -f "${_compat_tmp_7}"
     echo ""
     echo "---"
     echo ""
@@ -216,12 +238,15 @@ HTML_HEAD
 
     echo "<h2>[MOD] Module Inventory</h2>"
     echo "<table><tr><th>Module</th><th>Components</th><th>Todos</th><th>Language</th><th>Description</th></tr>"
+    _compat_tmp_8=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    iter_modules > "${_compat_tmp_8}" 2>/dev/null || true
     while IFS=$'\t' read -r mi mname mdesc; do
         cn=$(component_count "$mi")
         tn=$(jq "[.modules[$mi].components[].todos // [] | length] | add // 0" "$STRUCT_FILE")
         lang=$(jq -r ".modules[$mi].language // \"any\"" "$STRUCT_FILE")
         echo "<tr><td><code>${mname}</code></td><td>$cn</td><td>$tn</td><td>$lang</td><td>${mdesc}</td></tr>"
-    done < <(iter_modules)
+    done < "${_compat_tmp_8}"
+    rm -f "${_compat_tmp_8}"
     echo "</table>"
 
     cat <<'HTML_FOOT'

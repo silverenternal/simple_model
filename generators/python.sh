@@ -2,6 +2,7 @@
 # generators/python.sh — Python 代码骨架生成器（纯 bash + jq）
 # 约定: PascalCase 组件 -> snake_case 文件，class 封装
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 LANG="python"
@@ -44,11 +45,14 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
             echo "${module_desc}"
             echo "\"\"\""
             # re-export 每个 component，让 from data import DataLoader 能工作
+            _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            jq -r ".modules[$mi].components[].name" "$STRUCT_FILE" > "${_compat_tmp_1}" 2>/dev/null || true
             while IFS= read -r comp; do
                 [[ -z "$comp" ]] && continue
                 snake_comp=$(to_snake "$comp")
                 echo "from .${snake_comp} import ${comp}  # noqa: F401"
-            done < <(jq -r ".modules[$mi].components[].name" "$STRUCT_FILE")
+            done < "${_compat_tmp_1}"
+            rm -f "${_compat_tmp_1}"
         } > "$init_py"
         mark_generated "$init_py" "$STRUCT_FILE"
         say "  [OK] ${LANG_DIR#$OUTPUT_DIR/}/${module_name}/__init__.py"
@@ -79,6 +83,8 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
 
             # 构建 import 块
             imports_block=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -89,7 +95,8 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
                 else
                     imports_block+="from ..${dep_module}.${dep_snake} import ${dep}"$'\n'
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             # produces list literal
             exports_py=$(echo "$c_exports" | jq -r '. | tostring')
@@ -99,10 +106,13 @@ for mi in $(seq 0 $((N_MODULES - 1))); do
             todos_block=""
             if [[ "$(echo "$c_todos_json" | jq 'length')" -gt 0 ]]; then
                 todos_block="    # TODO:"$'\n'
+                _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [\(.status // "pending")] blocks=\(.blocks // [])"' > "${_compat_tmp_3}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todos_block+="    #   - ${line}"$'\n'
-                done < <(echo "$c_todos_json" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] [\(.status // "pending")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_3}"
+                rm -f "${_compat_tmp_3}"
             fi
 
             {

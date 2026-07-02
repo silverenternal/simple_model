@@ -232,7 +232,10 @@ choose_targets() {
         available+=("$lang")
         printf "  %d) %s\n" "$i" "$lang"
         ((i++))
-    done < <(find "$GENERATORS_DIR" -maxdepth 1 -name '*.sh' -type f 2>/dev/null | sort)
+    _compat_tmp_bootstrap=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    find "$GENERATORS_DIR" -maxdepth 1 -name '*.sh' -type f 2>/dev/null | sort > "$_compat_tmp_bootstrap"
+    done < "$_compat_tmp_bootstrap"
+    rm -f "$_compat_tmp_bootstrap"
     available+=("all")
     printf "  %d) all (全部)\n" "$i"
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# _compat_patched
 # ============================================================================
 # git_merge.sh — 把 wave/* branches merge 到 main，并同步 .ai/dev_queue.json
 #
@@ -125,7 +126,10 @@ MERGED=()
 FAILED=()
 SKIPPED=()
 
-mapfile -t BRANCHES < <(list_wave_branches "$WAVE_FILTER")
+_compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+list_wave_branches "$WAVE_FILTER" > "${_compat_tmp_1}" 2>/dev/null || true
+mapfile -t BRANCHES < "${_compat_tmp_1}"
+rm -f "${_compat_tmp_1}"
 
 if [[ ${#BRANCHES[@]} -eq 0 ]]; then
     echo "[INFO] 没有匹配的 wave/* branches（filter='${WAVE_FILTER:-all}'）" >&2

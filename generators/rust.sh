@@ -2,6 +2,7 @@
 # generators/rust.sh — Rust 代码骨架生成器（纯 bash + jq）
 # 约定: 每个 module -> 子模块 (mod.rs), 每个 component -> pub struct + impl
 set -euo pipefail
+# _compat_patched
 source "$(dirname "${BASH_SOURCE[0]}")/_lib.sh"
 
 LANG="rust"
@@ -15,10 +16,13 @@ to_rust_str_vec() {
     local arr="$1"
     if [[ "$arr" == "[]" ]]; then echo "Vec::new()"; return; fi
     local items=""
+    _compat_tmp_1=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+    echo "$arr" | jq -r '.[]' > "${_compat_tmp_1}" 2>/dev/null || true
     while IFS= read -r s; do
         [[ -z "$s" ]] && continue
         items+="        String::from(\"$s\"),"$'\n'
-    done < <(echo "$arr" | jq -r '.[]')
+    done < "${_compat_tmp_1}"
+    rm -f "${_compat_tmp_1}"
     echo "vec!["$'\n'"${items}    ]"
 }
 
@@ -57,6 +61,8 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
 
             # use 块: 同模块用 super::, 跨模块用 crate::
             use_block=""
+            _compat_tmp_2=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_imports" | jq -r '.[]' > "${_compat_tmp_2}" 2>/dev/null || true
             while IFS= read -r dep; do
                 [[ -z "$dep" ]] && continue
                 dep_module=$(module_of "$dep")
@@ -67,23 +73,30 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
                 else
                     use_block+="use crate::${dep_module}::${dep_snake}::${dep};"$'\n'
                 fi
-            done < <(echo "$c_imports" | jq -r '.[]')
+            done < "${_compat_tmp_2}"
+            rm -f "${_compat_tmp_2}"
 
             # struct fields from exports
             struct_fields=""
+            _compat_tmp_3=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+            echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_3}" 2>/dev/null || true
             while IFS= read -r e; do
                 [[ -z "$e" ]] && continue
                 struct_fields+="    pub ${e}: Option<String>,  // ${e}"$'\n'
-            done < <(echo "$c_exports" | jq -r '.[]')
+            done < "${_compat_tmp_3}"
+            rm -f "${_compat_tmp_3}"
 
             # todos 注释
             todo_lines=""
             if [[ "$(echo "$c_todos" | jq 'length')" -gt 0 ]]; then
                 todo_lines="    // TODO:"$'\n'
+                _compat_tmp_4=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"' > "${_compat_tmp_4}" 2>/dev/null || true
                 while IFS= read -r line; do
                     [[ -z "$line" ]] && continue
                     todo_lines+="    //   - ${line}"$'\n'
-                done < <(echo "$c_todos" | jq -r '.[] | "\(.id): \(.task) [priority=\(.priority // "medium")] blocks=\(.blocks // [])"')
+                done < "${_compat_tmp_4}"
+                rm -f "${_compat_tmp_4}"
             fi
 
             {
@@ -115,10 +128,13 @@ for mi in $(seq 0 $(($(jq '.modules | length' "$STRUCT_FILE") - 1))); do
                 echo "    pub fn new() -> Self {"
                 echo "        Self {"
                 # 给每个 export 字段初始化
+                _compat_tmp_5=$(mktemp "${TMPDIR:-/tmp}/sm_compat.XXXXXX")
+                echo "$c_exports" | jq -r '.[]' > "${_compat_tmp_5}" 2>/dev/null || true
                 while IFS= read -r e; do
                     [[ -z "$e" ]] && continue
                     echo "            ${e}: None,"
-                done < <(echo "$c_exports" | jq -r '.[]')
+                done < "${_compat_tmp_5}"
+                rm -f "${_compat_tmp_5}"
                 echo "            optional: ${c_optional},"
                 echo "        }"
                 echo "    }"
