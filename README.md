@@ -74,6 +74,28 @@ It also ships a local Codex plugin at
 `plugins/simple-model-project-intelligence/`, with the same skill bundled under
 the plugin's `skills/` directory for plugin-based installation flows.
 
+Install it from a local clone:
+
+```bash
+git clone https://github.com/silverenternal/simple_model.git
+cd simple_model
+
+# Register this repository's local plugin marketplace.
+codex plugin marketplace add "$PWD"
+
+# Install the plugin from the marketplace named in .agents/plugins/marketplace.json.
+codex plugin add simple-model-project-intelligence@simple-model
+```
+
+Then start a new Codex thread and invoke:
+
+```text
+Use $simple-model-project-intelligence to audit this repo.
+```
+
+The same plugin is also attached to the `v0.5.0` GitHub Release as
+`simple-model-project-intelligence-plugin-v0.5.0.zip`.
+
 ---
 
 ## Adopting Existing Large Projects
