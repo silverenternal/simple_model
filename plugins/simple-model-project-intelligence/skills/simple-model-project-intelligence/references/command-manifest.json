@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "commands": [
+    {
+      "name": "doctor",
+      "description": "Diagnose plugin, toolchain, and target repository readiness.",
+      "required_args": [],
+      "optional_args": ["--target-root", "--struct", "--json"],
+      "output": "human or JSON diagnostics",
+      "example": "simple_model_pi.sh --target-root /path/to/repo doctor --json"
+    },
+    {
+      "name": "commands",
+      "description": "List available wrapper commands and their metadata.",
+      "required_args": [],
+      "optional_args": ["--json"],
+      "output": "human list or command manifest JSON",
+      "example": "simple_model_pi.sh commands --json"
+    },
+    {
+      "name": "validate",
+      "description": "Run simple_model validate, check-all, lint, and drift summaries.",
+      "required_args": [],
+      "optional_args": [],
+      "output": "validation logs and JSON summaries",
+      "example": "simple_model_pi.sh validate"
+    },
+    {
+      "name": "full-check",
+      "description": "Run the full simple_model validation and test suite.",
+      "required_args": [],
+      "optional_args": [],
+      "output": "test logs",
+      "example": "simple_model_pi.sh full-check"
+    },
+    {
+      "name": "ingest",
+      "description": "Draft a struct model from an existing repository.",
+      "required_args": [],
+      "optional_args": ["repo", "output"],
+      "output": "struct JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo ingest"
+    },
+    {
+      "name": "audit",
+      "description": "Report source files not represented by struct component paths.",
+      "required_args": [],
+      "optional_args": ["repo", "--struct"],
+      "output": "adoption audit JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/struct.json audit"
+    },
+    {
+      "name": "interfaces",
+      "description": "Scan public interfaces and compare them with struct exports.",
+      "required_args": [],
+      "optional_args": ["repo", "--struct"],
+      "output": "interface scan JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo interfaces"
+    },
+    {
+      "name": "facts",
+      "description": "Emit normalized code facts for a target repository.",
+      "required_args": [],
+      "optional_args": ["repo", "--struct"],
+      "output": "code facts JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo facts"
+    },
+    {
+      "name": "pr-gate",
+      "description": "Run impact, interface/dependency gates, risk, tests, and review routing.",
+      "required_args": [],
+      "optional_args": ["repo", "files", "--struct"],
+      "output": "PR gate JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo pr-gate /path/to/repo src/api/server.ts"
+    },
+    {
+      "name": "dashboard",
+      "description": "Generate a static Project Intelligence dashboard.",
+      "required_args": [],
+      "optional_args": ["output"],
+      "output": "HTML file",
+      "example": "simple_model_pi.sh dashboard generated/dashboard.html"
+    },
+    {
+      "name": "resolve",
+      "description": "Resolve multi-file struct includes.",
+      "required_args": [],
+      "optional_args": ["--struct"],
+      "output": "resolved struct JSON",
+      "example": "simple_model_pi.sh --struct struct.json resolve"
+    }
+  ]
+}

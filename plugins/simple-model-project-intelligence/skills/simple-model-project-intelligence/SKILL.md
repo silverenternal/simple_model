@@ -27,6 +27,13 @@ codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh ingest
 codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh validate
 ```
 
+Use `doctor` before debugging installation or cross-repo use:
+
+```bash
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh doctor --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh commands --json
+```
+
 3. Analyze a large in-progress repo against `struct.json`:
 
 ```bash
@@ -59,6 +66,7 @@ codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh full-c
 ## Commands Reference
 
 For exact command surfaces and common report flows, read `references/commands.md`.
+For structured command metadata, read `references/command-manifest.json`.
 
 ## Validation Before Handoff
 

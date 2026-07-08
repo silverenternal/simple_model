@@ -69,7 +69,7 @@ JSON
 check "federation resolve" bash -c "bash generators/federation_resolve.sh '$TMP_DIR/federation.json' --json | jq -e '.summary.repos == 1'"
 check "batch plan" bash -c "echo '$impact' | bash generators/batch_plan.sh --json | jq -e '.summary.components == 1'"
 check "architecture debt" bash -c "bash generators/architecture_debt.sh --root '$TMP_DIR' --struct '$TMP_DIR/struct.json' --json | jq -e '.summary.findings >= 0'"
-check "todo roadmap done count" bash -c "jq -e '[.todos[]|select(.status==\"done\")]|length >= 20' todo.json"
+check "todo roadmap implemented" bash -c "jq -e '.status == \"implemented\" and ([.todos[]|select(.status==\"pending\")]|length == 0)' todo.json"
 
 echo "  passed: $pass"
 echo "  failed: $fail"

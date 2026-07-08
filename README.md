@@ -50,7 +50,7 @@ bash examples/dnc-demo/run.sh
 # 4. Regenerate all safe no-argument outputs
 ./bootstrap.sh --target all
 
-# 5. Run the full test suite (228 assertions across 12 suites)
+# 5. Run the full test suite (248 assertions across 13 suites)
 for t in tests/test_*.sh; do bash "$t" || exit 1; done
 ```
 
@@ -73,6 +73,8 @@ codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh pr-gat
 It also ships a local Codex plugin at
 `plugins/simple-model-project-intelligence/`, with the same skill bundled under
 the plugin's `skills/` directory for plugin-based installation flows.
+See `docs/CODEX_PLUGIN.md` for update, packaging, troubleshooting, and version
+policy details.
 
 Install it from a local clone:
 
@@ -93,8 +95,15 @@ Then start a new Codex thread and invoke:
 Use $simple-model-project-intelligence to audit this repo.
 ```
 
-The same plugin is also attached to the `v0.5.0` GitHub Release as
-`simple-model-project-intelligence-plugin-v0.5.0.zip`.
+The same plugin is also attached to GitHub Releases as a
+`simple-model-project-intelligence-plugin-<version>.zip` asset.
+
+Check local readiness:
+
+```bash
+plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh doctor
+plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh commands --json
+```
 
 ---
 
@@ -152,6 +161,10 @@ It now adds stricter fact contracts, interface signatures and hashes, fact-cache
 metrics, waiver checks, PR Markdown rendering, route/env scanning, release
 contract reporting, dashboard generation, large-repo benchmark smoke coverage,
 and an agent work-record harness.
+The v0.6 plugin surface adds install smoke coverage, source/bundled skill sync,
+cross-repo wrapper mode, `doctor`, structured command metadata, plugin target
+fixtures, one-command demo, release packager, plugin CI, MCP command bridge, and
+explicit plugin version policy.
 
 ---
 

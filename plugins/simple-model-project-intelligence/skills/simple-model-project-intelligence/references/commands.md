@@ -4,6 +4,10 @@ Use these commands from the `simple_model` repository root unless a wrapper comm
 
 ## Model Lifecycle
 
+- Diagnose plugin/toolchain readiness:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh doctor --json`
+- List wrapper command metadata:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh commands --json`
 - Validate source model:
   `./bootstrap.sh --validate`
 - Resolve multi-file model:

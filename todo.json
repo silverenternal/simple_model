@@ -1,855 +1,370 @@
 {
   "name": "simple_model",
-  "version": "0.5-roadmap",
+  "version": "0.6-plugin-skill-roadmap",
   "status": "implemented",
-  "positioning": "A repo-native Project Intelligence control plane for large, half-built projects: deterministic code facts, architectural intent, PR gates, work records, and agent slices that stay synchronized with real code rather than disposable agent memory.",
+  "positioning": "A repo-native Project Intelligence control plane that can also be consumed as a Codex skill/plugin: easy to install, easy to invoke from arbitrary repos, deterministic in CI, and useful to maintainers who did not author simple_model.",
   "implementation_audit": {
     "as_of": "2026-07-08",
-    "summary": "v0.4 established executable surfaces for the full control plane, but most are thin deterministic MVPs. The next roadmap must turn those surfaces into production-grade project-maintenance capabilities: deeper language parsing, stable facts, real diff semantics, policy waivers, CI/PR integrations, and scalable incremental operation.",
-    "baseline_strengths": [
-      "Multi-file struct resolution works and is integrated into bootstrap.",
-      "Repo ingest, adoption audit, interface scan, import scan, test scan, ownership, PR impact, PR gate, work records, MCP, federation, batch plan, and debt report all have runnable bash+jq entry points.",
-      "The suite has deterministic smoke coverage across the v0.4 surface.",
-      "The project direction is clearly differentiated: not another coding agent, but a repo-carried engineering fact layer."
+    "summary": "The v0.5 Project Intelligence core and Codex skill/plugin exist and are published, but the plugin experience is still a developer-grade wrapper. The next roadmap should harden installation, invocation, packaging, release automation, cross-repo use, diagnostics, examples, and telemetry-free adoption UX.",
+    "current_strengths": [
+      "A repo-local Codex skill exists at codex/skills/simple-model-project-intelligence.",
+      "A plugin package exists at plugins/simple-model-project-intelligence with the skill bundled.",
+      "A repo-local marketplace exists at .agents/plugins/marketplace.json.",
+      "The README documents clone, marketplace add, and plugin install commands.",
+      "The plugin release path now has a deterministic v0.6 packager and version policy.",
+      "The skill wrapper can call validate, ingest, audit, interface scan, facts, PR gate, dashboard, and resolve commands."
     ],
     "major_gaps": [
       {
-        "area": "code facts",
-        "gap": "specs/code-facts.json is permissive and code_facts.sh mostly aggregates other reports. It lacks stable ids, source ranges, hashes, schema validation depth, and incremental cache semantics.",
+        "area": "installation",
+        "gap": "Install instructions are documented but not self-tested in CI or by an install smoke script. Users may hit Codex CLI version differences without guidance.",
         "severity": "high"
       },
       {
-        "area": "interface graph",
-        "gap": "interface_scan.sh still extracts mostly names. It does not yet capture robust signatures, source spans, docstrings, type info, changed/removed interface comparison against a base ref, or per-interface hashes.",
+        "area": "plugin packaging",
+        "gap": "The plugin duplicates the skill directory, so source skill and bundled plugin skill can drift. There is no sync check or release packager.",
         "severity": "high"
       },
       {
-        "area": "import graph",
-        "gap": "import_graph_scan.sh is best-effort regex and handles only simple relative imports. It does not resolve aliases, package roots, re-exports, monorepo workspaces, path aliases, Python packages, Go modules, or Rust crates.",
+        "area": "cross-repo usability",
+        "gap": "The wrapper assumes it can find the simple_model root, but usage from an arbitrary target repository is awkward and does not support a configured toolchain path.",
         "severity": "high"
       },
       {
-        "area": "test mapping",
-        "gap": "test_surface_scan.sh finds test-looking files but does not reliably map tests to components via imports, coverage, package manifests, or declared check commands.",
+        "area": "first-run UX",
+        "gap": "There is no doctor command that verifies bash, jq, Codex CLI, plugin registration, writable output dirs, and target repo readiness.",
         "severity": "high"
       },
       {
-        "area": "PR impact and gates",
-        "gap": "pr_impact.sh currently relies on exact file paths and pr_gate.sh bundles only shallow gate outputs. It lacks base/head diff handling, Markdown reports, waiver semantics, selected test execution, and stable exit taxonomy.",
-        "severity": "high"
-      },
-      {
-        "area": "work records",
-        "gap": "work_record_collect.sh validates only minimal fields and is not wired into dispatch, CBOM, PR gate, or summary collection as an audit ledger.",
+        "area": "command discoverability",
+        "gap": "The skill explains commands, but the wrapper does not expose structured command metadata, examples, or next-step suggestions.",
         "severity": "medium"
       },
       {
-        "area": "MCP",
-        "gap": "tools/simple_model_mcp.sh is a one-shot JSON-RPC wrapper, not a compliant multi-method MCP server with tool schemas, errors, streaming, or discovery.",
+        "area": "release automation",
+        "gap": "Plugin zips and GitHub releases were created manually. There is no deterministic release script that validates, packages, tags, and publishes assets.",
         "severity": "medium"
       },
       {
-        "area": "multi-repo and batch changes",
-        "gap": "federation_resolve.sh and batch_plan.sh are smoke-level. They do not resolve cross-repo component identities, downstream interfaces, owners, branch plans, or PR batch sizing.",
+        "area": "examples",
+        "gap": "There is no small external fixture repo showing clone -> plugin install -> ingest -> PR gate end to end.",
         "severity": "medium"
       },
       {
-        "area": "adoption UX",
-        "gap": "The project can generate reports but lacks an adoption playbook, static dashboard, examples on real fixtures, and a guided path from unmanaged code to enforced gates.",
+        "area": "documentation",
+        "gap": "README has installation commands, but lacks troubleshooting, version compatibility, uninstall/update flows, and the expected new-thread boundary after plugin install.",
         "severity": "medium"
       }
     ],
-    "planning_principle": "Do not add more thin surfaces until the existing control-plane surfaces become accurate, explainable, cacheable, and useful on real large repositories."
-  },
-  "market_thesis": {
-    "durable_gap": "Most tools either execute coding tasks or infer repo maps. The durable gap is a continuously reconciled, repo-native engineering fact layer that can be consumed by any coding agent and enforced by CI.",
-    "differentiation": [
-      "Deterministic facts and gates live in the repo, not in a hosted index or agent session.",
-      "Declared intent in struct fragments is reconciled with discovered code facts.",
-      "Work records, PR impact, interface drift, dependency drift, and CBOM provenance form an auditable maintenance loop.",
-      "Agents remain leaf workers; structural decisions remain deterministic."
-    ],
-    "north_star": "A maintainer can run one command on an unfamiliar half-built repo and get: model coverage, public interfaces, dependency graph, tests, owners, PR impact, risk, selected checks, and gate verdicts."
+    "planning_principle": "Treat the plugin as a product surface, not only a packaging artifact. Every install, invocation, and release path should be deterministic, scripted, and testable."
   },
   "success_criteria": {
-    "production_readiness": [
-      "A 100k+ LOC monorepo can run fact scans incrementally in under 60 seconds after the first scan.",
-      "PR impact maps changed files to components, public interfaces, tests, owners, and risk with useful precision.",
-      "Interface and dependency drift gates support explicit waivers and fail deterministically.",
-      "Agent dispatch writes work records that are linked into CBOM and PR gate output.",
-      "Reports are useful to humans without opening JSON by hand."
+    "plugin_readiness": [
+      "A new user can install the plugin from a fresh clone by following one README section.",
+      "A smoke test verifies marketplace metadata, plugin manifest, bundled skill, wrapper help, and at least one wrapper command.",
+      "Source skill and plugin-bundled skill cannot drift without a failing test.",
+      "The wrapper can run from either the simple_model repo or a separate target repo with an explicit SIMPLE_MODEL_HOME.",
+      "A release script can validate, package, tag, and upload the plugin zip repeatably."
     ],
     "quality_bar": [
-      "Every generator has JSON mode, human mode, stable exit codes, and tests.",
-      "Every schema has concrete required fields and validation fixtures.",
-      "Every production gate has at least one failure fixture and one adoption-mode waiver fixture.",
-      "No required runtime dependency beyond bash+jq; optional deeper parsers must be detected and reported as optional."
+      "Every new command has --help output and stable exit codes.",
+      "Every plugin/skill metadata file is validated in tests.",
+      "No global Codex config is modified by tests.",
+      "Documentation covers install, update, uninstall, troubleshooting, and release assets.",
+      "The plugin remains telemetry-free and repo-local by default."
     ]
   },
   "todos": [
     {
-      "id": "fact_schema_harden",
+      "id": "plugin_install_smoke_test",
       "wave": 1,
-      "task": "Harden specs/code-facts.json into a strict schema with stable ids, source ranges, hashes, language, kind, visibility, component id, and provenance.",
+      "task": "Add a deterministic smoke test for the repo-local Codex plugin package.",
       "priority": "high",
       "status": "done",
-      "audience": "both",
+      "audience": "plugin-users",
       "blocks": [
-        "fact_cache_incremental",
-        "interface_signature_fixtures",
-        "pr_impact_v2"
+        "plugin_release_ci",
+        "plugin_install_docs_v2"
       ],
-      "current_gap": "Current schema is permissive and does not enforce a useful fact contract.",
-      "deliverable": "Strict code facts schema plus validation tests.",
+      "current_gap": "Plugin validation was run manually with a temporary PyYAML environment and is not part of the test suite.",
+      "deliverable": "tests/test_plugin_package.sh",
       "acceptance": [
-        "Schema rejects facts without id, kind, path, component, source hash, and provenance",
-        "Schema represents files, symbols, imports, exports, tests, routes, configs, owners, and checks",
-        "tests/test_code_facts_schema.sh covers valid and invalid fixtures"
+        "Validates .agents/plugins/marketplace.json with jq",
+        "Validates plugins/simple-model-project-intelligence/.codex-plugin/plugin.json with jq",
+        "Validates bundled skill frontmatter and agents/openai.yaml",
+        "Asserts wrapper help exits 0",
+        "Asserts no TODO placeholders remain in plugin/skill files"
       ],
       "files": [
-        "specs/code-facts.json",
-        "tests/test_code_facts_schema.sh"
+        "tests/test_plugin_package.sh",
+        ".agents/plugins/marketplace.json",
+        "plugins/simple-model-project-intelligence/.codex-plugin/plugin.json"
       ]
     },
     {
-      "id": "fact_cache_incremental",
+      "id": "skill_plugin_sync_check",
       "wave": 1,
-      "task": "Add content-hash based incremental scanning for code facts so unchanged files are reused from cache.",
+      "task": "Prevent drift between the source skill and the plugin-bundled skill.",
       "priority": "high",
       "status": "done",
-      "audience": "both",
+      "audience": "maintainers",
       "blocks": [
-        "large_repo_benchmark",
-        "pr_impact_v2"
+        "plugin_release_packager"
       ],
-      "current_gap": "code_facts.sh recomputes everything and has no stable cache contract.",
-      "deliverable": "generated/.bootstrap/fact_cache.json with deterministic invalidation.",
+      "current_gap": "codex/skills/simple-model-project-intelligence and plugins/.../skills/simple-model-project-intelligence are duplicated manually.",
+      "deliverable": "A sync script and test that compare file hashes or refresh the bundled copy deterministically.",
       "acceptance": [
-        "First run scans all managed files and writes cache",
-        "Second run over unchanged repo reports cache hits",
-        "Changing one file invalidates only that file's facts",
-        "Cache key includes scanner version and file hash"
+        "A check reports exact files that differ",
+        "A sync mode refreshes the plugin-bundled skill from codex/skills",
+        "The test suite fails if the two skill copies drift",
+        "Generated caches and non-skill files are ignored"
       ],
       "files": [
-        "generators/code_facts.sh",
-        "tests/test_fact_cache.sh"
+        "tools/sync_codex_plugin.sh",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "interface_signature_fixtures",
+      "id": "wrapper_cross_repo_mode",
       "wave": 1,
-      "task": "Upgrade interface_scan to capture best-effort signatures, source line ranges, symbol kind, visibility, and per-interface hashes across Python/TS/JS/Go/Rust.",
+      "task": "Make simple_model_pi.sh ergonomic from arbitrary target repositories.",
       "priority": "high",
       "status": "done",
-      "audience": "both",
+      "audience": "plugin-users",
       "blocks": [
-        "interface_diff_base_head",
-        "release_contract_report"
+        "plugin_target_repo_fixture",
+        "doctor_command"
       ],
-      "current_gap": "Current scan mostly captures names and misses signature drift.",
-      "deliverable": "Signature-aware interface facts with golden fixtures.",
+      "current_gap": "The wrapper mainly assumes execution from the simple_model repo and does not clearly separate toolchain root from target repo.",
+      "deliverable": "Cross-repo wrapper mode with SIMPLE_MODEL_HOME and --target-root support.",
       "acceptance": [
-        "Captures function/class/type/interface names and signatures where regex can safely infer them",
-        "Captures start line for every discovered interface and end line when cheaply available",
-        "Computes interface_hash from normalized public surface",
-        "Golden fixtures cover Python, TypeScript, Go, and Rust"
+        "SIMPLE_MODEL_HOME can point to the simple_model checkout",
+        "--target-root selects the repository being analyzed",
+        "Wrapper commands work when CWD is outside simple_model",
+        "Error messages explain how to set SIMPLE_MODEL_HOME",
+        "Existing repo-root usage remains backward compatible"
       ],
       "files": [
-        "generators/interface_scan.sh",
-        "tests/fixtures/interfaces/",
-        "tests/test_interface_scan_v2.sh"
+        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
+        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "interface_diff_base_head",
+      "id": "doctor_command",
       "wave": 1,
-      "task": "Compare public interfaces between base and head refs to classify added, removed, changed, and unchanged interfaces.",
+      "task": "Add a doctor command for plugin and skill readiness diagnostics.",
       "priority": "high",
       "status": "done",
-      "audience": "both",
+      "audience": "plugin-users",
       "blocks": [
-        "interface_gate_waivers",
-        "pr_impact_v2"
+        "plugin_install_docs_v2"
       ],
-      "current_gap": "interface_drift_gate only compares current code to struct exports, not base/head interface changes.",
-      "deliverable": "generators/interface_diff.sh",
+      "current_gap": "Users have no single command to diagnose missing jq, old bash, missing Codex CLI, bad marketplace registration, or invalid target repo paths.",
+      "deliverable": "simple_model_pi.sh doctor",
       "acceptance": [
-        "Accepts --base and --head git refs",
-        "Emits added/removed/changed interfaces by component",
-        "Uses interface_hash for changed detection",
-        "Works without modifying the worktree"
+        "Checks bash version, jq, git, and optional gh/codex availability",
+        "Checks simple_model root discovery",
+        "Checks plugin manifest and marketplace JSON parse",
+        "Checks target repo path when provided",
+        "Emits JSON mode for machine-readable diagnostics",
+        "Exits non-zero only for hard blockers"
       ],
       "files": [
-        "generators/interface_diff.sh",
-        "tests/test_interface_diff.sh"
+        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
+        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "import_resolver_v2",
+      "id": "plugin_command_manifest",
       "wave": 1,
-      "task": "Replace simple import matching with language-aware path resolution for Python packages, TS path aliases/workspaces, Go modules, and Rust crates.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "dependency_gate_waivers",
-        "slice_codefact_integration",
-        "test_mapping_v2"
-      ],
-      "current_gap": "Current import scan only handles very simple relative imports.",
-      "deliverable": "generators/import_graph_scan.sh v2 with resolver report.",
-      "acceptance": [
-        "Reads package.json/tsconfig paths for TypeScript projects",
-        "Reads go.mod module roots",
-        "Reads Cargo.toml crate names and src layout",
-        "Handles Python relative imports and __init__.py packages",
-        "Reports unresolved imports separately from drift"
-      ],
-      "files": [
-        "generators/import_graph_scan.sh",
-        "tests/fixtures/imports/",
-        "tests/test_import_resolver_v2.sh"
-      ]
-    },
-    {
-      "id": "test_mapping_v2",
-      "wave": 1,
-      "task": "Map tests to components using import graph, naming conventions, co-location, declared checks, and package manifests.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "test_select_execute",
-        "pr_impact_v2"
-      ],
-      "current_gap": "Current test scan finds test files but does not map them with enough confidence.",
-      "deliverable": "test_surface_scan v2 with confidence reasons.",
-      "acceptance": [
-        "Each mapped test includes confidence and reason",
-        "Supports direct import, same-directory, naming, and declared check mapping",
-        "Reports ambiguous tests and orphan tests",
-        "Has fixtures for at least Python and TypeScript"
-      ],
-      "files": [
-        "generators/test_surface_scan.sh",
-        "tests/test_test_mapping_v2.sh"
-      ]
-    },
-    {
-      "id": "owner_resolution_v2",
-      "wave": 1,
-      "task": "Improve ownership resolution with CODEOWNERS pattern matching, nearest-owner precedence, struct override rules, and optional git history hints.",
+      "task": "Expose wrapper command metadata for discoverability and future MCP/tool generation.",
       "priority": "medium",
       "status": "done",
-      "audience": "human",
+      "audience": "plugin-users",
       "blocks": [
-        "review_routing_v2",
-        "architecture_debt_v2"
+        "mcp_plugin_bridge"
       ],
-      "current_gap": "Current ownership resolution uses only struct owners and a crude CODEOWNERS fallback.",
-      "deliverable": "ownership_resolve v2 with precedence model.",
+      "current_gap": "The wrapper has help text but no structured command catalog with descriptions, args, outputs, and examples.",
+      "deliverable": "codex/skills/.../references/command-manifest.json plus wrapper command list --json.",
       "acceptance": [
-        "Parses CODEOWNERS patterns in order with last-match semantics",
-        "Struct component owner overrides module owner and CODEOWNERS",
-        "Reports ownership source for every owner",
-        "Optional git history mode is disabled by default and clearly marked"
+        "Command manifest lists validate, full-check, ingest, audit, interfaces, facts, pr-gate, dashboard, resolve, and doctor",
+        "Each command declares required args, optional args, output type, and example invocation",
+        "simple_model_pi.sh commands --json emits the manifest",
+        "README references the command discovery path"
       ],
       "files": [
-        "generators/ownership_resolve.sh",
-        "tests/test_ownership_v2.sh"
+        "codex/skills/simple-model-project-intelligence/references/command-manifest.json",
+        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
+        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/references/command-manifest.json"
       ]
     },
     {
-      "id": "route_and_config_scan",
+      "id": "plugin_target_repo_fixture",
       "wave": 2,
-      "task": "Discover web/API routes, CLI commands, config files, env vars, database migrations, and feature flags as first-class code facts.",
+      "task": "Add a minimal external target repo fixture for end-to-end plugin usage.",
       "priority": "medium",
       "status": "done",
-      "audience": "both",
+      "audience": "plugin-users",
       "blocks": [
-        "pr_impact_v2",
-        "architecture_debt_v2"
+        "plugin_demo_script",
+        "plugin_install_docs_v2"
       ],
-      "current_gap": "The model tracks symbols and imports but misses operational surfaces that often break production.",
-      "deliverable": "generators/surface_scan.sh",
+      "current_gap": "Existing tests prove generators, but not the user journey of using the plugin against a separate half-built repo.",
+      "deliverable": "examples/plugin-target-repo fixture.",
       "acceptance": [
-        "Detects common route declarations in Express/FastAPI/Flask-like patterns using best-effort regex",
-        "Detects env var reads and config file references",
-        "Detects migration-looking files and links them to components by path",
-        "Outputs facts into code_facts.json"
+        "Fixture contains a small Python or TypeScript app with public interfaces and tests",
+        "Plugin wrapper can ingest the fixture",
+        "Plugin wrapper can scan interfaces for the fixture",
+        "Plugin wrapper can run a PR gate against fixture changes",
+        "Fixture remains small enough for fast tests"
       ],
       "files": [
-        "generators/surface_scan.sh",
-        "tests/test_surface_scan_operational.sh"
+        "examples/plugin-target-repo/",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "struct_patch_suggest",
+      "id": "plugin_demo_script",
       "wave": 2,
-      "task": "Generate deterministic struct patch suggestions for unmanaged files, undeclared exports, undeclared imports, missing owners, and missing checks.",
-      "priority": "high",
+      "task": "Create a one-command demo for the plugin user journey.",
+      "priority": "medium",
       "status": "done",
-      "audience": "human",
+      "audience": "plugin-users",
       "blocks": [
-        "adoption_playbook",
-        "architecture_debt_v2"
+        "plugin_release_ci"
       ],
-      "current_gap": "Reports identify drift but do not help maintainers update struct safely.",
-      "deliverable": "generators/struct_suggest.sh",
+      "current_gap": "Users must mentally stitch together install, ingest, audit, interface scan, and PR gate steps.",
+      "deliverable": "examples/plugin-demo/run.sh",
       "acceptance": [
-        "Emits JSON Patch operations, not free-form text",
-        "Supports --apply only with explicit flag",
-        "Patch suggestions include source finding ids",
-        "Tests cover adding exports/imports/owners/checks"
+        "Runs without modifying global Codex config",
+        "Uses the target repo fixture",
+        "Shows ingest, audit, interface scan, facts, dashboard, and PR gate",
+        "Emits a concise summary with output paths",
+        "Has a test smoke path"
       ],
       "files": [
-        "generators/struct_suggest.sh",
-        "tests/test_struct_suggest.sh"
+        "examples/plugin-demo/run.sh",
+        "examples/plugin-target-repo/",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "policy_waiver_model",
+      "id": "plugin_install_docs_v2",
       "wave": 2,
-      "task": "Add a waiver model for adoption mode and intentional drift: owner, reason, expiry, scope, and finding id.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "interface_gate_waivers",
-        "dependency_gate_waivers",
-        "pr_gate_v2"
-      ],
-      "current_gap": "Current gates can only pass/fail/warn; large projects need controlled exceptions.",
-      "deliverable": "specs/waiver.json + generators/waiver_check.sh",
-      "acceptance": [
-        "Waivers can scope to finding id, component, path, or rule",
-        "Expired waivers fail",
-        "Waiver summary appears in gate output",
-        "Waivers are deterministic JSON files under .simple_model/waivers/"
-      ],
-      "files": [
-        "specs/waiver.json",
-        "generators/waiver_check.sh",
-        "tests/test_waivers.sh"
-      ]
-    },
-    {
-      "id": "interface_gate_waivers",
-      "wave": 2,
-      "task": "Upgrade interface drift gate to support base/head interface diffs, downstream impact, and waivers.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "pr_gate_v2",
-        "release_contract_report"
-      ],
-      "current_gap": "Current interface gate does not detect changed signatures or manage intentional breaking changes.",
-      "deliverable": "interface_drift_gate v2",
-      "acceptance": [
-        "Fails on removed or changed exported interfaces unless waived",
-        "Warns on added public interfaces not declared in struct",
-        "Includes downstream impacted components from import graph",
-        "Outputs stable rule ids for waivers"
-      ],
-      "files": [
-        "generators/interface_drift_gate.sh",
-        "tests/test_interface_gate_v2.sh"
-      ]
-    },
-    {
-      "id": "dependency_gate_waivers",
-      "wave": 2,
-      "task": "Upgrade dependency gate to enforce declared imports, forbidden edges, phase boundaries, and waiver semantics.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "pr_gate_v2",
-        "architecture_debt_v2"
-      ],
-      "current_gap": "Current dependency gate treats most drift as warnings and lacks policy semantics.",
-      "deliverable": "dependency_drift_gate v2",
-      "acceptance": [
-        "Supports forbidden_imports and allowed_imports policy fields",
-        "Fails on unwaived forbidden edges",
-        "Reports undeclared observed imports separately from forbidden imports",
-        "Includes phase/cross-cutting violation checks where struct declares them"
-      ],
-      "files": [
-        "generators/dependency_drift_gate.sh",
-        "struct.schema.json",
-        "tests/test_dependency_gate_v2.sh"
-      ]
-    },
-    {
-      "id": "pr_impact_v2",
-      "wave": 3,
-      "task": "Rewrite PR impact around base/head diff semantics, component path prefix matching, interface diffs, import fanout, tests, owners, risk, and Markdown output.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "pr_gate_v2",
-        "github_pr_comment"
-      ],
-      "current_gap": "Current PR impact supports exact file paths and JSON only.",
-      "deliverable": "pr_impact v2 with JSON and Markdown reports.",
-      "acceptance": [
-        "Accepts --base/--head and current working tree mode",
-        "Maps file and directory component paths",
-        "Includes interface diff, dependency fanout, selected tests, owners, risk, and waivers",
-        "Markdown report is concise enough for PR comments"
-      ],
-      "files": [
-        "generators/pr_impact.sh",
-        "tests/test_pr_impact_v2.sh"
-      ]
-    },
-    {
-      "id": "test_select_execute",
-      "wave": 3,
-      "task": "Turn test selection into dry-run and execute modes with command de-duplication, timeouts, exit-code capture, and work-record output.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "pr_gate_v2",
-        "work_record_v2"
-      ],
-      "current_gap": "Current test_select only emits commands.",
-      "deliverable": "test_select.sh v2",
-      "acceptance": [
-        "Dry-run mode lists commands and reasons",
-        "Execute mode captures exit code, duration, stdout/stderr paths",
-        "Timeout is configurable and defaults conservatively",
-        "Results can be embedded in work records"
-      ],
-      "files": [
-        "generators/test_select.sh",
-        "tests/test_test_select_execute.sh"
-      ]
-    },
-    {
-      "id": "risk_model_v2",
-      "wave": 3,
-      "task": "Make risk scoring explainable and calibrated from interface changes, dependency fanout, test coverage, owner gaps, unmanaged code, and waiver count.",
+      "task": "Upgrade README plugin documentation into a complete install/update/uninstall/troubleshooting guide.",
       "priority": "medium",
       "status": "done",
-      "audience": "both",
-      "blocks": [
-        "review_routing_v2",
-        "pr_gate_v2"
-      ],
-      "current_gap": "Current risk_score uses a small heuristic over component risk only.",
-      "deliverable": "risk_score v2 with factor breakdown.",
-      "acceptance": [
-        "Risk factors are individually listed with points",
-        "High-risk factors include removed interfaces and missing tests",
-        "Waivers increase risk unless explicitly marked adoption-only",
-        "Tests cover low/medium/high/critical classification"
-      ],
-      "files": [
-        "generators/risk_score.sh",
-        "tests/test_risk_model_v2.sh"
-      ]
-    },
-    {
-      "id": "review_routing_v2",
-      "wave": 3,
-      "task": "Route review using owners, CODEOWNERS source, risk level, interface-breaking changes, and orphan escalation.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
-      "blocks": [
-        "github_pr_comment"
-      ],
-      "current_gap": "Current review routing returns unique owners only.",
-      "deliverable": "review_route v2 with required approvals and escalation reasons.",
-      "acceptance": [
-        "Critical risk requires at least two approval candidates when available",
-        "Interface-breaking changes include API owner escalation",
-        "Orphaned components route to fallback maintainers",
-        "Output includes why each reviewer was selected"
-      ],
-      "files": [
-        "generators/review_route.sh",
-        "tests/test_review_routing_v2.sh"
-      ]
-    },
-    {
-      "id": "work_record_v2",
-      "wave": 3,
-      "task": "Make work records a real ledger linked to dispatch, slices, commands, tests, changed files, CBOM, and gate verdicts.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "pr_gate_v2",
-        "dispatch_work_records"
-      ],
-      "current_gap": "Current collector only checks minimal required fields and is not integrated into dispatch or CBOM.",
-      "deliverable": "work record schema v2 and collector/generator integration.",
-      "acceptance": [
-        "Schema requires slice_hash, struct_hash, adapter, started/ended metadata, changed files, commands, tests, and summary",
-        "orchestrate_dispatch can create a pending work record stub",
-        "orchestrate_collect validates and aggregates work records",
-        "CBOM includes work_record_hash"
-      ],
-      "files": [
-        "specs/work-record.json",
-        "generators/work_record_collect.sh",
-        "generators/orchestrate_dispatch.sh",
-        "generators/cbom_emit.sh",
-        "tests/test_work_records_v2.sh"
-      ]
-    },
-    {
-      "id": "slice_codefact_integration",
-      "wave": 4,
-      "task": "Integrate code facts into bounded slices: upstream interfaces, downstream dependents, selected tests, risk, owners, and relevant policies.",
-      "priority": "high",
-      "status": "done",
-      "audience": "ai",
-      "blocks": [
-        "dispatch_work_records",
-        "agent_eval_harness"
-      ],
-      "current_gap": "Current slices are still mostly struct/intent-driven and do not include rich code facts.",
-      "deliverable": "orchestrate_bound v2 consuming generated/.ai/code_facts.json.",
-      "acceptance": [
-        "Slice includes direct upstream public interface signatures",
-        "Slice includes downstream components that may break",
-        "Slice includes selected tests and owners",
-        "Slice size remains bounded with deterministic truncation"
-      ],
-      "files": [
-        "generators/orchestrate_bound.sh",
-        "tests/test_bound_codefacts.sh"
-      ]
-    },
-    {
-      "id": "dispatch_work_records",
-      "wave": 4,
-      "task": "Wire dispatch adapters to write work record stubs and final summaries under generated/.ai/work_records.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "ai",
-      "blocks": [
-        "agent_eval_harness"
-      ],
-      "current_gap": "Dispatch and work records are separate surfaces.",
-      "deliverable": "dispatch/work-record integration.",
-      "acceptance": [
-        "Each dispatched leaf has a deterministic work record path",
-        "Adapter failure records status failed/blocked",
-        "Collector can aggregate all records for a wave",
-        "PR gate can require records for agent-authored changes"
-      ],
-      "files": [
-        "generators/orchestrate_dispatch.sh",
-        "generators/adapters/generic.sh",
-        "generators/work_record_collect.sh",
-        "tests/test_dispatch_work_records.sh"
-      ]
-    },
-    {
-      "id": "pr_gate_v2",
-      "wave": 4,
-      "task": "Rewrite PR gate as the product-grade bundled verdict: validate, impact, facts, interface gate, dependency gate, selected tests, work records, risk, review routing, and waivers.",
-      "priority": "high",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "github_pr_comment",
-        "github_action_v2"
-      ],
-      "current_gap": "Current pr_gate bundles shallow JSON from a few scripts and does not run tests or waivers.",
-      "deliverable": "pr_gate v2 with stable exit taxonomy and Markdown report.",
-      "acceptance": [
-        "Stable exit codes distinguish validation, interface, dependency, test, and work-record failures",
-        "JSON report includes all child reports and hashes",
-        "Markdown report has summary, blockers, warnings, selected tests, and reviewers",
-        "Adoption mode can pass with waived known debt but fails on new unwaived debt"
-      ],
-      "files": [
-        "generators/pr_gate.sh",
-        "tests/test_pr_gate_v2.sh"
-      ]
-    },
-    {
-      "id": "github_action_v2",
-      "wave": 4,
-      "task": "Generate a production GitHub Actions workflow that posts PR impact/gate reports and uploads artifacts.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
-      "blocks": [
-        "github_pr_comment"
-      ],
-      "current_gap": "Current github_action.sh writes a minimal workflow with no PR comment integration.",
-      "deliverable": "github_action generator v2 and example workflow.",
-      "acceptance": [
-        "Workflow computes base/head refs correctly for pull_request",
-        "Runs pr_gate v2 and uploads JSON/Markdown artifacts",
-        "Optionally posts or updates a PR comment via gh",
-        "Documents required permissions"
-      ],
-      "files": [
-        "generators/github_action.sh",
-        "examples/github-actions/pr-gate.yml",
-        "tests/test_github_action_v2.sh"
-      ]
-    },
-    {
-      "id": "github_pr_comment",
-      "wave": 4,
-      "task": "Add a deterministic PR comment renderer for impact/gate/risk/review output.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
+      "audience": "plugin-users",
       "blocks": [],
-      "current_gap": "Reports are JSON-first and not easy to consume in code review.",
-      "deliverable": "generators/pr_comment.sh",
+      "current_gap": "README now shows install commands but lacks compatibility, update, uninstall, troubleshooting, and release asset guidance.",
+      "deliverable": "README plugin section plus docs/CODEX_PLUGIN.md.",
       "acceptance": [
-        "Renders compact Markdown from pr_gate JSON",
-        "Includes collapsible detail blocks for warnings",
-        "Includes reviewer suggestions and selected tests",
-        "Has stable marker for comment update workflows"
+        "Documents clone-based install",
+        "Documents release zip usage",
+        "Documents update/reinstall flow after new releases",
+        "Documents uninstall or marketplace removal path where supported",
+        "Documents starting a new Codex thread after install/update",
+        "Documents common failures and doctor command usage"
       ],
       "files": [
-        "generators/pr_comment.sh",
-        "tests/test_pr_comment.sh"
+        "README.md",
+        "docs/CODEX_PLUGIN.md"
       ]
     },
     {
-      "id": "mcp_server_v2",
-      "wave": 5,
-      "task": "Upgrade the MCP wrapper into a small compliant stdio tool server with method discovery, schemas, errors, and read-only operations.",
+      "id": "plugin_release_packager",
+      "wave": 2,
+      "task": "Add a deterministic release packager for the Codex plugin.",
+      "priority": "high",
+      "status": "done",
+      "audience": "maintainers",
+      "blocks": [
+        "plugin_release_ci"
+      ],
+      "current_gap": "The original v0.5.0 plugin zip was created manually; v0.6 adds a deterministic packager with sync/validation steps.",
+      "deliverable": "tools/package_codex_plugin.sh",
+      "acceptance": [
+        "Runs skill/plugin sync check first",
+        "Validates plugin manifest and skill metadata",
+        "Creates dist/simple-model-project-intelligence-plugin-<version>.zip",
+        "Includes only plugin package files, not generated build artifacts",
+        "Prints sha256 checksum"
+      ],
+      "files": [
+        "tools/package_codex_plugin.sh",
+        "tests/test_plugin_package.sh"
+      ]
+    },
+    {
+      "id": "plugin_release_ci",
+      "wave": 3,
+      "task": "Add CI coverage for plugin package readiness and release packaging.",
       "priority": "medium",
       "status": "done",
-      "audience": "ai",
-      "blocks": [
-        "agent_eval_harness"
-      ],
-      "current_gap": "Current MCP wrapper handles a few one-shot methods and is not a compliant tool server.",
-      "deliverable": "tools/simple_model_mcp.sh v2",
+      "audience": "maintainers",
+      "blocks": [],
+      "current_gap": "Plugin validation and packaging are not enforced by GitHub Actions.",
+      "deliverable": "GitHub Actions workflow or generator output that validates plugin package on PRs.",
       "acceptance": [
-        "Supports initialize, tools/list, tools/call style methods",
-        "Exposes resolved_struct, component_explain, code_facts, pr_impact, pr_gate, next_task",
-        "Returns structured JSON-RPC errors",
-        "Tests cover at least initialize/list/call/error"
+        "CI runs plugin package smoke test",
+        "CI validates marketplace JSON and plugin manifest",
+        "CI checks source/bundled skill sync",
+        "CI can run package script without publishing",
+        "Workflow avoids modifying global Codex config"
+      ],
+      "files": [
+        ".github/workflows/plugin.yml",
+        "generators/github_action.sh",
+        "tests/test_plugin_package.sh"
+      ]
+    },
+    {
+      "id": "mcp_plugin_bridge",
+      "wave": 3,
+      "task": "Bridge the command manifest to MCP/tool schemas for richer Codex tool invocation.",
+      "priority": "medium",
+      "status": "done",
+      "audience": "agent-integrators",
+      "blocks": [],
+      "current_gap": "The project has an MCP wrapper, but the plugin does not expose command schemas or a clear route from command manifest to MCP tools.",
+      "deliverable": "Generated MCP tool schemas derived from the command manifest.",
+      "acceptance": [
+        "MCP tools/list includes plugin commands with schemas",
+        "MCP tools/call can invoke read-only plugin commands",
+        "Errors are structured and include remediation hints",
+        "No write/publish command is exposed through MCP by default",
+        "Tests cover initialize, tools/list, and one tools/call path"
       ],
       "files": [
         "tools/simple_model_mcp.sh",
-        "tests/test_mcp_v2.sh"
+        "codex/skills/simple-model-project-intelligence/references/command-manifest.json",
+        "tests/test_plugin_package.sh"
       ]
     },
     {
-      "id": "federation_v2",
-      "wave": 5,
-      "task": "Make multi-repo federation resolve cross-repo component ids, interfaces, imports, owners, and downstream PR impact.",
+      "id": "plugin_version_policy",
+      "wave": 3,
+      "task": "Define and enforce version alignment between repo release, plugin manifest, marketplace entry, and release asset names.",
       "priority": "medium",
       "status": "done",
-      "audience": "both",
-      "blocks": [
-        "batch_plan_v2"
-      ],
-      "current_gap": "Current federation_resolve reads multiple structs but does not build cross-repo facts.",
-      "deliverable": "federation_resolve v2",
-      "acceptance": [
-        "Federation spec supports repo id, path, struct, default branch, and owner",
-        "Resolved component ids are globally unique",
-        "Cross-repo imports are represented as facts",
-        "PR impact can report downstream cross-repo consumers"
-      ],
-      "files": [
-        "specs/federation.json",
-        "generators/federation_resolve.sh",
-        "tests/test_federation_v2.sh"
-      ]
-    },
-    {
-      "id": "batch_plan_v2",
-      "wave": 5,
-      "task": "Plan large-scale migrations into dependency-safe PR batches with owners, tests, risk caps, and gate expectations.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "evolution_harness_v2"
-      ],
-      "current_gap": "Current batch_plan places impacted components into one trivial batch.",
-      "deliverable": "batch_plan v2",
-      "acceptance": [
-        "Accepts component list or PR impact report",
-        "Batches respect dependency topological order",
-        "Batch size and risk cap are configurable",
-        "Each batch includes owners, tests, expected gates, and rationale"
-      ],
-      "files": [
-        "generators/batch_plan.sh",
-        "tests/test_batch_plan_v2.sh"
-      ]
-    },
-    {
-      "id": "large_repo_benchmark",
-      "wave": 5,
-      "task": "Add a benchmark fixture or synthetic generator for 1k/10k/100k file projects to measure scan time, cache hits, and report size.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "evolution_harness_v2"
-      ],
-      "current_gap": "Current tests are tiny fixtures and do not prove large-project behavior.",
-      "deliverable": "tests/bench_large_repo.sh",
-      "acceptance": [
-        "Generates synthetic repo fixtures without external dependencies",
-        "Measures cold scan, warm scan, and one-file-change scan",
-        "Outputs JSON metrics",
-        "Has conservative thresholds documented but not brittle"
-      ],
-      "files": [
-        "tests/bench_large_repo.sh",
-        "tests/fixtures/large_repo/"
-      ]
-    },
-    {
-      "id": "architecture_debt_v2",
-      "wave": 6,
-      "task": "Turn architecture debt into a ranked, actionable report with finding ids, owners, suggested struct patches, waivers, and trend hashes.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
-      "blocks": [
-        "static_dashboard"
-      ],
-      "current_gap": "Current architecture_debt.sh aggregates counts only.",
-      "deliverable": "architecture_debt v2 JSON and Markdown.",
-      "acceptance": [
-        "Every finding has stable id, severity, component/path, owner, rule, and suggested remediation",
-        "Report includes top risks and adoption progress",
-        "Supports baseline comparison against previous report",
-        "Markdown report is readable without jq"
-      ],
-      "files": [
-        "generators/architecture_debt.sh",
-        "tests/test_architecture_debt_v2.sh"
-      ]
-    },
-    {
-      "id": "static_dashboard",
-      "wave": 6,
-      "task": "Generate a static HTML dashboard for project intelligence: coverage, interfaces, imports, tests, owners, debt, gates, and trends.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
+      "audience": "maintainers",
       "blocks": [],
-      "current_gap": "The project has architecture visualization but not an operational maintenance dashboard.",
-      "deliverable": "generators/dashboard.sh",
+      "current_gap": "The plugin manifest now follows a documented plugin version policy, but future releases must continue enforcing that alignment.",
+      "deliverable": "Version policy plus validation script.",
       "acceptance": [
-        "Single-file HTML output under generated/dashboard.html",
-        "No external network assets",
-        "Includes sortable tables for findings and components",
-        "Links back to source paths and reports"
+        "Documents whether plugin version follows repo version or independent semver",
+        "Checks release asset name against selected version policy",
+        "Checks plugin manifest version in package script",
+        "README displays current plugin version source of truth",
+        "Release notes template includes plugin version"
       ],
       "files": [
-        "generators/dashboard.sh",
-        "tests/test_dashboard.sh"
-      ]
-    },
-    {
-      "id": "adoption_playbook",
-      "wave": 6,
-      "task": "Write a concrete adoption playbook for a half-built large project: ingest, split struct, scan facts, fix drift, add waivers, enable PR gate.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
-      "blocks": [],
-      "current_gap": "The commands exist but the adoption path is not yet operationally clear.",
-      "deliverable": "docs/ADOPTION_PLAYBOOK.md",
-      "acceptance": [
-        "Includes 30-minute, 1-day, and 1-week adoption paths",
-        "Shows multi-file struct examples",
-        "Explains adoption mode vs enforcement mode",
-        "Includes troubleshooting for noisy scans"
-      ],
-      "files": [
-        "docs/ADOPTION_PLAYBOOK.md"
-      ]
-    },
-    {
-      "id": "evolution_harness_v2",
-      "wave": 6,
-      "task": "Replace the smoke evolution harness with real multi-step scenarios measuring drift, gate quality, work records, and fact cache behavior.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "both",
-      "blocks": [
-        "agent_eval_harness"
-      ],
-      "current_gap": "Current evolution harness is a static three-step smoke JSON.",
-      "deliverable": "examples/evolution-bench with executable scenarios.",
-      "acceptance": [
-        "Runs at least three sequential repo mutations",
-        "Measures whether gates catch introduced interface/dependency/test drift",
-        "Measures fact cache invalidation across steps",
-        "Outputs JSON metrics and Markdown summary"
-      ],
-      "files": [
-        "examples/evolution-bench/",
-        "tests/test_evolution_harness_v2.sh"
-      ]
-    },
-    {
-      "id": "agent_eval_harness",
-      "wave": 7,
-      "task": "Evaluate agent usefulness with bounded slices and work records across Claude/Codex/generic adapters on deterministic fixtures.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "ai",
-      "blocks": [],
-      "current_gap": "The project can dispatch adapters but does not measure whether code-fact slices improve outcomes.",
-      "deliverable": "tests/test_agent_eval_harness.sh",
-      "acceptance": [
-        "Runs generic adapter without network",
-        "Can optionally run real adapters when env vars are set",
-        "Compares slice size and included facts",
-        "Validates returned work records and gate results"
-      ],
-      "files": [
-        "tests/test_agent_eval_harness.sh",
-        "generators/orchestrate_dispatch.sh"
-      ]
-    },
-    {
-      "id": "release_contract_report",
-      "wave": 7,
-      "task": "Generate release-facing contract reports: public interface changes, migration files, downstream impact, and required acknowledgements.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "human",
-      "blocks": [],
-      "current_gap": "Interface changes are internal gate data, not release-facing artifacts.",
-      "deliverable": "generators/release_contract.sh",
-      "acceptance": [
-        "Consumes interface diff and PR impact",
-        "Separates breaking, additive, and internal-only changes",
-        "Includes migration/config/env changes",
-        "Outputs Markdown suitable for release notes"
-      ],
-      "files": [
-        "generators/release_contract.sh",
-        "tests/test_release_contract.sh"
+        "docs/CODEX_PLUGIN.md",
+        "plugins/simple-model-project-intelligence/.codex-plugin/plugin.json",
+        "tools/package_codex_plugin.sh"
       ]
     }
-  ],
-  "non_goals": [
-    "Do not build a new general-purpose autonomous coding agent.",
-    "Do not require hosted services, vector databases, or ML models for core scans and gates.",
-    "Do not claim production-grade precision from regex scanners without fixtures and clear confidence metadata.",
-    "Do not make PR gates noisy without waiver and adoption-mode controls.",
-    "Do not add more surfaces before hardening the existing fact/gate/report loop."
   ]
 }

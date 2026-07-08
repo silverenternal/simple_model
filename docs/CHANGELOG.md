@@ -68,6 +68,10 @@ not used; we cut a new dated entry instead.
   suggestions, waiver checks, executable test selection, PR Markdown comments,
   MCP initialize/tools flow, release contract reports, dashboard generation,
   large-repo benchmark smoke, and agent work-record harness.
-- Test surface is now **228 assertions across 12 suites**.
+- v0.6 plugin productization: repo-local Codex plugin marketplace, bundled skill
+  sync check, cross-repo wrapper mode, `doctor`, command manifest, target repo
+  fixture, plugin demo, deterministic packager, plugin CI, MCP command bridge,
+  and plugin version policy.
+- Test surface is now **248 assertions across 13 suites**.
 
 See `todo.json` for live status.

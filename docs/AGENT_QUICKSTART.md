@@ -90,12 +90,13 @@ or together via `for t in tests/test_*.sh; do bash "$t" || exit 1; done`.
 | `tests/test_struct_resolve.sh` | 24 | Multi-file struct resolution, bootstrap auto-resolve, conflict/path safety, repo ingest, adoption audit, and interface scan. |
 | `tests/test_v04_roadmap.sh` | 19 | v0.4 code facts, import/test/owner scans, gates, PR impact, work records, MCP, federation, batch, and debt smoke coverage. |
 | `tests/test_v05_roadmap.sh` | 23 | v0.5 hardening: strict facts, cache, signatures, waivers, PR Markdown, MCP v2, dashboard, release contracts. |
+| `tests/test_plugin_package.sh` | 20 | v0.6 Codex plugin package: marketplace, manifest, skill sync, cross-repo wrapper, doctor, demo, packager, CI, MCP bridge. |
 | `tests/test_agent_eval_harness.sh` | 1 | Generic adapter work-record harness smoke test. |
 | `tests/test_evolution_harness.sh` | 1 | Long-horizon evolution harness smoke test. |
 | `tests/test_chimeric_e2e.sh` | 26 | The chimeric verify modes (contract/golden/invariants/round-trip) still pass — Gate reuses these. Zero regression. |
 | `tests/test_animations.sh` | 23 | Animation library regression: single-line overwrite, no `\033[2J`, color reset, TTY fallback. |
 
-Total: **228 green assertions** across 12 suites as of v0.5.
+Total: **248 green assertions** across 13 suites as of v0.6.
 
 ## 5. Shipped roadmap surface
 
@@ -118,6 +119,8 @@ The v0.3 roadmap items in `todo.json` are implemented. Use these entry points:
 - `bash generators/dashboard.sh` — emit a static Project Intelligence dashboard.
 - `bash generators/release_contract.sh --json` — summarize public contract changes.
 - `tools/simple_model_mcp.sh` — read-only JSON-RPC wrapper for agent tools.
+- `plugins/simple-model-project-intelligence/` — repo-local Codex plugin package.
+- `bash tests/test_plugin_package.sh` — validate plugin packaging and cross-repo skill UX.
 - `docs/ip/provisional-draft.md` — provisional patent draft for attorney review.
 
 ## 6. Multi-file struct

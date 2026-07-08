@@ -1,0 +1,25 @@
+{
+  "schema_version": "3.0",
+  "description": "Small target repo fixture for the simple_model Codex plugin.",
+  "modules": [
+    {
+      "name": "api",
+      "description": "API layer",
+      "owners": ["team-api"],
+      "checks": {
+        "unit": "true"
+      },
+      "components": [
+        {
+          "name": "Server",
+          "description": "HTTP server entrypoint.",
+          "path": "src/api/server.ts",
+          "imports": [],
+          "exports": ["startServer"],
+          "risk": "medium",
+          "todos": []
+        }
+      ]
+    }
+  ]
+}
