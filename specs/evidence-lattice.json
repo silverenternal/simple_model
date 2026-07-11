@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Evidence Lattice and Uncertainty Calculus",
+  "schema_version": "1.0",
+  "states": ["unknown", "supported", "corroborated", "conflict", "stale"],
+  "classes": ["declared", "parsed", "inferred", "runtime", "cross_repository"],
+  "verdicts": ["safe", "unsafe", "unknown"],
+  "join_laws": ["associative", "commutative", "idempotent", "provenance_preserving"],
+  "required_fact_fields": ["id", "subject", "class", "verdict", "provenance", "freshness", "invalidation_keys"],
+  "conflict_rule": "both safe and unsafe current facts for one subject produce conflict",
+  "stale_rule": "only current facts participate in verdict; stale-only subjects remain stale"
+}

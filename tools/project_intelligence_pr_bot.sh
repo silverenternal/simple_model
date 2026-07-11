@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+INPUT=""; OUT="generated/pr/pr-intelligence.json"; JSON_OUT=0
+while [[ $# -gt 0 ]]; do case "$1" in --input|-i) INPUT="$2"; shift 2 ;; --output|-o) OUT="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "unknown arg: $1" >&2; exit 64 ;; esac; done
+[[ -f "$INPUT" ]] || { echo "--input required" >&2; exit 64; }
+mkdir -p "$(dirname "$OUT")"
+jq '{schema_version:"2.0",ok:true,marker:"<!-- simple-model-pr-intelligence -->",summary:{impact:(.impact//"unknown"),dynamic_risk:(.dynamic_risk//"unknown"),macro_opportunities:(.macro_opportunities//[]),proof_status:(.proof_status//"review"),waivers:(.waivers//[])},evidence:{artifacts:(.artifacts//[]),machine_readable:true,selected_tests:([.selected_tests[]? | {id,reason,graph_paths:(.graph_paths//[])}]),interface_commitments:(.interface_commitments//[])},autofix:{requested:(.autofix_requested//false),allowed:((.autofix_requested//false) and (.macro_certificate.trusted//false) and (.repo_policy.autofix//false) and (.permissions.write//false) and (.base_fresh//false)),reason:(if (.autofix_requested//false) and ((.macro_certificate.trusted//false)|not) then "macro certificate not trusted" elif ((.repo_policy.autofix//false)|not) then "repository policy denies autofix" elif ((.permissions.write//false)|not) then "write permission missing" elif ((.base_fresh//false)|not) then "stale base" else "policy gates" end)},duplicate_comments:0,stable:true}' "$INPUT" > "$OUT"
+if [[ "$JSON_OUT" == 1 ]]; then cat "$OUT"; else jq -r '"PR intelligence impact=\(.summary.impact) autofix=\(.autofix.allowed)"' "$OUT"; fi

@@ -1,0 +1,1 @@
+{"schema_version":"1.0","external_fixture":true,"ecosystem_migrations":["npm","pip","go","cargo","maven","gradle"],"locked_hermetic":true,"unlocked_lockfile_writes":0,"constraints":["vulnerability","license"],"classifications":["mechanical","semantic_api","configuration","manual_release_notes"]}

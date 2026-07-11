@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Structural Match Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "ok", "matches", "summary", "diagnostics"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "ok": {"type": "boolean"},
+    "query_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "graph_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "matches": {"type": "array", "items": {"type": "object", "required": ["capture", "node_id", "stable_id", "typed", "symbol_identity", "style_context"], "properties": {"capture": {"type": "string"}, "node_id": {"type": "string"}, "stable_id": {"type": "string"}, "typed": {"type": "object"}, "symbol_identity": {"type": "object"}, "style_context": {"type": "object"}}}},
+    "summary": {"type": "object", "required": ["matches", "ambiguous", "apply_allowed"], "properties": {"matches": {"type": "integer", "minimum": 0}, "ambiguous": {"type": "boolean"}, "apply_allowed": {"type": "boolean"}, "candidate_count": {"type": "integer", "minimum": 0}}},
+    "diagnostics": {"type": "array"}
+  },
+  "invariants": [
+    "Matching is structural and identity-aware; regular expressions are not a matching primitive.",
+    "Formatting-only style_context changes do not change stable_id or capture identity.",
+    "Ambiguous captures are review-only and cannot reach apply mode."
+  ]
+}

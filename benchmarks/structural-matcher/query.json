@@ -1,0 +1,7 @@
+{
+  "schema_version": "1.0",
+  "match": {"kind": "function", "name": "serve", "syntax": {"node_type": "function_declaration"}},
+  "capture": "handler",
+  "capture_policy": "many",
+  "quantifier": "all"
+}

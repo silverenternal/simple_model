@@ -31,11 +31,19 @@ trap 'rm -rf "$tmp"' EXIT
 
 if [[ -z "$GRAPH" ]]; then
   GRAPH="$tmp/semantic-graph.json"
-  bash "$SELF_DIR/semantic_graph_incremental.sh" --root "$ROOT" --struct "$STRUCT" --output "$GRAPH" --diff-output "$tmp/diff.json" --json >/dev/null
+  if [[ -f "generated/intelligence/semantic-graph.json" ]]; then
+    cp generated/intelligence/semantic-graph.json "$GRAPH"
+  else
+    bash "$SELF_DIR/semantic_graph_incremental.sh" --root "$ROOT" --struct "$STRUCT" --output "$GRAPH" --diff-output "$tmp/diff.json" --json >/dev/null
+  fi
 fi
 if [[ -z "$DYNAMIC" ]]; then
   DYNAMIC="$tmp/dynamic-edges.json"
-  bash "$SELF_DIR/dynamic_edge_resolver.sh" --root "$ROOT" --struct "$STRUCT" --output "$DYNAMIC" --json >/dev/null
+  if [[ -f "generated/intelligence/dynamic-edges.json" ]]; then
+    cp generated/intelligence/dynamic-edges.json "$DYNAMIC"
+  else
+    bash "$SELF_DIR/dynamic_edge_resolver.sh" --root "$ROOT" --struct "$STRUCT" --output "$DYNAMIC" --json >/dev/null
+  fi
 fi
 
 if [[ -n "$MACRO" && -f "$MACRO" ]]; then

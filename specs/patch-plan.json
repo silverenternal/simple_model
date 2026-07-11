@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Style Preserving Patch Plan",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema_version","ok","files","blocked_edits","alternatives","summary"],
+  "properties":{"schema_version":{"const":"1.0"},"ok":{"type":"boolean"},"files":{"type":"array"},"blocked_edits":{"type":"array"},"alternatives":{"type":"array"},"summary":{"type":"object","required":["selected_files","protected_region_writes","unnecessary_line_change_ratio","conflict_risk"]}},
+  "invariants":["Generated, vendored, ignored, and explicitly protected files are blocked by default.","Formatter scope is limited to lines touched by accepted semantic edits.","The plan reports a deterministic lower-conflict file schedule."]
+}

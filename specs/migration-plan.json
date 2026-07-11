@@ -1,0 +1,8 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Migration Macro Plan v1",
+  "type":"object",
+  "required":["schema_version","ok","changes","stages","rollback_order","summary"],
+  "properties":{"schema_version":{"const":"1.0"},"ok":{"type":"boolean"},"changes":{"type":"array"},"stages":{"type":"array"},"rollback_order":{"type":"array"},"summary":{"type":"object","required":["breaking_change_detection_rate","unplanned_impacted_consumers"]}},
+  "invariants":["Breaking and irreversible data changes require explicit approval and backup/validation.","Producer, consumer, and unified-graph edges are linked before a plan is accepted.","Rollback order is the reverse of forward stage order."]
+}

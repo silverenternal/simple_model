@@ -25,9 +25,18 @@ ROOT="$(cd "$ROOT" && pwd)"
 STRUCT="$(cd "$(dirname "$STRUCT")" && pwd)/$(basename "$STRUCT")"
 mkdir -p "$(dirname "$OUT")"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-if [[ -z "$GRAPH" ]]; then GRAPH="$tmp/graph.json"; bash "$SELF_DIR/semantic_graph_incremental.sh" --root "$ROOT" --struct "$STRUCT" --output "$GRAPH" --diff-output "$tmp/diff.json" --json >/dev/null; fi
-if [[ -z "$DYNAMIC" ]]; then DYNAMIC="$tmp/dynamic.json"; bash "$SELF_DIR/dynamic_edge_resolver.sh" --root "$ROOT" --struct "$STRUCT" --output "$DYNAMIC" --json >/dev/null; fi
-if [[ -z "$TIERS" ]]; then TIERS="$tmp/tiers.json"; bash "$SELF_DIR/parser_tier_registry.sh" --root "$ROOT" --output "$TIERS" --json >/dev/null; fi
+if [[ -z "$GRAPH" ]]; then
+  GRAPH="$tmp/graph.json"
+  if [[ -f generated/intelligence/semantic-graph.json ]]; then cp generated/intelligence/semantic-graph.json "$GRAPH"; else bash "$SELF_DIR/semantic_graph_incremental.sh" --root "$ROOT" --struct "$STRUCT" --output "$GRAPH" --diff-output "$tmp/diff.json" --json >/dev/null; fi
+fi
+if [[ -z "$DYNAMIC" ]]; then
+  DYNAMIC="$tmp/dynamic.json"
+  if [[ -f generated/intelligence/dynamic-edges.json ]]; then cp generated/intelligence/dynamic-edges.json "$DYNAMIC"; else bash "$SELF_DIR/dynamic_edge_resolver.sh" --root "$ROOT" --struct "$STRUCT" --output "$DYNAMIC" --json >/dev/null; fi
+fi
+if [[ -z "$TIERS" ]]; then
+  TIERS="$tmp/tiers.json"
+  if [[ -f generated/intelligence/parser-tiers.json ]]; then cp generated/intelligence/parser-tiers.json "$TIERS"; else bash "$SELF_DIR/parser_tier_registry.sh" --root "$ROOT" --output "$TIERS" --json >/dev/null; fi
+fi
 
 report=$(jq -n --arg root "$ROOT" --arg struct "$STRUCT" --slurpfile graph "$GRAPH" --slurpfile dyn "$DYNAMIC" --slurpfile tiers "$TIERS" '
   def cid($s): ($s|gsub("[^A-Za-z0-9_.:-]"; "_"));

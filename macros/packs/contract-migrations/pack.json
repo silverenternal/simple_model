@@ -1,0 +1,1 @@
+{"schema_version":"1.0","id":"contract-migrations","status":"review_only","source":"migration_spec_compile.sh","required_approval":["breaking_changes","data_migration"],"rollback":"reverse_stages"}

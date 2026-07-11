@@ -1008,6 +1008,39 @@ case "$cmd" in
         printf '%s\n' "$report" > "$out_dir/adopt.json"
         if [[ "$JSON_OUT" == "1" ]]; then printf '%s\n' "$report"; else jq -r '"Adopt ok=" + (.ok|tostring) + " semantic_nodes=" + (.phases.semantic_graph.nodes|tostring)' <<<"$report"; fi
         ;;
+    capability-truth)
+        out="$SIMPLE_HOME/generated/audits/capability-truth.json"
+        spec_file="$SIMPLE_HOME/specs/capability-maturity.json"
+        cap_root="$TARGET_ROOT"
+        cap_struct=""
+        fixtures=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --target-root|--root) cap_root="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --spec) spec_file="$2"; shift 2 ;;
+                --struct) cap_struct="$2"; shift 2 ;;
+                --fixtures) fixtures="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown capability-truth arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cap_root="$(cd "$cap_root" 2>/dev/null && pwd || printf '%s' "$cap_root")"
+        if [[ -z "$cap_struct" ]]; then
+            cap_struct="$cap_root/struct.json"
+        elif [[ "$cap_struct" = /* ]]; then
+            :
+        elif [[ -f "$cap_struct" ]]; then
+            cap_struct="$(cd "$(dirname "$cap_struct")" && pwd)/$(basename "$cap_struct")"
+        else
+            cap_struct="$cap_root/$cap_struct"
+        fi
+        cd "$SIMPLE_HOME"
+        args=(--root "$cap_root" --struct "$cap_struct" --spec "$spec_file" --output "$out")
+        [[ -n "$fixtures" ]] && args+=(--fixtures "$fixtures")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/capability_truth_audit.sh "${args[@]}"
+        ;;
     onboard)
         out_dir="$SIMPLE_HOME/generated/onboard"
         while [[ $# -gt 0 ]]; do
@@ -1110,15 +1143,18 @@ case "$cmd" in
         ;;
     adoption-report)
         out_dir="$SIMPLE_HOME/generated/adoption-report"
+        benchmark_file=""
         while [[ $# -gt 0 ]]; do
             case "$1" in
                 --output-dir) out_dir="$2"; shift 2 ;;
+                --benchmark) benchmark_file="$2"; shift 2 ;;
                 --json) JSON_OUT=1; shift ;;
                 *) echo "[FAIL] unknown adoption-report arg: $1" >&2; exit 64 ;;
             esac
         done
         cd "$SIMPLE_HOME"
         args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir")
+        [[ -n "$benchmark_file" ]] && args+=(--benchmark "$benchmark_file")
         [[ "$JSON_OUT" == "1" ]] && args+=(--json)
         generators/adoption_report.sh "${args[@]}"
         ;;
@@ -1135,6 +1171,47 @@ case "$cmd" in
         args=(--version "$version")
         [[ "$JSON_OUT" == "1" ]] && args+=(--json)
         generators/release_slo.sh "${args[@]}"
+        ;;
+    evolution-benchmark)
+        out_dir="$SIMPLE_HOME/generated/benchmarks/evolution-v2"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output-dir) out_dir="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown evolution-benchmark arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; mkdir -p "$out_dir"
+        generators/evolution_replay_v2.sh --manifest benchmarks/evolution-v2/manifest.json --output "$out_dir/replay.json" --json >/dev/null
+        generators/evolution_score.sh --replay "$out_dir/replay.json" --output "$out_dir/scorecard.json" --json
+        ;;
+    performance-v2)
+        out_dir="$SIMPLE_HOME/generated/performance"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output-dir) out_dir="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown performance-v2 arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; mkdir -p "$out_dir"
+        generators/performance_benchmark_v2.sh --output "$out_dir/v2-benchmark.json" --json >/dev/null
+        generators/test_economics.sh --benchmark "$out_dir/v2-benchmark.json" --output "$out_dir/v2-scorecard.json" --json
+        ;;
+    macro-pack-verify)
+        input=""; key="simple-model-dev-key"; revocations=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --input) input="$2"; shift 2 ;; --key) key="$2"; shift 2 ;; --revocations) revocations="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown macro-pack-verify arg: $1" >&2; exit 64 ;; esac
+        done
+        [[ -n "$input" ]] || { echo "[FAIL] macro-pack-verify requires --input" >&2; exit 64; }
+        cd "$SIMPLE_HOME"
+        if [[ -n "$revocations" ]]; then
+            if [[ "$JSON_OUT" == "1" ]]; then generators/macro_pack_verify.sh --input "$input" --key "$key" --revocations "$revocations" --json; else generators/macro_pack_verify.sh --input "$input" --key "$key" --revocations "$revocations"; fi
+        elif [[ "$JSON_OUT" == "1" ]]; then generators/macro_pack_verify.sh --input "$input" --key "$key" --json
+        else generators/macro_pack_verify.sh --input "$input" --key "$key"; fi
+        ;;
+    interoperability)
+        printf '%s\n' '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | SIMPLE_MODEL_ROOT="$SIMPLE_HOME" bash "$SIMPLE_HOME/tools/simple_model_mcp_v2.sh"
+        ;;
+    release-slo-v2)
+        out="$SIMPLE_HOME/generated/releases/v2-production-readiness.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown release-slo-v2 arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"
+        if [[ "$JSON_OUT" == "1" ]]; then generators/release_slo_v2.sh --output "$out" --json; else generators/release_slo_v2.sh --output "$out"; fi
         ;;
     parser-tiers)
         out="$SIMPLE_HOME/generated/intelligence/parser-tiers.json"

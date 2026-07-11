@@ -12,7 +12,11 @@ while [[ $# -gt 0 ]]; do
 done
 mkdir -p "$OUT_DIR"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-bash "$(dirname "$0")/macro_discover_motifs.sh" --output "$tmp/motifs.json" --json >/dev/null
+if [[ -f generated/macros/motif-candidates.json ]]; then
+  cp generated/macros/motif-candidates.json "$tmp/motifs.json"
+else
+  bash "$(dirname "$0")/macro_discover_motifs.sh" --output "$tmp/motifs.json" --json >/dev/null
+fi
 bash "$(dirname "$0")/macro_template_synth.sh" --motifs "$tmp/motifs.json" --output "$tmp/templates.json" --json >/dev/null
 bash "$(dirname "$0")/macro_proof_bundle.sh" --output "$tmp/proof.json" --json >/dev/null
 bash "$(dirname "$0")/macro_outcome_ledger.sh" --proof "$tmp/proof.json" --output "$tmp/ledger.json" --json >/dev/null

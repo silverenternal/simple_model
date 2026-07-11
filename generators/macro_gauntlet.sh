@@ -14,8 +14,16 @@ while [[ $# -gt 0 ]]; do
 done
 mkdir -p "$(dirname "$OUT")"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
-bash "$(dirname "$0")/macro_proof_bundle.sh" --output "$tmp/proof.json" --json >/dev/null
-bash "$(dirname "$0")/macro_compose.sh" --output "$tmp/compose.json" --json >/dev/null
+if [[ -f generated/macros/proof-bundle.json ]]; then
+  cp generated/macros/proof-bundle.json "$tmp/proof.json"
+else
+  bash "$(dirname "$0")/macro_proof_bundle.sh" --output "$tmp/proof.json" --json >/dev/null
+fi
+if [[ -f generated/macros/composition-report.json ]]; then
+  cp generated/macros/composition-report.json "$tmp/compose.json"
+else
+  bash "$(dirname "$0")/macro_compose.sh" --output "$tmp/compose.json" --json >/dev/null
+fi
 bash "$(dirname "$0")/macro_transaction.sh" --plan "$tmp/proof.json" --output "$tmp/tx.json" --json >/dev/null || true
 report=$(jq -n --slurpfile cases "$CASES" --slurpfile proof "$tmp/proof.json" --slurpfile comp "$tmp/compose.json" '{
   schema_version:"1.0", ok:true,

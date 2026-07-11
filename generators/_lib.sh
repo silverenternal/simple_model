@@ -61,6 +61,20 @@ bootstrap_env() {
     return 0
 }
 
+# Resolve root-level struct includes for generators that are invoked directly.
+# bootstrap.sh exports the resolved path for its normal flow, but standalone
+# orchestration commands and plugin demos must honor the same contract.
+resolve_struct_includes() {
+    [[ -f "$STRUCT_FILE" ]] || return 1
+    if jq -e '((.includes // []) | length) > 0' "$STRUCT_FILE" >/dev/null 2>&1; then
+        local resolved_path="${STRUCT_RESOLVE_OUTPUT:-${OUTPUT_DIR:-./generated}/.bootstrap/resolved.struct.json}"
+        mkdir -p "$(dirname "$resolved_path")"
+        bash "$(dirname "${BASH_SOURCE[0]}")/struct_resolve.sh" --struct "$STRUCT_FILE" --output "$resolved_path" >/dev/null
+        STRUCT_FILE="$resolved_path"
+        export STRUCT_FILE
+    fi
+}
+
 # 自动调用一次（被 source 进来后立即生效）
 bootstrap_env 2>/dev/null || true
 

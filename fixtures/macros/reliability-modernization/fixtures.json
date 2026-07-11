@@ -1,0 +1,1 @@
+{"schema_version":"1.0","simulate_capable_macros":3,"apply_capable_macros":2,"fixtures":["race","cancellation","leak","saturation"],"non_idempotent_retry_blocked":true,"behavioral_oracles":true}

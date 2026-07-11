@@ -102,9 +102,9 @@ Total: **346 green assertions** across 15 suites as of v0.7.
 
 ## 5. Shipped roadmap surface
 
-The previously shipped roadmap items are summarized in
-`todo.json.previous_milestone`; the top-level `todo.json.todos` list is the next
-product roadmap. Use these implemented entry points:
+Previously shipped roadmap items remain recorded in Git history and release
+artifacts. The top-level `todo.json.todos` list contains only the active product
+roadmap. Use these implemented entry points:
 
 - `./bootstrap.sh --target dispatch --plan` — worktree-isolated dispatch plan.
 - `bash generators/orchestrate_collect.sh` — bounded leaf summary collector.

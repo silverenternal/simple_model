@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema","title":"Lossless Edit IR","type":"object","additionalProperties":false,
+  "required":["schema_version","source","source_hash","edits"],
+  "properties":{"schema_version":{"const":"1.0"},"source":{"type":"string"},"source_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "edits":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["id","capture","original","replacement"],"properties":{
+      "id":{"type":"string"},"capture":{"type":"object","additionalProperties":false,"required":["stable_id","start","end","expected_hash"],"properties":{"stable_id":{"type":"string"},"start":{"type":"integer","minimum":0},"end":{"type":"integer","minimum":0},"expected_hash":{"type":"string"}}},
+      "original":{"type":"string"},"replacement":{"type":"string"}}}}
+  },"invariants":["captures do not overlap","source hash must match","captured original text must match","inverse restores source hash"]
+}

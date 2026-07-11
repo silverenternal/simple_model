@@ -60,6 +60,7 @@ done
 [[ -n "${POSITIONAL_STRUCT:-}" ]] && STRUCT_FILE="$POSITIONAL_STRUCT"
 
 [[ -f "$STRUCT_FILE" ]] || { echo "[FAIL] struct.json not found: $STRUCT_FILE" >&2; exit 2; }
+resolve_struct_includes
 [[ -f "$PLAN_FILE" ]]   || { echo "[FAIL] plan not found: $PLAN_FILE (run orchestrate_decompose.sh first)" >&2; exit 2; }
 
 mkdir -p "$OUT_DIR"

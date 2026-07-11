@@ -1,0 +1,1 @@
+{"schema_version":"1.0","language":"python","sources":["request.args","os.environ"],"sinks":["cursor.execute","requests.post"],"barriers":["escape","validate"],"unknown_calls":"partial"}

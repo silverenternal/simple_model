@@ -1,0 +1,1 @@
+{"schema_version":"1.0","name":"configuration-governance","status":"certified","macros":[{"id":"config.reconcile","apply_capable":true},{"id":"config.flag_remove","apply_capable":true},{"id":"config.secret_reference","apply_capable":true}],"policy":{"secret_value_captures":0,"flag_removal_requires_reachability_and_rollout":true}}

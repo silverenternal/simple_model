@@ -1,0 +1,1 @@
+{"schema_version":"2.0","adapter_id":"codeql","ecosystem":"CodeQL","capabilities":["facts","provenance"],"write_mode":"none","provenance_required":true}

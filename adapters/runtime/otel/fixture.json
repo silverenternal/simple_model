@@ -1,0 +1,1 @@
+{"schema_version":"2.0","trace_id":"fixture-trace","span_id":"fixture-span","edge_id":"edge:api->db","from":"api","to":"db","environment":"test","build":"build-1","commit":"abc123","sampling":1.0,"freshness":"current","coverage":0.8,"attributes":{"user.email":"secret@example.com","http.method":"GET"},"payload":{"token":"never-store"}}

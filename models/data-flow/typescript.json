@@ -1,0 +1,1 @@
+{"schema_version":"1.0","language":"typescript","sources":["request.body","process.env"],"sinks":["db.query","http.send"],"barriers":["sanitize","validate"],"unknown_calls":"partial"}

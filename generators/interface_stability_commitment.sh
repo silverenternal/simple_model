@@ -29,6 +29,12 @@ done
 
 ROOT="$(cd "$ROOT" && pwd)"
 STRUCT="$(cd "$(dirname "$STRUCT")" && pwd)/$(basename "$STRUCT")"
+if jq -e '((.includes // []) | length) > 0' "$STRUCT" >/dev/null 2>&1; then
+  resolved="$(dirname "$OUT")/.bootstrap/resolved.struct.json"
+  mkdir -p "$(dirname "$resolved")"
+  bash "$SELF_DIR/struct_resolve.sh" --struct "$STRUCT" --output "$resolved" >/dev/null
+  STRUCT="$(cd "$(dirname "$resolved")" && pwd)/$(basename "$resolved")"
+fi
 [[ -f "$STRUCT" ]] || { echo "[FAIL] missing struct: $STRUCT" >&2; exit 2; }
 [[ -n "$MARKDOWN" ]] || MARKDOWN="${OUT%.json}.md"
 mkdir -p "$(dirname "$OUT")" "$(dirname "$MARKDOWN")"

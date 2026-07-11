@@ -1,0 +1,1 @@
+{"schema_version":"2.0","resolver_id":"decorator","frameworks":["reference"],"versions":["1.x"],"evidence_inputs":["struct.json","runtime-evidence-v2"],"output_edge_types":["dynamic_edge"],"trust_requirements":["provenance","review"],"deterministic":true}

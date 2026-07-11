@@ -137,6 +137,11 @@ Use these commands from the `simple_model` repository root unless a wrapper comm
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-operator-ir --json`
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-motifs --json`
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-templates --json`
+
+## v2.0 Capability Truth
+
+- Audit command and macro capability truth with reproducible evidence and deltas:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root <repo-root> --struct <repo-root>/struct.json capability-truth --fixtures <fixture-root[,fixture-root2...]> --json`
 - Compose, search, and prove macro plans:
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-compose --json`
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-plan-search --json`
@@ -170,6 +175,15 @@ Use these commands from the `simple_model` repository root unless a wrapper comm
   `generators/waiver_check.sh --waivers specs/waiver.json --json`
 
 ## PR And Release
+
+- Replay the long-horizon evolution benchmark and inspect v2 performance economics:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh evolution-benchmark --json`
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh performance-v2 --json`
+- Verify signed macro-pack provenance offline:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macro-pack-verify --input <pack.json> --json`
+- Inspect the model-portable MCP/adapter surface and run the final release gate:
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh interoperability --json`
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh release-slo-v2 --json`
 
 - Compute PR impact:
   `./bootstrap.sh --pr-impact <repo-root> --json`

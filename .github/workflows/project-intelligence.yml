@@ -1,0 +1,9 @@
+name: project-intelligence
+on:
+  pull_request:
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./tools/project_intelligence_pr_bot.sh --input .github/project-intelligence-input.json --output generated/pr/pr-intelligence.json --json

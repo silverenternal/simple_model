@@ -1,0 +1,1 @@
+{"schema_version":"1.0","name":"dependency-modernization","status":"certified","ecosystems":["npm","pip","go","cargo","maven","gradle"],"policy":{"lockfile_mode":"hermetic_locked_only","unlocked_lockfile_writes":0,"vulnerability_and_license_constraints":true}}

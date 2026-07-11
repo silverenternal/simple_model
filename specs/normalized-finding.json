@@ -1,0 +1,7 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Normalized Finding v1",
+  "type":"object",
+  "required":["schema_version","semantic_id","category","severity","provenance","location"],
+  "properties":{"schema_version":{"const":"1.0"},"semantic_id":{"type":"string"},"category":{"type":"string"},"severity":{"enum":["info","warning","error","critical"]},"message":{"type":"string"},"location":{"type":"object","required":["path"]},"provenance":{"type":"array","items":{"type":"object","required":["tool","rule_id","raw_hash"]}},"evidence":{"type":"object"}}
+}

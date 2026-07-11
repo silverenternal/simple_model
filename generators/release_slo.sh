@@ -38,7 +38,7 @@ while [[ $# -gt 0 ]]; do
 done
 [[ -f "$SCORECARD" ]] || bash generators/benchmark_scorecard.sh . --json >/dev/null
 [[ -f "$PERFORMANCE" ]] || bash generators/performance_benchmark.sh --root . --struct ./struct.json --json >/dev/null
-[[ -f "$PRODUCTION" ]] || bash generators/production_benchmark.sh --root . --struct ./struct.json --json >/dev/null
+[[ -f "$PRODUCTION" ]] || bash generators/production_benchmark.sh --root . --struct ./struct.json --output-dir "$(dirname "$PRODUCTION")" --json >/dev/null
 [[ -f "$SCORE_MODEL" ]] || bash generators/score_calibrate.sh --json >/dev/null
 [[ -f "$PARSER_TIERS" ]] || bash generators/parser_tier_registry.sh --root . --output "$PARSER_TIERS" --json >/dev/null
 [[ -f "$SYMBOL_INDEX" ]] || bash generators/symbol_identity.sh --root . --struct ./struct.json --tiers "$PARSER_TIERS" --output "$SYMBOL_INDEX" --json >/dev/null

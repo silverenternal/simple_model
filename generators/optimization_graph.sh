@@ -21,6 +21,12 @@ command -v jq >/dev/null 2>&1 || { echo "[FAIL] missing jq" >&2; exit 2; }
 [[ -d "$ROOT" && -f "$STRUCT" ]] || { echo "[FAIL] missing root or struct" >&2; exit 2; }
 ROOT="$(cd "$ROOT" && pwd)"
 STRUCT="$(cd "$(dirname "$STRUCT")" && pwd)/$(basename "$STRUCT")"
+if jq -e '((.includes // []) | length) > 0' "$STRUCT" >/dev/null 2>&1; then
+  resolved="$(dirname "$OUT")/.bootstrap/resolved.struct.json"
+  mkdir -p "$(dirname "$resolved")"
+  bash "$SELF_DIR/struct_resolve.sh" --struct "$STRUCT" --output "$resolved" >/dev/null
+  STRUCT="$(cd "$(dirname "$resolved")" && pwd)/$(basename "$resolved")"
+fi
 mkdir -p "$(dirname "$OUT")"
 
 tmp="$(mktemp -d)"

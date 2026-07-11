@@ -34,6 +34,25 @@
       "release_gate": true
     },
     {
+      "name": "capability-truth",
+      "description": "Run an executable capability truth audit across analyze/simulate/apply/replay/generalization pipelines.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--spec",
+        "--fixtures",
+        "--output",
+        "--json"
+      ],
+      "output": "capability truth audit JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo capability-truth --json",
+      "tests": [
+        "tests/test_v20_capability_truth_audit.sh"
+      ],
+      "release_gate": true
+    },
+    {
       "name": "adoption-cockpit",
       "description": "Generate terminal, JSON, Markdown, and HTML adoption cockpit report.",
       "required_args": [],
@@ -1081,6 +1100,56 @@
       "tests": [
         "tests/test_v07_roadmap.sh"
       ],
+      "release_gate": true
+    },
+    {
+      "name": "evolution-benchmark",
+      "description": "Replay the resumable long-horizon evolution benchmark and emit its scorecard.",
+      "required_args": [],
+      "optional_args": ["--output-dir", "--json"],
+      "output": "long-horizon evolution scorecard JSON",
+      "example": "simple_model_pi.sh evolution-benchmark --json",
+      "tests": ["tests/test_v20_evolution_benchmark.sh"],
+      "release_gate": true
+    },
+    {
+      "name": "performance-v2",
+      "description": "Measure v2 incremental analysis and test-selection economics across cache scenarios.",
+      "required_args": [],
+      "optional_args": ["--output-dir", "--json"],
+      "output": "performance economics scorecard JSON",
+      "example": "simple_model_pi.sh performance-v2 --json",
+      "tests": ["tests/test_v20_performance_v2.sh"],
+      "release_gate": true
+    },
+    {
+      "name": "macro-pack-verify",
+      "description": "Verify macro-pack provenance, content hash, signatures, and revocation state offline.",
+      "required_args": ["--input"],
+      "optional_args": ["--key", "--revocations", "--json"],
+      "output": "macro-pack trust decision JSON",
+      "example": "simple_model_pi.sh macro-pack-verify --input pack.json --json",
+      "tests": ["tests/test_v20_macro_pack_signing.sh"],
+      "release_gate": true
+    },
+    {
+      "name": "interoperability",
+      "description": "Expose the stable v2 project-intelligence MCP tool contract and adapter surface.",
+      "required_args": [],
+      "optional_args": ["--json"],
+      "output": "MCP tools/list JSON",
+      "example": "simple_model_pi.sh interoperability --json",
+      "tests": ["tests/test_v20_interoperability.sh"],
+      "release_gate": true
+    },
+    {
+      "name": "release-slo-v2",
+      "description": "Run the final v2 production release gate over external, held-out, performance, replay, supply-chain, and plugin evidence.",
+      "required_args": [],
+      "optional_args": ["--output", "--json"],
+      "output": "v2 production readiness JSON",
+      "example": "simple_model_pi.sh release-slo-v2 --json",
+      "tests": ["tests/test_v20_release_gate.sh"],
       "release_gate": true
     },
     {

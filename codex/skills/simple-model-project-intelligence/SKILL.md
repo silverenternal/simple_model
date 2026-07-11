@@ -66,6 +66,17 @@ codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh dashbo
 codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh full-check
 ```
 
+7. For the v2 production evidence path, run the resumable evolution benchmark,
+incremental performance economics, offline macro-pack verification, portable
+MCP surface, and final release SLO:
+
+```bash
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh evolution-benchmark --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh performance-v2 --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh interoperability --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh release-slo-v2 --json
+```
+
 ## Operating Rules
 
 - Keep `todo.json` product-roadmap progress separate from component todos in `struct.json`.

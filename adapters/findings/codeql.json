@@ -1,0 +1,1 @@
+{"schema_version":"1.0","tool":"codeql","fields":["rule_id","path","line","message","category","severity","semantic_id"],"provenance_required":true}

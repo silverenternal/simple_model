@@ -1,0 +1,11 @@
+{
+  "schema_version": "3.0",
+  "nodes": [
+    {"id":"ts:serve","symbol_id":"sym:ts:serve","kind":"function","name":"serve","language":"typescript","repository":"fixture","component":"api","syntax":{"node_type":"function_declaration","parameter_count":1},"style":{"indent":2,"quote":"double","line_ending":"lf"}},
+    {"id":"py:serve","symbol_id":"sym:py:serve","kind":"function","name":"serve","language":"python","repository":"fixture","component":"api","syntax":{"node_type":"function_declaration","parameter_count":1},"style":{"indent":4,"quote":"single","line_ending":"lf"}},
+    {"id":"go:serve","symbol_id":"sym:go:serve","kind":"function","name":"serve","language":"go","repository":"fixture","component":"api","syntax":{"node_type":"function_declaration","parameter_count":1},"style":{"indent":"tabs","quote":"double","line_ending":"lf"}},
+    {"id":"ts:serve-helper","symbol_id":"sym:ts:serve-helper","kind":"function","name":"serve_helper","language":"typescript","repository":"fixture","component":"api","syntax":{"node_type":"function_declaration","parameter_count":1}},
+    {"id":"ts:constant","symbol_id":"sym:constant","kind":"constant","name":"serve","language":"typescript","repository":"fixture","component":"api","syntax":{"node_type":"variable_declaration"}}
+  ],
+  "edges": []
+}

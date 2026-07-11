@@ -51,7 +51,7 @@ check "layered plugin workflows exist" bash -c "test -f .github/workflows/plugin
 check "mcp plugin tools list" bash -c "printf '{\"id\":1,\"method\":\"tools/list\"}\\n' | SIMPLE_MODEL_ROOT='$ROOT_DIR' bash tools/simple_model_mcp.sh | jq -e '.result.tools[]|select(.name==\"plugin_doctor\")'"
 check "mcp plugin doctor call" bash -c "printf '{\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"plugin_doctor\",\"arguments\":{\"target_root\":\"$TARGET\"}}}\\n' | SIMPLE_MODEL_ROOT='$ROOT_DIR' bash tools/simple_model_mcp.sh | jq -e '.result.ok == true'"
 check "mcp plugin self-check call" bash -c "printf '{\"id\":1,\"method\":\"tools/call\",\"params\":{\"name\":\"plugin_self_check\",\"arguments\":{\"target_root\":\"$TARGET\"}}}\\n' | SIMPLE_MODEL_ROOT='$ROOT_DIR' bash tools/simple_model_mcp.sh | jq -e '.result.ok == true'"
-check "todo roadmap v1.2 completed" bash -c "jq -e '.version == \"1.2-macro-maximalist-deterministic-optimizer-roadmap\" and .status == \"completed\" and ([.todos[]|select(.status!=\"done\")]|length == 0) and ([.todos[]|select(.priority==\"critical\")]|length >= 9) and all(.todos[]; (.acceptance|length) >= 4 and (.files|length) >= 5)' todo.json"
+check "todo roadmap v2 executable macro wisdom planned" bash -c "jq -e '.version == \"2.0-executable-macro-wisdom-roadmap\" and .status == \"planned\" and (.waves|length) >= 7 and (.todos|length) >= 45 and all(.todos[]; (.status == \"pending\" or .status == \"done\") and (.acceptance|length)>=4 and (.deliverables|length)>=4 and (.dependencies|type)==\"array\" and (.metrics|type)==\"object\") and (([.todos[].id]|length)==([.todos[].id]|unique|length))' todo.json"
 
 echo "  passed: $pass"
 echo "  failed: $fail"

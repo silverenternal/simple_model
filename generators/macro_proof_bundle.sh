@@ -13,7 +13,11 @@ done
 mkdir -p "$(dirname "$OUT")"
 tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT
 bash "$(dirname "$0")/macro_operator_ir.sh" --output "$tmp/operators.json" --json >/dev/null
-bash "$(dirname "$0")/macro_discover_motifs.sh" --output "$tmp/motifs.json" --json >/dev/null
+if [[ -f generated/macros/motif-candidates.json ]]; then
+  cp generated/macros/motif-candidates.json "$tmp/motifs.json"
+else
+  bash "$(dirname "$0")/macro_discover_motifs.sh" --output "$tmp/motifs.json" --json >/dev/null
+fi
 bash "$(dirname "$0")/macro_preconditions.sh" --output "$tmp/preconditions.json" --json >/dev/null
 bash "$(dirname "$0")/macro_compose.sh" --operators "$tmp/operators.json" --output "$tmp/compose.json" --json >/dev/null
 bash "$(dirname "$0")/macro_plan_search.sh" --operators "$tmp/operators.json" --composition "$tmp/compose.json" --output "$tmp/search.json" --json >/dev/null

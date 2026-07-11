@@ -61,6 +61,7 @@ if [[ -n "${POSITIONAL_STRUCT:-}" ]]; then
 fi
 
 [[ -f "$STRUCT_FILE" ]] || { echo "[FAIL] struct.json not found: $STRUCT_FILE" >&2; exit 2; }
+resolve_struct_includes
 
 mkdir -p "$(dirname "$PLAN_OUT")"
 

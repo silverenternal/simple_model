@@ -29,6 +29,12 @@ mkdir -p "$OUT_DIR"
 
 ROOT="$(cd "$ROOT" && pwd)"
 STRUCT_ABS="$(cd "$(dirname "$STRUCT")" && pwd)/$(basename "$STRUCT")"
+if jq -e '((.includes // []) | length) > 0' "$STRUCT_ABS" >/dev/null 2>&1; then
+    resolved="$OUT_DIR/.bootstrap/resolved.struct.json"
+    mkdir -p "$(dirname "$resolved")"
+    bash "$SELF_DIR/struct_resolve.sh" --struct "$STRUCT_ABS" --output "$resolved" >/dev/null
+    STRUCT_ABS="$(cd "$(dirname "$resolved")" && pwd)/$(basename "$resolved")"
+fi
 
 adoption=$(bash "$SELF_DIR/adoption_audit.sh" --root "$ROOT" --struct "$STRUCT_ABS" --json || true)
 interface=$(bash "$SELF_DIR/interface_scan.sh" --root "$ROOT" --struct "$STRUCT_ABS" --json || true)

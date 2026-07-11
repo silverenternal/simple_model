@@ -1,0 +1,17 @@
+{
+  "schema_version": "2.0",
+  "scenarios": ["cold", "warm", "one_file", "one_symbol", "branch_switch", "cache_corruption"],
+  "budgets": {
+    "incremental_analysis_p95_seconds": 2,
+    "affected_check_p95_seconds": 30,
+    "unlabeled_suite_max_seconds": 30,
+    "missed_affected_tests": 0,
+    "duplicate_heavy_phase_executions": 0
+  },
+  "invariants": [
+    "isolated_output_partitions",
+    "deterministic_merge_order",
+    "cache_disabled_release_correctness",
+    "immutable_input_digest_artifacts"
+  ]
+}

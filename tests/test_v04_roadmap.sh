@@ -69,7 +69,7 @@ JSON
 check "federation resolve" bash -c "bash generators/federation_resolve.sh '$TMP_DIR/federation.json' --json | jq -e '.summary.repos == 1'"
 check "batch plan" bash -c "echo '$impact' | bash generators/batch_plan.sh --json | jq -e '.summary.components == 1'"
 check "architecture debt" bash -c "bash generators/architecture_debt.sh --root '$TMP_DIR' --struct '$TMP_DIR/struct.json' --json | jq -e '.summary.findings >= 0'"
-check "todo roadmap v1.2 completed" bash -c "jq -e '.version == \"1.2-macro-maximalist-deterministic-optimizer-roadmap\" and .status == \"completed\" and ([.todos[]|select(.status!=\"done\")]|length == 0) and ([.todos[]|select(.priority==\"critical\")]|length >= 9) and all(.todos[]; (.acceptance|length) >= 4 and (.files|length) >= 5)' todo.json"
+check "todo roadmap v2 executable macro wisdom planned" bash -c "jq -e '.version == \"2.0-executable-macro-wisdom-roadmap\" and .status == \"planned\" and (.waves|length) >= 7 and (.todos|length) >= 45 and all(.todos[]; ((.status == \"pending\" or .status == \"done\")) and (.acceptance|length)>=4 and (.deliverables|length)>=4 and (.dependencies|type)==\"array\" and (.metrics|type)==\"object\") and (([.todos[].id]|length)==([.todos[].id]|unique|length))' todo.json"
 
 echo "  passed: $pass"
 echo "  failed: $fail"

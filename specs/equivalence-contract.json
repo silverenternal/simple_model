@@ -1,0 +1,8 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Behavioral Equivalence Contract v1",
+  "type":"object",
+  "required":["schema_version","mode","before","after"],
+  "properties":{"schema_version":{"const":"1.0"},"mode":{"enum":["exact","normalized","observational","bounded","breaking"]},"before":{},"after":{},"normalizers":{"type":"array","items":{"type":"object","required":["path","type"],"properties":{"path":{"type":"string"},"type":{"enum":["timestamp","uuid","ordering","whitespace","volatile"]}}}},"observe_paths":{"type":"array","items":{"type":"string"}},"budget":{"type":"object"},"unit_tests_passed":{"type":"boolean"}},
+  "invariants":["Untyped ignored fields are rejected.","A declared contract failure remains a failure even when unit_tests_passed is true.","Failures retain minimized differing inputs and graph paths."]
+}

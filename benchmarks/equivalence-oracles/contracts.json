@@ -1,0 +1,8 @@
+{
+  "schema_version":"1.0",
+  "contracts":[
+    {"id":"exact-api","mode":"exact","before":{"status":200,"body":{"ok":true}},"after":{"status":200,"body":{"ok":true}}},
+    {"id":"normalized-trace","mode":"normalized","before":{"timestamp":"2026-01-01T00:00:00Z","value":1},"after":{"timestamp":"2026-01-02T00:00:00Z","value":1},"normalizers":[{"path":"timestamp","type":"timestamp"}]},
+    {"id":"bounded-performance","mode":"bounded","before":{"value":"same"},"after":{"value":"same"},"budget":{"duration_ms":40,"max_duration_ms":50}}
+  ]
+}

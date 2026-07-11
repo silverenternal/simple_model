@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "simple-model://adapter-protocol-v1",
+  "title": "Simple Model Adapter Protocol v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "adapter", "capabilities", "languages", "provenance", "limits", "sandbox", "deterministic"],
+  "properties": {
+    "protocol": {"const": "adapter-protocol-v1"},
+    "adapter": {"type":"object","additionalProperties":false,"required":["id","version"],"properties":{"id":{"type":"string","pattern":"^[a-z][a-z0-9._-]+$"},"version":{"type":"string","pattern":"^[0-9]+\\.[0-9]+\\.[0-9]+$"}}},
+    "capabilities": {"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["parser","query","rewrite","runtime_evidence"]}},
+    "languages": {"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","pattern":"^[a-z][a-z0-9+#.-]*$"}},
+    "provenance": {"type":"object","additionalProperties":false,"required":["source","tool","version","mode"],"properties":{"source":{"type":"string","minLength":1},"tool":{"type":"string","minLength":1},"version":{"type":"string","minLength":1},"mode":{"enum":["fixture","local","sandbox","remote"]}}},
+    "limits": {"type":"object","additionalProperties":false,"required":["timeout_ms","max_output_bytes"],"properties":{"timeout_ms":{"type":"integer","minimum":1},"max_output_bytes":{"type":"integer","minimum":1024}}},
+    "sandbox": {"type":"object","additionalProperties":false,"required":["required","network","write_paths"],"properties":{"required":{"type":"boolean"},"network":{"const":false},"write_paths":{"type":"array","items":{"type":"string"}}}},
+    "deterministic": {"const":true},
+    "optional": {"type":"boolean","default":false}
+  },
+  "request": {"type":"object","additionalProperties":false,"required":["protocol","request_id","operation","language","input"],"properties":{"protocol":{"const":"adapter-protocol-v1"},"request_id":{"type":"string","pattern":"^[A-Za-z0-9._:-]+$"},"operation":{"enum":["parse","query","rewrite","runtime_evidence"]},"language":{"type":"string"},"input":{"type":"object","additionalProperties":false,"required":["path","sha256","freshness"],"properties":{"path":{"type":"string","minLength":1},"sha256":{"type":"string","pattern":"^[a-f0-9]{64}$"},"content":{"type":"string"},"freshness":{"enum":["current","stale"]}}},"parameters":{"type":"object"}}},
+  "response": {"type":"object","additionalProperties":false,"required":["protocol","request_id","adapter","operation","language","available","status","result","provenance","input","write_set","deterministic","decision","fail_closed"],"properties":{"protocol":{"const":"adapter-protocol-v1"},"request_id":{"type":"string"},"adapter":{"type":"object","required":["id","version"]},"operation":{"enum":["parse","query","rewrite","runtime_evidence"]},"language":{"type":"string"},"available":{"type":"boolean"},"status":{"enum":["ok","unavailable"]},"result":{"type":"object"},"provenance":{"type":"object","required":["source","tool","version","mode"]},"input":{"type":"object","required":["sha256","freshness"]},"write_set":{"type":"array","items":{"type":"string"}},"deterministic":{"const":true},"decision":{"enum":["accept","review_only","reject"]},"fail_closed":{"const":true},"evidence":{"type":"array"}}},
+  "invariants": [
+    "A response is accepted only after manifest capability/language negotiation, exact request identity, current input hash, complete provenance, and deterministic replay.",
+    "Rewrite write_set entries must be within the manifest sandbox write_paths; network access is never permitted.",
+    "Unavailable optional adapters produce review_only or reject with fail_closed=true and cannot claim success."
+  ]
+}

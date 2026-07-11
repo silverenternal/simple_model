@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "fixture": "polyglot-serve",
+  "languages": ["typescript", "python", "go"],
+  "query": "query.json",
+  "expected_node_ids": ["ts:serve", "py:serve", "go:serve"],
+  "negative_node_ids": ["ts:serve-helper", "ts:constant"],
+  "thresholds": {"precision_min": 0.99, "recall_min": 0.97},
+  "notes": ["formatting, quote, line-ending, and harmless body-style changes must preserve identity", "duplicate stable identities are review-only"]
+}

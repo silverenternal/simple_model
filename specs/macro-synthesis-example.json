@@ -1,0 +1,7 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Macro Synthesis Example v1",
+  "type":"object",
+  "required":["schema_version","examples"],
+  "properties":{"schema_version":{"const":"1.0"},"examples":{"type":"array","minItems":1},"held_out":{"type":"array"}}
+}

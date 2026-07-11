@@ -1,0 +1,9 @@
+{
+  "schema_version":"1.0",
+  "examples":[
+    {"id":"ts-route","before":{"kind":"route","name":"old","method":"GET"},"after":{"kind":"route","name":"new","method":"GET"}},
+    {"id":"py-route","before":{"kind":"route","name":"legacy","method":"GET"},"after":{"kind":"route","name":"current","method":"GET"}},
+    {"id":"negative-post","negative":true,"before":{"kind":"route","name":"old","method":"POST"},"after":{"kind":"route","name":"new","method":"POST"},"forbidden_matches":["method:POST"]}
+  ],
+  "held_out":[{"before":{"kind":"route","name":"v1","method":"GET"},"after":{"kind":"route","name":"v2","method":"GET"},"expected":true}]
+}

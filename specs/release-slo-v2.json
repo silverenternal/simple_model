@@ -1,0 +1,26 @@
+{
+  "schema_version": "2.0",
+  "program_targets": {
+    "apply_capable_macros": 24,
+    "simulate_capable_macros": 40,
+    "macro_families": 16,
+    "supported_languages_with_native_rewrites": 6,
+    "real_repository_corpus": 60,
+    "macro_gauntlet_cases": 500,
+    "false_safe_apply": 0,
+    "interface_blocked_ratio_max": 0.1,
+    "incremental_analysis_p95_seconds": 2,
+    "affected_check_p95_seconds": 30,
+    "rollback_success_rate": 1,
+    "replay_determinism_rate": 1,
+    "ai_structural_decisions": 0
+  },
+  "evidence_policy": {
+    "cache_disabled": true,
+    "hermetic_replay": true,
+    "external_corpus_required": true,
+    "held_out_evidence_required": true,
+    "supply_chain_verification_required": true
+  },
+  "plugin_summary_fields": ["maturity", "benchmark", "proof", "performance", "compatibility"]
+}

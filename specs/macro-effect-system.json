@@ -1,0 +1,9 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Macro Effect System v1",
+  "type":"object",
+  "required":["schema_version","effects","alias_status"],
+  "properties":{"schema_version":{"const":"1.0"},"effects":{"type":"array","items":{"type":"object","required":["kind","id","access"]}},"alias_status":{"type":"object","required":["ok","unknown","cycles"]}},
+  "effect_kinds":["direct_file","symbol","generated_output","contract","test","build_target","runtime_surface"],
+  "invariants":["Unknown aliasing blocks parallel apply but permits isolated simulation.","A write/write or write/read overlap emits a counterexample.","Accepted commuting effects have deterministic serial and parallel hashes."]
+}

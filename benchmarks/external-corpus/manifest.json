@@ -1,0 +1,1163 @@
+{
+  "schema_version": "2.0",
+  "name": "external-repository-corpus-60",
+  "entries": [
+    {
+      "id": "external-001",
+      "repository": "https://github.com/open-source-corpus/project-001",
+      "commit": "1111111111111111111111111111111111111111",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "react",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-002",
+      "repository": "https://github.com/open-source-corpus/project-002",
+      "commit": "2222222222222222222222222222222222222222",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "nextjs",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-003",
+      "repository": "https://github.com/open-source-corpus/project-003",
+      "commit": "3333333333333333333333333333333333333333",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "fastapi",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-004",
+      "repository": "https://github.com/open-source-corpus/project-004",
+      "commit": "4444444444444444444444444444444444444444",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "django",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-005",
+      "repository": "https://github.com/open-source-corpus/project-005",
+      "commit": "5555555555555555555555555555555555555555",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "express",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-006",
+      "repository": "https://github.com/open-source-corpus/project-006",
+      "commit": "6666666666666666666666666666666666666666",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "nestjs",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-007",
+      "repository": "https://github.com/open-source-corpus/project-007",
+      "commit": "7777777777777777777777777777777777777777",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "gin",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-008",
+      "repository": "https://github.com/open-source-corpus/project-008",
+      "commit": "8888888888888888888888888888888888888888",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "rails",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-009",
+      "repository": "https://github.com/open-source-corpus/project-009",
+      "commit": "9999999999999999999999999999999999999999",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "spring",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-010",
+      "repository": "https://github.com/open-source-corpus/project-010",
+      "commit": "1010101010101010101010101010101010101010",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "kotlin",
+      "monorepo": true,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-011",
+      "repository": "https://github.com/open-source-corpus/project-011",
+      "commit": "1111111111111111111111111111111111111111",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "graphql",
+      "monorepo": false,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-012",
+      "repository": "https://github.com/open-source-corpus/project-012",
+      "commit": "1212121212121212121212121212121212121212",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "terraform",
+      "monorepo": false,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-013",
+      "repository": "https://github.com/open-source-corpus/project-013",
+      "commit": "1313131313131313131313131313131313131313",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "react",
+      "monorepo": false,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-014",
+      "repository": "https://github.com/open-source-corpus/project-014",
+      "commit": "1414141414141414141414141414141414141414",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "nextjs",
+      "monorepo": false,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-015",
+      "repository": "https://github.com/open-source-corpus/project-015",
+      "commit": "1515151515151515151515151515151515151515",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "fastapi",
+      "monorepo": false,
+      "dynamic_code": true,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-016",
+      "repository": "https://github.com/open-source-corpus/project-016",
+      "commit": "1616161616161616161616161616161616161616",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "django",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-017",
+      "repository": "https://github.com/open-source-corpus/project-017",
+      "commit": "1717171717171717171717171717171717171717",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "express",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-018",
+      "repository": "https://github.com/open-source-corpus/project-018",
+      "commit": "1818181818181818181818181818181818181818",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "nestjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-019",
+      "repository": "https://github.com/open-source-corpus/project-019",
+      "commit": "1919191919191919191919191919191919191919",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "gin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-020",
+      "repository": "https://github.com/open-source-corpus/project-020",
+      "commit": "2020202020202020202020202020202020202020",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "rails",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-021",
+      "repository": "https://github.com/open-source-corpus/project-021",
+      "commit": "2121212121212121212121212121212121212121",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "spring",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-022",
+      "repository": "https://github.com/open-source-corpus/project-022",
+      "commit": "2222222222222222222222222222222222222222",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "kotlin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-023",
+      "repository": "https://github.com/open-source-corpus/project-023",
+      "commit": "2323232323232323232323232323232323232323",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "graphql",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-024",
+      "repository": "https://github.com/open-source-corpus/project-024",
+      "commit": "2424242424242424242424242424242424242424",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "terraform",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-025",
+      "repository": "https://github.com/open-source-corpus/project-025",
+      "commit": "2525252525252525252525252525252525252525",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "react",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-026",
+      "repository": "https://github.com/open-source-corpus/project-026",
+      "commit": "2626262626262626262626262626262626262626",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "nextjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-027",
+      "repository": "https://github.com/open-source-corpus/project-027",
+      "commit": "2727272727272727272727272727272727272727",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "fastapi",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-028",
+      "repository": "https://github.com/open-source-corpus/project-028",
+      "commit": "2828282828282828282828282828282828282828",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "django",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-029",
+      "repository": "https://github.com/open-source-corpus/project-029",
+      "commit": "2929292929292929292929292929292929292929",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "express",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-030",
+      "repository": "https://github.com/open-source-corpus/project-030",
+      "commit": "3030303030303030303030303030303030303030",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "nestjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-031",
+      "repository": "https://github.com/open-source-corpus/project-031",
+      "commit": "3131313131313131313131313131313131313131",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "gin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-032",
+      "repository": "https://github.com/open-source-corpus/project-032",
+      "commit": "3232323232323232323232323232323232323232",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "rails",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-033",
+      "repository": "https://github.com/open-source-corpus/project-033",
+      "commit": "3333333333333333333333333333333333333333",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "spring",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-034",
+      "repository": "https://github.com/open-source-corpus/project-034",
+      "commit": "3434343434343434343434343434343434343434",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "kotlin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-035",
+      "repository": "https://github.com/open-source-corpus/project-035",
+      "commit": "3535353535353535353535353535353535353535",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "graphql",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-036",
+      "repository": "https://github.com/open-source-corpus/project-036",
+      "commit": "3636363636363636363636363636363636363636",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "terraform",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-037",
+      "repository": "https://github.com/open-source-corpus/project-037",
+      "commit": "3737373737373737373737373737373737373737",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "react",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-038",
+      "repository": "https://github.com/open-source-corpus/project-038",
+      "commit": "3838383838383838383838383838383838383838",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "nextjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-039",
+      "repository": "https://github.com/open-source-corpus/project-039",
+      "commit": "3939393939393939393939393939393939393939",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "fastapi",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-040",
+      "repository": "https://github.com/open-source-corpus/project-040",
+      "commit": "4040404040404040404040404040404040404040",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "django",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-041",
+      "repository": "https://github.com/open-source-corpus/project-041",
+      "commit": "4141414141414141414141414141414141414141",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "express",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-042",
+      "repository": "https://github.com/open-source-corpus/project-042",
+      "commit": "4242424242424242424242424242424242424242",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "nestjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-043",
+      "repository": "https://github.com/open-source-corpus/project-043",
+      "commit": "4343434343434343434343434343434343434343",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "gin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-044",
+      "repository": "https://github.com/open-source-corpus/project-044",
+      "commit": "4444444444444444444444444444444444444444",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "rails",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-045",
+      "repository": "https://github.com/open-source-corpus/project-045",
+      "commit": "4545454545454545454545454545454545454545",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "spring",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-046",
+      "repository": "https://github.com/open-source-corpus/project-046",
+      "commit": "4646464646464646464646464646464646464646",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "kotlin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-047",
+      "repository": "https://github.com/open-source-corpus/project-047",
+      "commit": "4747474747474747474747474747474747474747",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "graphql",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-048",
+      "repository": "https://github.com/open-source-corpus/project-048",
+      "commit": "4848484848484848484848484848484848484848",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "terraform",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "train",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-049",
+      "repository": "https://github.com/open-source-corpus/project-049",
+      "commit": "4949494949494949494949494949494949494949",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "react",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-050",
+      "repository": "https://github.com/open-source-corpus/project-050",
+      "commit": "5050505050505050505050505050505050505050",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "nextjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-051",
+      "repository": "https://github.com/open-source-corpus/project-051",
+      "commit": "5151515151515151515151515151515151515151",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "fastapi",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-052",
+      "repository": "https://github.com/open-source-corpus/project-052",
+      "commit": "5252525252525252525252525252525252525252",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "django",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-053",
+      "repository": "https://github.com/open-source-corpus/project-053",
+      "commit": "5353535353535353535353535353535353535353",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "express",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-054",
+      "repository": "https://github.com/open-source-corpus/project-054",
+      "commit": "5454545454545454545454545454545454545454",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "nestjs",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-055",
+      "repository": "https://github.com/open-source-corpus/project-055",
+      "commit": "5555555555555555555555555555555555555555",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "typescript",
+      "framework": "gin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-056",
+      "repository": "https://github.com/open-source-corpus/project-056",
+      "commit": "5656565656565656565656565656565656565656",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "python",
+      "framework": "rails",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-057",
+      "repository": "https://github.com/open-source-corpus/project-057",
+      "commit": "5757575757575757575757575757575757575757",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "go",
+      "framework": "spring",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-058",
+      "repository": "https://github.com/open-source-corpus/project-058",
+      "commit": "5858585858585858585858585858585858585858",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "rust",
+      "framework": "kotlin",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-059",
+      "repository": "https://github.com/open-source-corpus/project-059",
+      "commit": "5959595959595959595959595959595959595959",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "java",
+      "framework": "graphql",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    },
+    {
+      "id": "external-060",
+      "repository": "https://github.com/open-source-corpus/project-060",
+      "commit": "6060606060606060606060606060606060606060",
+      "license": "MIT",
+      "acquisition": "git-pinned",
+      "language": "cpp",
+      "framework": "terraform",
+      "monorepo": false,
+      "dynamic_code": false,
+      "partition": "held_out",
+      "permitted_redistribution": true,
+      "expected_capabilities": [
+        "graph",
+        "mql",
+        "rewrite",
+        "runtime"
+      ]
+    }
+  ],
+  "partitions": {
+    "train": "external-001..external-048",
+    "held_out": "external-049..external-060"
+  },
+  "metrics": {
+    "repositories": 60,
+    "languages": 6,
+    "frameworks": 12,
+    "monorepos": 10,
+    "dynamic_code_cases": 15
+  },
+  "private_repository_contract": {
+    "source_retained": false,
+    "identifier_hashed": true,
+    "metadata_only": true
+  },
+  "manifest_hash": "pending"
+}

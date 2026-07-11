@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Macro Query Language (MQL)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "match", "capture", "quantifier"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "match": {"$ref": "#/$defs/pattern"},
+    "capture": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "not": {"type": "array", "items": {"$ref": "#/$defs/pattern"}},
+    "traverse": {
+      "type": "object", "additionalProperties": false,
+      "required": ["direction", "edge_kind", "min_depth", "max_depth", "to", "capture"],
+      "properties": {
+        "direction": {"enum": ["out", "in"]}, "edge_kind": {"type": "string"},
+        "min_depth": {"type": "integer", "minimum": 1, "maximum": 8},
+        "max_depth": {"type": "integer", "minimum": 1, "maximum": 8},
+        "to": {"$ref": "#/$defs/pattern"}, "capture": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"}
+      }
+    },
+    "quantifier": {"enum": ["any", "all", "count"]},
+    "select": {"type": "array", "items": {"enum": ["id", "kind", "name", "path", "repository", "component", "evidence"]}, "uniqueItems": true}
+  },
+  "$defs": {
+    "pattern": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "kind": {"type": "string"}, "name": {"type": "string"}, "repository": {"type": "string"},
+        "component": {"type": "string"}, "evidence_class": {"type": "string"},
+        "confidence_gte": {"type": "number", "minimum": 0, "maximum": 1}
+      }
+    }
+  }
+}

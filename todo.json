@@ -1,438 +1,1418 @@
 {
   "name": "simple_model",
-  "version": "1.2-macro-maximalist-deterministic-optimizer-roadmap",
-  "status": "completed",
-  "as_of": "2026-07-10",
-  "positioning": "Turn macros from safe codemod units into a deterministic project-optimization substrate: discoverable from semantic graph motifs, composable into verified plans, executable through bounded search, and self-improving through benchmark evidence.",
-  "principle": "The hard advantage is not writing more macros by hand. The hard advantage is making macros behave like typed, testable, reversible optimization operators over a semantic project graph.",
-  "why_this_can_be_hard_for_others": [
-    "Most coding agents treat code changes as conversational edits; simple_model already has struct, semantic graph, risk gates, macro contracts, rollback, benchmark scorecards, and plugin command surfaces.",
-    "Most codemod systems are strong at known migrations but weak at project-specific discovery. simple_model can derive macro candidates from adoption gaps, graph motifs, dynamic edges, tests, ownership, and score deltas.",
-    "Most static-analysis tools stop at findings. simple_model can turn repeated findings into review-only macro candidates, prove preconditions, run drills, and route safe subsets into deterministic apply queues.",
-    "Most AI workflows do not preserve replayable evidence. simple_model can attach graph paths, parser confidence, run logs, rollback manifests, affected tests, and release SLO outcomes to each macro decision."
-  ],
-  "north_star": "Given a messy large repository, simple_model should discover structural improvement patterns, synthesize typed macro operators, search for the best macro plan under risk and runtime budgets, prove safety through drills and tests, apply only evidence-sufficient changes, and learn which macro families work across projects.",
-  "success_criteria": {
-    "macro_power": [
-      "Macros are typed operators with inputs, outputs, graph preconditions, write-set effects, score effects, rollback semantics, and affected-test selectors.",
-      "Macro candidates can be generated from graph motifs and repeated findings without becoming apply-capable until fixtures, proofs, and policy gates pass.",
-      "Multiple macros can be composed into plans only when their read/write sets, graph effects, dynamic risks, and rollback scopes are compatible.",
-      "The optimizer can search macro plans under budget and explain why selected plans dominate alternatives."
+  "version": "2.0-executable-macro-wisdom-roadmap",
+  "status": "planned",
+  "as_of": "2026-07-11",
+  "positioning": "A model-portable deterministic control plane that understands living software systems, compiles structural intent into proof-carrying macros, and safely evolves one repository or an entire repository fleet.",
+  "north_star": "Given a large half-built project, simple_model should reconstruct a trustworthy executable model of its code and runtime behavior, identify high-value structural improvements, synthesize or select reusable macros, prove their safety, execute them transactionally, and continuously verify that the project becomes easier to evolve.",
+  "diagnosis": {
+    "current_strengths": [
+      "The project already has struct.json, semantic graphs, dynamic-edge evidence, macro contracts, plan search, rollback metadata, benchmark gates, plugin commands, and MCP exposure.",
+      "The deterministic control plane is model-portable and already constrains AI to bounded leaf work.",
+      "The repository can ingest half-built projects, issue interface-stability reports, and produce replayable proof bundles."
     ],
-    "production_safety": [
-      "Every apply path has dry-run, precondition proof, conflict analysis, idempotency drill, rollback drill, affected-test proof, and replay log.",
-      "Unsafe dynamic edges, low parser confidence, missing tests, or ownership conflicts automatically downgrade actions to review-first or gather-evidence.",
-      "Macro plan execution is transactional: partial failure yields deterministic rollback and a resumable run record.",
-      "Release gates include false-safe-apply, rollback failure, non-idempotency, missed affected tests, and benchmark regression thresholds."
-    ],
-    "learning_loop": [
-      "Macro outcomes feed a local corpus with success/failure, score delta, runtime, review reason, rollback cost, and changed graph motifs.",
-      "The system can rank macro families by observed value across fixtures and local repos.",
-      "Generated macro templates are promoted only after crossing deterministic evidence thresholds.",
-      "Reports show which macro families are not worth automating yet."
+    "current_gaps": [
+      "The current release reports 13 macro operators but zero apply-capable and zero simulate-capable operators; most macro intelligence still stops at advice.",
+      "The current self-analysis classifies all 94 discovered interfaces as blocked, so the evidence model is too conservative or too weak to support useful automation.",
+      "The macro gauntlet has only four cases, which is insufficient evidence for cross-project production claims.",
+      "The project has many commands and reports, but no unified structural query language, lossless edit representation, always-on intelligence daemon, or multi-repository campaign executor.",
+      "Runtime evidence exists as a concept but is not yet a continuous feedback loop that can discharge static uncertainty and promote macros safely."
     ]
   },
+  "research_basis": [
+    {
+      "name": "OpenRewrite recipes and Lossless Semantic Trees",
+      "url": "https://docs.openrewrite.org/concepts-and-explanations/recipes",
+      "lesson": "Production refactoring needs typed, composable transformations over format-preserving semantic trees."
+    },
+    {
+      "name": "CodeQL data-flow analysis",
+      "url": "https://codeql.github.com/docs/writing-codeql-queries/about-data-flow-analysis/",
+      "lesson": "AST structure alone is insufficient; local/global data flow, taint state, barriers, and path evidence must become first-class graph facts."
+    },
+    {
+      "name": "Tree-sitter query syntax",
+      "url": "https://tree-sitter.github.io/tree-sitter/using-parsers/queries/1-syntax.html",
+      "lesson": "A small structural query DSL can make polyglot pattern matching reusable and explainable."
+    },
+    {
+      "name": "Clang AST matchers and refactoring engine",
+      "url": "https://clang.llvm.org/docs/RefactoringEngine.html",
+      "lesson": "Matchers, bound nodes, typed replacements, and rule-specific initiation requirements are proven building blocks for deterministic source transformation."
+    },
+    {
+      "name": "OpenTelemetry semantic conventions",
+      "url": "https://opentelemetry.io/docs/concepts/semantic-conventions/",
+      "lesson": "Runtime traces become portable evidence only when normalized into stable semantic conventions."
+    },
+    {
+      "name": "Nix reproducible builds",
+      "url": "https://reproducible.nixos.org/",
+      "lesson": "Macro proof requires hermetic execution and reproducible artifacts, not merely a successful local test run."
+    },
+    {
+      "name": "SWE-EVO long-horizon evolution benchmark",
+      "url": "https://arxiv.org/abs/2512.18470",
+      "lesson": "Long-running multi-file evolution remains substantially harder than isolated issue repair and needs explicit state, checkpoints, and regression preservation."
+    },
+    {
+      "name": "Long-running agent harness design",
+      "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "lesson": "The harness and evaluator loop are part of capability; persistent progress, independent evaluation, and resumable context must be designed explicitly."
+    }
+  ],
+  "operating_invariants": [
+    "Deterministic scripts own structural decisions, write sets, scheduling, promotion, rollback, and release gates.",
+    "AI may explain, propose parameters, classify unresolved domain intent, or generate review-only candidates; it may not directly promote or apply a macro.",
+    "No macro becomes apply-capable without typed matching, bounded effects, idempotency, rollback, affected-test coverage, counterexamples, and benchmark evidence.",
+    "Unknown dynamic behavior lowers trust and triggers evidence gathering; it is never silently interpreted as safe.",
+    "Every decisive artifact is content-addressed, replayable offline, and records parser/runtime/tool provenance.",
+    "Daily development uses affected checks and caches; release certification uses hermetic full checks and adversarial benchmarks.",
+    "Every plugin command has a stable JSON contract, terminal rendering, tests, MCP exposure where appropriate, and a release-gate owner."
+  ],
+  "program_targets": {
+    "apply_capable_macros": 24,
+    "simulate_capable_macros": 40,
+    "macro_families": 16,
+    "supported_languages_with_native_rewrites": 6,
+    "real_repository_corpus": 60,
+    "macro_gauntlet_cases": 500,
+    "false_safe_apply": 0,
+    "interface_blocked_ratio_max": 0.10,
+    "incremental_analysis_p95_seconds": 2,
+    "affected_check_p95_seconds": 30,
+    "rollback_success_rate": 1.0,
+    "replay_determinism_rate": 1.0,
+    "ai_structural_decisions": 0
+  },
+  "definition_of_done": [
+    "Named generators, schemas, fixtures, reports, plugin commands, and tests exist and are connected rather than being documentation-only placeholders.",
+    "Acceptance metrics are measured on labeled fixtures and at least one repository not used while implementing the feature.",
+    "Failure, timeout, partial evidence, dirty worktree, rollback, and resume paths are covered.",
+    "The command manifest, skill reference, MCP surface, terminal report, package manifest, and release SLO are updated when the capability is user-facing.",
+    "A roadmap item remains pending if its evidence is indirect, only self-referential, or cannot be replayed from a clean checkout."
+  ],
   "waves": [
     {
-      "wave": 1,
-      "name": "Typed Macro Operator Algebra",
-      "objective": "Define macros as first-class optimization operators with graph effects, type constraints, conflict rules, and proof obligations."
+      "id": 0,
+      "name": "Executable Truth Foundation",
+      "exit_gate": "A single typed project graph and query language can explain symbols, types, control/data flow, runtime evidence, ownership, tests, and interfaces with stable identities."
     },
     {
-      "wave": 2,
-      "name": "Macro Discovery And Synthesis",
-      "objective": "Generate high-quality macro candidates from semantic graph motifs, repeated findings, benchmark labels, and repository-specific drift patterns."
+      "id": 1,
+      "name": "Production Rewrite Kernel",
+      "exit_gate": "At least six representative macros can perform lossless native rewrites in isolated workspaces and prove formatting, idempotency, test selection, rollback, and replay."
     },
     {
-      "wave": 3,
-      "name": "Compositional Macro Planner",
-      "objective": "Search, rank, compose, and execute macro plans under deterministic safety, risk, runtime, and rollback constraints."
+      "id": 2,
+      "name": "Macro Wisdom Compiler",
+      "exit_gate": "Repeated examples, findings, and migration specifications can be compiled into review-only macros and refined by deterministic counterexamples before promotion."
     },
     {
-      "wave": 4,
-      "name": "Macro Outcome Learning",
-      "objective": "Use local evidence to rank macro families, promote candidates, reject weak automations, and feed release-grade benchmarks."
+      "id": 3,
+      "name": "High-Leverage Macro Packs",
+      "exit_gate": "Common repository-evolution workflows are available as convenient, parameterized, production-tested macro packs rather than bespoke scripts."
     },
     {
-      "wave": 5,
-      "name": "Macro Product Surface",
-      "objective": "Make the plugin expose macro intelligence as a guided workflow: discover, prove, plan, simulate, apply, rollback, and report."
+      "id": 4,
+      "name": "Living Runtime Intelligence",
+      "exit_gate": "Runtime observations continuously discharge static uncertainty, update trust states, and verify behavioral equivalence without allowing probes to mutate production state."
+    },
+    {
+      "id": 5,
+      "name": "Fleet and Product Experience",
+      "exit_gate": "Users can take over, watch, query, optimize, and coordinate changes across large multi-repository systems through one CLI/plugin workflow."
+    },
+    {
+      "id": 6,
+      "name": "Evidence, Scale, and Ecosystem",
+      "exit_gate": "Claims are supported by a large external corpus, long-horizon evolution benchmarks, hermetic replay, signed macro packs, and a strict v2 release gate."
     }
   ],
   "todos": [
     {
-      "id": "graph_motif_macro_discovery",
-      "wave": 2,
-      "theme": "macro-discovery",
-      "task": "Discover macro candidates from semantic graph motifs such as boundary drift, orphaned exports, duplicated routes, stale generated clients, missing tests, ownership splits, and dynamic evidence gaps.",
+      "id": "project_intelligence_truth_audit_v2",
+      "wave": 0,
+      "theme": "measurement",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/macro_discover_motifs.sh and generated/macros/motif-candidates.json.",
-      "acceptance": [
-        "Discovery consumes Semantic Graph v2.1, dynamic edges, parser tiers, symbol identity, and test impact DAG.",
-        "Each motif candidate includes graph path evidence, confidence, expected operator family, missing proof obligations, and review reason.",
-        "Candidates are clustered by repeated structure rather than file-name heuristics.",
-        "Low-confidence motifs are emitted as gather-evidence actions, not apply-capable macros."
+      "goal": "Replace self-reported capability counts with an executable maturity audit that proves which commands and macros analyze, simulate, apply, rollback, replay, and generalize on external fixtures.",
+      "dependencies": [],
+      "deliverables": [
+        "generators/capability_truth_audit.sh",
+        "specs/capability-maturity.json",
+        "generated/audits/capability-truth.json",
+        "docs/CAPABILITY_TRUTH.md",
+        "tests/test_v20_capability_truth_audit.sh"
       ],
-      "files": [
-        "generators/macro_discover_motifs.sh",
-        "generators/semantic_graph_incremental.sh",
-        "generators/dynamic_edge_resolver.sh",
-        "generators/test_impact_dag.sh",
-        "tests/test_v12_macro_motif_discovery.sh"
-      ]
+      "acceptance": [
+        "Every command and macro receives a maturity level backed by direct artifact and test evidence.",
+        "The audit distinguishes report-only, review-only, simulate-capable, apply-capable, externally-proven, and fleet-proven behavior.",
+        "A claimed capability fails closed when its fixture, rollback, or external evidence is missing.",
+        "Release reports show deltas from the previous maturity baseline."
+      ],
+      "metrics": {
+        "unclassified_commands": 0,
+        "unsupported_capability_claims": 0
+      }
     },
     {
-      "id": "half_built_project_takeover_init",
-      "wave": 5,
-      "theme": "plugin-product",
-      "task": "Create a macro-dominant initialization workflow for taking over a large half-built project: diagnose, ingest, tier parsers, build semantic graph, discover macro motifs, generate initialization steps, and isolate the few AI leaf tasks.",
+      "id": "unified_program_graph_v3",
+      "wave": 0,
+      "theme": "program-model",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/takeover_init.sh and generated/adoption/takeover-init.json/md.",
-      "acceptance": [
-        "Workflow produces ordered initialization phases with deterministic commands and artifacts.",
-        "Macros own structural decisions; AI tasks are emitted only as bounded leaf clarifications with explicit inputs and outputs.",
-        "Initialization report includes readiness, blockers, macro-safe actions, review actions, evidence gaps, and next commands.",
-        "Plugin exposes takeover-init as a read-only command for external repositories."
+      "goal": "Unify syntax, symbols, types, imports, calls, control flow, data flow, interfaces, runtime edges, tests, ownership, build targets, and deployment resources into one versioned graph.",
+      "dependencies": ["project_intelligence_truth_audit_v2"],
+      "deliverables": [
+        "specs/unified-program-graph-v3.json",
+        "generators/unified_program_graph.sh",
+        "generators/graph_partition_store.sh",
+        "generated/intelligence/program-graph-v3.json",
+        "tests/test_v20_unified_program_graph.sh"
       ],
-      "files": [
-        "generators/takeover_init.sh",
-        "generators/macro_advisor.sh",
-        "generators/external_repo_eval.sh",
-        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "tests/test_v12_takeover_init.sh"
-      ]
+      "acceptance": [
+        "All node and edge identities remain stable across unrelated edits and path-preserving renames.",
+        "Graph partitions can be updated independently and merged deterministically.",
+        "Each edge carries evidence class, confidence, provenance, freshness, and invalidation keys.",
+        "The graph supports polyglot call paths and contract paths across repository boundaries."
+      ],
+      "metrics": {
+        "stable_identity_rate": 0.999,
+        "full_graph_replay_rate": 1.0
+      }
     },
     {
-      "id": "interface_stability_commitment",
-      "wave": 5,
-      "theme": "release-quality",
-      "task": "Generate interface stability commitments for half-built projects by combining interface scans, semantic graph evidence, dynamic edges, macro plans, and explicit AI leaf-review requests.",
+      "id": "evidence_lattice_and_uncertainty_calculus",
+      "wave": 0,
+      "theme": "evidence",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/interface_stability_commitment.sh and generated/adoption/interface-stability.json/md.",
-      "acceptance": [
-        "Commitment classifies interfaces as stable, provisional, experimental, deprecated, or blocked with evidence.",
-        "Breaking-change policy, compatibility window, owner/reviewer requirements, and affected tests are emitted per interface group.",
-        "Macro recommendations dominate remediation; AI tasks only request missing intent, owner, or compatibility decisions.",
-        "Release SLO and takeover init can consume the stability commitment artifact."
+      "goal": "Replace ad hoc confidence numbers with an evidence lattice that can combine, contradict, expire, and discharge parser, build, test, runtime, ownership, and human-contract evidence.",
+      "dependencies": ["unified_program_graph_v3"],
+      "deliverables": [
+        "specs/evidence-lattice.json",
+        "generators/evidence_join.sh",
+        "generators/evidence_explain.sh",
+        "generated/intelligence/evidence-ledger.json",
+        "tests/test_v20_evidence_lattice.sh"
       ],
-      "files": [
-        "generators/interface_stability_commitment.sh",
-        "generators/interface_scan.sh",
-        "generators/semantic_graph_incremental.sh",
-        "generators/release_slo.sh",
-        "tests/test_v12_interface_stability_commitment.sh"
-      ]
+      "acceptance": [
+        "Evidence joins are associative, commutative, deterministic, and provenance-preserving.",
+        "Contradictory static and runtime evidence produces an explicit conflict state rather than an averaged score.",
+        "Freshness and invalidation propagate only to dependent graph partitions.",
+        "Every blocked interface or macro emits the minimal evidence needed to change its decision."
+      ],
+      "metrics": {
+        "unexplained_blockers": 0,
+        "evidence_conflict_detection_rate": 1.0
+      }
     },
     {
-      "id": "macro_benchmark_gauntlet",
-      "wave": 4,
-      "theme": "macro-learning",
-      "task": "Expand benchmarks into a macro gauntlet that tests operator discovery, synthesis, composition, transaction execution, rollback, and promotion across adversarial repo fixtures.",
+      "id": "macro_query_language_mql",
+      "wave": 0,
+      "theme": "query-language",
       "priority": "critical",
       "status": "done",
-      "deliverable": "benchmarks/macro-gauntlet/ and generators/macro_gauntlet.sh.",
-      "acceptance": [
-        "Gauntlet includes safe, unsafe, ambiguous, dynamic, generated-code, conflicting-write, stale-test, and ownership-conflict cases.",
-        "Metrics include discovery recall, false-safe-apply, composition rejection accuracy, transaction rollback success, runtime, and score delta.",
-        "Gauntlet can run offline and produces deterministic JSON/Markdown scorecards.",
-        "Release SLO includes macro gauntlet thresholds."
+      "goal": "Create a compact declarative Macro Query Language for matching graph motifs, AST nodes, paths, data-flow states, runtime evidence, and project policies without writing one-off jq pipelines.",
+      "dependencies": ["unified_program_graph_v3", "evidence_lattice_and_uncertainty_calculus"],
+      "deliverables": [
+        "specs/mql.schema.json",
+        "generators/mql_parse.sh",
+        "generators/mql_plan.sh",
+        "generators/mql_execute.sh",
+        "docs/MQL_REFERENCE.md",
+        "tests/test_v20_mql.sh"
       ],
-      "files": [
-        "benchmarks/macro-gauntlet/",
-        "generators/macro_gauntlet.sh",
-        "generated/benchmarks/macro-gauntlet-scorecard.json",
-        "docs/MACRO_PACKS.md",
-        "tests/test_v12_macro_gauntlet.sh"
-      ]
+      "acceptance": [
+        "MQL supports typed node patterns, graph traversal, captures, negative patterns, quantifiers, evidence predicates, and bounded path queries.",
+        "Queries compile to a normalized deterministic plan with cost estimates and an explain trace.",
+        "The engine rejects unbounded or ambiguous queries before execution.",
+        "At least 30 existing repository checks are re-expressed in MQL with identical results."
+      ],
+      "metrics": {
+        "existing_checks_migrated": 30,
+        "query_result_determinism": 1.0
+      }
     },
     {
-      "id": "macro_cockpit_v2",
-      "wave": 5,
-      "theme": "plugin-product",
-      "task": "Upgrade adoption cockpit into a macro cockpit that guides discover, prove, compose, simulate, apply, rollback, and promote workflows.",
+      "id": "lossless_edit_ir",
+      "wave": 0,
+      "theme": "rewrite-ir",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Define a language-neutral lossless edit IR that preserves formatting and comments while carrying typed captures, symbol identities, preconditions, effects, inverse operations, and source maps.",
+      "dependencies": ["macro_query_language_mql"],
+      "deliverables": [
+        "specs/lossless-edit-ir.json",
+        "generators/edit_ir_validate.sh",
+        "generators/edit_ir_diff.sh",
+        "generators/edit_ir_inverse.sh",
+        "tests/test_v20_lossless_edit_ir.sh"
+      ],
+      "acceptance": [
+        "No-op rendering is byte-identical for supported languages.",
+        "Each edit references stable captures rather than raw line numbers alone.",
+        "Inverse edits restore byte-identical content and graph hashes.",
+        "Overlapping or stale edits are rejected with exact conflict locations."
+      ],
+      "metrics": {
+        "no_op_byte_identity": 1.0,
+        "inverse_round_trip_rate": 1.0
+      }
+    },
+    {
+      "id": "parser_and_rewriter_adapter_sdk",
+      "wave": 0,
+      "theme": "extensibility",
       "priority": "high",
       "status": "done",
-      "deliverable": "generators/macro_cockpit.sh and generated/macros/cockpit.json/md/html.",
-      "acceptance": [
-        "Cockpit shows discovered motifs, synthesized templates, safe plans, blocked plans, proof bundles, outcome rankings, and promotion status.",
-        "Terminal output remains concise with top safe actions, top review actions, top evidence gaps, and top retired macro ideas.",
-        "HTML report is static and local-only.",
-        "Plugin exposes macro-cockpit as a read-only command by default."
+      "goal": "Provide a stable adapter SDK so language parsers, LSPs, tree-sitter queries, native refactoring tools, and external recipe engines can contribute normalized facts and edits.",
+      "dependencies": ["lossless_edit_ir"],
+      "deliverables": [
+        "specs/adapter-protocol-v1.json",
+        "tools/adapter_harness.sh",
+        "generators/adapter_conformance.sh",
+        "examples/adapter-sdk/",
+        "docs/ADAPTER_SDK.md",
+        "tests/test_v20_adapter_sdk.sh"
       ],
-      "files": [
-        "generators/macro_cockpit.sh",
-        "generators/adoption_cockpit.sh",
-        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "generated/macros/cockpit.json",
-        "tests/test_v12_macro_cockpit.sh"
-      ]
+      "acceptance": [
+        "Adapters negotiate capabilities, versions, languages, provenance, timeouts, and sandbox requirements.",
+        "Malformed, partial, nondeterministic, or stale adapter output is rejected.",
+        "Conformance fixtures cover parser-only, query-only, rewrite, and runtime-evidence adapters.",
+        "Optional backends never weaken the fail-closed baseline when unavailable."
+      ],
+      "metrics": {
+        "reference_adapters": 5,
+        "protocol_conformance_rate": 1.0
+      }
     },
     {
-      "id": "macro_composition_analyzer",
-      "wave": 3,
-      "theme": "macro-planning",
-      "task": "Analyze whether multiple macro operators can be safely composed by checking read/write conflicts, graph-effect conflicts, dynamic risk escalation, test coverage overlap, and rollback scope compatibility.",
-      "priority": "critical",
-      "status": "done",
-      "deliverable": "generators/macro_compose.sh and generated/macros/composition-report.json.",
-      "acceptance": [
-        "Composition rejects conflicting write sets, incompatible graph effects, unbounded rollback scopes, and unsafe dynamic dependencies.",
-        "Independent operators can be grouped into parallel stages with deterministic ordering.",
-        "Composition output includes accepted groups, rejected pairs, conflict reasons, and required affected tests.",
-        "The scheduler can consume composition stages as task input."
-      ],
-      "files": [
-        "generators/macro_compose.sh",
-        "generators/parallel_scheduler.sh",
-        "specs/macro-composition.json",
-        "generated/macros/composition-report.json",
-        "tests/test_v12_macro_composition.sh"
-      ]
-    },
-    {
-      "id": "macro_external_repo_advisor",
-      "wave": 5,
-      "theme": "plugin-product",
-      "task": "Add an external-repo macro advisor that tells users exactly which macro workflows are worth running in their project and which need more evidence first.",
-      "priority": "high",
-      "status": "done",
-      "deliverable": "generators/macro_advisor.sh and generated/macros/advisor-report.json.",
-      "acceptance": [
-        "Advisor consumes external eval, parser tiers, semantic graph, macro family rankings, and macro cockpit artifacts.",
-        "Advisor outputs safe-now, simulate-first, review-first, gather-evidence, and avoid lists.",
-        "Advisor includes command lines users can run next without requiring global state or network.",
-        "Advisor refuses apply recommendations for repos with dirty worktrees unless explicitly allowed and rollback proof exists."
-      ],
-      "files": [
-        "generators/macro_advisor.sh",
-        "generators/external_repo_eval.sh",
-        "codex/skills/simple-model-project-intelligence/references/commands.md",
-        "generated/macros/advisor-report.json",
-        "tests/test_v12_macro_external_repo_advisor.sh"
-      ]
-    },
-    {
-      "id": "macro_family_ranker",
-      "wave": 4,
-      "theme": "macro-learning",
-      "task": "Rank macro families by observed usefulness, safety, runtime, rollback reliability, and cross-repo generality.",
-      "priority": "high",
-      "status": "done",
-      "deliverable": "generators/macro_family_ranker.sh and generated/macros/family-rankings.json.",
-      "acceptance": [
-        "Ranker consumes outcome ledger, accuracy scorecard, benchmark corpus labels, and plugin adoption reports.",
-        "Families receive value, safety, generality, maturity, and promotion scores.",
-        "Ranker identifies families that should remain review-only or be retired.",
-        "Adoption cockpit shows the top useful macro families for the target repo."
-      ],
-      "files": [
-        "generators/macro_family_ranker.sh",
-        "generators/adoption_cockpit.sh",
-        "generated/macros/family-rankings.json",
-        "benchmarks/messy-repo-corpus/labels.json",
-        "tests/test_v12_macro_family_ranker.sh"
-      ]
-    },
-    {
-      "id": "macro_operator_ir_v1",
+      "id": "structural_match_and_capture_engine",
       "wave": 1,
-      "theme": "operator-algebra",
-      "task": "Create a typed Macro Operator IR that models every macro as an optimization operator over semantic graph nodes and repository files.",
+      "theme": "rewrite-kernel",
       "priority": "critical",
       "status": "done",
-      "deliverable": "specs/macro-operator-ir.json and generators/macro_operator_ir.sh.",
-      "acceptance": [
-        "IR includes operator id, input graph selectors, output graph effects, write-set effects, preconditions, postconditions, affected tests, rollback scope, and score factors.",
-        "Existing macro packs can be normalized into Macro Operator IR without losing v3/v4 contract evidence.",
-        "Operators distinguish review-only, simulate-capable, and apply-capable modes.",
-        "Validation rejects operators with ambiguous write effects, missing rollback scope, or untyped graph selectors."
+      "goal": "Execute MQL structural patterns against native and tree-sitter ASTs with typed captures, symbol resolution, local style context, and match stability checks.",
+      "dependencies": ["parser_and_rewriter_adapter_sdk"],
+      "deliverables": [
+        "generators/structural_match.sh",
+        "generators/capture_stability.sh",
+        "specs/structural-match-result.json",
+        "benchmarks/structural-matcher/",
+        "tests/test_v20_structural_matcher.sh"
       ],
-      "files": [
-        "specs/macro-operator-ir.json",
-        "generators/macro_operator_ir.sh",
-        "generators/macro_registry.sh",
-        "macros/registry.json",
-        "tests/test_v12_macro_operator_ir.sh"
-      ]
+      "acceptance": [
+        "Matches use syntax and symbol identity rather than regex as the primary mechanism.",
+        "Equivalent formatting and harmless syntax variation preserve match results.",
+        "Ambiguous captures are reported and cannot reach apply mode.",
+        "Matcher precision and recall are measured on labeled polyglot fixtures."
+      ],
+      "metrics": {
+        "precision_min": 0.99,
+        "recall_min": 0.97
+      }
     },
     {
-      "id": "macro_outcome_ledger",
-      "wave": 4,
-      "theme": "macro-learning",
-      "task": "Record every macro simulation, drill, apply, rollback, review decision, and benchmark result into a local outcome ledger.",
+      "id": "native_rewrite_backends_wave1",
+      "wave": 1,
+      "theme": "rewrite-kernel",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/macro_outcome_ledger.sh and generated/macros/outcome-ledger.json.",
-      "acceptance": [
-        "Ledger records operator id, repo fingerprint, motif id, decision, score delta, runtime, affected tests, rollback result, review reason, and final status.",
-        "Ledger entries are append-only, hash-linked, and redactable for external repo use.",
-        "Outcome records can be generated from existing run logs and benchmark artifacts.",
-        "The ledger never stores secrets or full source content."
+      "goal": "Implement production native rewrite backends for TypeScript, Python, Go, and Rust using the lossless edit IR and language-appropriate tooling.",
+      "dependencies": ["structural_match_and_capture_engine"],
+      "deliverables": [
+        "codemods/backends/typescript/",
+        "codemods/backends/python/",
+        "codemods/backends/go/",
+        "codemods/backends/rust/",
+        "generators/native_rewrite_dispatch.sh",
+        "tests/test_v20_native_rewrites_wave1.sh"
       ],
-      "files": [
-        "generators/macro_outcome_ledger.sh",
-        "generators/run_log.sh",
-        "specs/macro-outcome-ledger.json",
-        "generated/macros/outcome-ledger.json",
-        "tests/test_v12_macro_outcome_ledger.sh"
-      ]
+      "acceptance": [
+        "Each backend supports symbol rename, import editing, declaration insertion/removal, call-site rewrite, and signature migration.",
+        "Backends preserve comments, local formatting, encoding, and newline conventions.",
+        "Every backend has parse-after-write, typecheck/build, idempotency, inverse, and malformed-input fixtures.",
+        "Fallback text edits remain review-only and are never silently labeled native."
+      ],
+      "metrics": {
+        "languages": 4,
+        "round_trip_rate": 1.0
+      }
     },
     {
-      "id": "macro_plan_search",
-      "wave": 3,
-      "theme": "macro-planning",
-      "task": "Implement deterministic macro plan search that selects the best sequence or parallel stages of macro operators under score, risk, runtime, and rollback budgets.",
-      "priority": "critical",
-      "status": "done",
-      "deliverable": "generators/macro_plan_search.sh and generated/macros/plan-search.json.",
-      "acceptance": [
-        "Search considers expected value, evidence confidence, dynamic risk, test cost, rollback cost, ownership risk, and composition constraints.",
-        "Search emits selected, rejected, dominated, deferred, and gather-evidence candidates with reasons.",
-        "Plans are deterministic across repeated runs and include stable hashes.",
-        "The confidence optimizer consumes plan search output instead of ranking isolated macro candidates only."
-      ],
-      "files": [
-        "generators/macro_plan_search.sh",
-        "generators/confidence_optimizer.sh",
-        "generators/score_delta_proof.sh",
-        "generated/macros/plan-search.json",
-        "tests/test_v12_macro_plan_search.sh"
-      ]
-    },
-    {
-      "id": "macro_promotion_gate",
-      "wave": 4,
-      "theme": "macro-learning",
-      "task": "Create a promotion gate that upgrades synthesized macro templates to trusted macro packs only after deterministic evidence thresholds are met.",
-      "priority": "critical",
-      "status": "done",
-      "deliverable": "generators/macro_promotion_gate.sh and generated/macros/promotion-report.json.",
-      "acceptance": [
-        "Promotion requires labeled fixtures, operator IR validation, composition compatibility, drill success, affected-test recall, false-safe-apply zero, and positive score delta.",
-        "Promotion writes a signed local manifest entry with source template hash and proof bundle hash.",
-        "Failed promotion explains missing evidence and required next fixtures.",
-        "Release SLO blocks trusted macro packs that lack promotion records."
-      ],
-      "files": [
-        "generators/macro_promotion_gate.sh",
-        "macros/registry.json",
-        "specs/macro-promotion.json",
-        "generated/macros/promotion-report.json",
-        "tests/test_v12_macro_promotion_gate.sh"
-      ]
-    },
-    {
-      "id": "macro_proof_bundle",
-      "wave": 3,
-      "theme": "macro-execution",
-      "task": "Emit a macro proof bundle that packages all evidence needed to review, replay, or audit a macro plan.",
+      "id": "native_rewrite_backends_wave2",
+      "wave": 1,
+      "theme": "rewrite-kernel",
       "priority": "high",
       "status": "done",
-      "deliverable": "generators/macro_proof_bundle.sh and generated/macros/proof-bundle.json.",
-      "acceptance": [
-        "Proof bundle includes operator IR, motif evidence, preconditions, composition report, plan search, drill report, affected tests, diffs, rollback manifest, and score delta proof.",
-        "Bundle has a stable content hash and can be replay-verified without network access.",
-        "Markdown rendering summarizes safe-now, review-first, and blocked reasons for humans.",
-        "Release SLO fails if apply-capable macro plans lack proof bundles."
+      "goal": "Add production rewrite support for Java/Kotlin and C/C++ through OpenRewrite-compatible and Clang-compatible adapters.",
+      "dependencies": ["native_rewrite_backends_wave1"],
+      "deliverables": [
+        "codemods/backends/jvm/",
+        "codemods/backends/clang/",
+        "generators/openrewrite_adapter.sh",
+        "generators/clang_refactor_adapter.sh",
+        "tests/test_v20_native_rewrites_wave2.sh"
       ],
-      "files": [
-        "generators/macro_proof_bundle.sh",
-        "generators/report_render.sh",
-        "specs/macro-proof-bundle.json",
-        "generated/macros/proof-bundle.json",
-        "tests/test_v12_macro_proof_bundle.sh"
-      ]
+      "acceptance": [
+        "JVM rewrites use type-attributed semantic trees when the backend is installed.",
+        "C/C++ rewrites require compilation database evidence and reject unresolved translation units.",
+        "Adapter absence produces an actionable review-only decision rather than a false success.",
+        "Fixtures include templates, macros, generated code, mixed Java/Kotlin modules, and build failures."
+      ],
+      "metrics": {
+        "total_native_languages": 6,
+        "unsafe_fallback_apply": 0
+      }
     },
     {
-      "id": "macro_template_synthesis_engine",
+      "id": "style_preserving_patch_planner",
+      "wave": 1,
+      "theme": "rewrite-quality",
+      "priority": "high",
+      "status": "done",
+      "goal": "Plan minimal patches that respect repository-local style, generated regions, ownership boundaries, formatter scopes, and merge-conflict probability.",
+      "dependencies": ["native_rewrite_backends_wave1"],
+      "deliverables": [
+        "generators/patch_planner.sh",
+        "generators/style_profile.sh",
+        "specs/patch-plan.json",
+        "benchmarks/patch-minimality/",
+        "tests/test_v20_patch_planner.sh"
+      ],
+      "acceptance": [
+        "The planner minimizes touched lines and files under semantic correctness constraints.",
+        "Generated, vendored, ignored, or explicitly protected regions are excluded by default.",
+        "Formatter execution is scoped to changed syntax regions where tooling supports it.",
+        "Patch plans report conflict risk and alternative lower-conflict schedules."
+      ],
+      "metrics": {
+        "unnecessary_line_change_ratio_max": 0.02,
+        "protected_region_writes": 0
+      }
+    },
+    {
+      "id": "hermetic_macro_transaction_runner",
+      "wave": 1,
+      "theme": "execution",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Run macros in hermetic isolated workspaces with declared tools, environment, resource limits, network policy, content-addressed inputs, checkpoints, and reproducible outputs.",
+      "dependencies": ["style_preserving_patch_planner"],
+      "deliverables": [
+        "generators/hermetic_macro_runner.sh",
+        "specs/macro-environment-lock.json",
+        "specs/macro-transaction-v2.json",
+        "tools/sandbox_backends/",
+        "tests/test_v20_hermetic_macro_runner.sh"
+      ],
+      "acceptance": [
+        "The runner supports local sandbox, container, and optional Nix execution with equivalent contracts.",
+        "Undeclared network, environment, filesystem, or tool access fails the transaction.",
+        "Interrupted runs resume from verified checkpoints without replaying completed writes.",
+        "Two clean runs over identical inputs produce identical decision and artifact hashes."
+      ],
+      "metrics": {
+        "replay_determinism_rate": 1.0,
+        "rollback_success_rate": 1.0
+      }
+    },
+    {
+      "id": "macro_conformance_and_certification_kit",
+      "wave": 1,
+      "theme": "macro-quality",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Give macro authors one command that generates fixtures and certifies match precision, bounded effects, idempotency, rollback, composition, test impact, performance, and external generality.",
+      "dependencies": ["hermetic_macro_transaction_runner"],
+      "deliverables": [
+        "tools/macro_certify.sh",
+        "specs/macro-certificate.json",
+        "generators/macro_fixture_scaffold.sh",
+        "docs/MACRO_CERTIFICATION.md",
+        "tests/test_v20_macro_certification.sh"
+      ],
+      "acceptance": [
+        "Certificates are content-addressed, signed locally, and invalidated by macro or fixture changes.",
+        "Negative, adversarial, partial-parse, dirty-worktree, and rollback fixtures are mandatory.",
+        "Certification emits exact remediation for every failed proof obligation.",
+        "Uncertified macros cannot enter trusted packs or apply mode."
+      ],
+      "metrics": {
+        "uncertified_trusted_macros": 0,
+        "certificate_replay_rate": 1.0
+      }
+    },
+    {
+      "id": "effect_alias_and_commutativity_solver",
       "wave": 2,
-      "theme": "macro-discovery",
-      "task": "Synthesize reusable macro templates from clusters of motif candidates while keeping them review-only until fixtures and drills prove safety.",
+      "theme": "macro-algebra",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/macro_template_synth.sh and generated/macros/templates.json.",
-      "acceptance": [
-        "Templates include parameters, graph selector schema, code edit adapter requirements, fixtures required, expected score delta, and promotion criteria.",
-        "Template synthesis deduplicates repeated candidates into reusable macro families.",
-        "Generated templates cannot be apply-capable until operator IR validation, preconditions, drill coverage, and benchmark thresholds pass.",
-        "Reports distinguish hand-authored packs, synthesized templates, and promoted templates."
+      "goal": "Compute semantic read/write effects, symbol aliases, generated artifacts, build outputs, and commutativity so macro plans can safely parallelize or reorder transformations.",
+      "dependencies": ["macro_conformance_and_certification_kit", "unified_program_graph_v3"],
+      "deliverables": [
+        "generators/effect_infer.sh",
+        "generators/alias_resolve.sh",
+        "generators/commutativity_check.sh",
+        "specs/macro-effect-system.json",
+        "tests/test_v20_effect_solver.sh"
       ],
-      "files": [
-        "generators/macro_template_synth.sh",
-        "generators/macro_generate_from_findings.sh",
-        "specs/macro-template.json",
-        "generated/macros/templates.json",
-        "tests/test_v12_macro_template_synthesis.sh"
-      ]
+      "acceptance": [
+        "Effects include direct files, symbols, generated outputs, contracts, tests, build targets, and runtime surfaces.",
+        "Unknown aliasing blocks parallel apply but still permits isolated simulation.",
+        "The solver produces counterexamples for rejected compositions.",
+        "Parallel and serial execution are proven equivalent for accepted commuting macros."
+      ],
+      "metrics": {
+        "false_commutativity_accepts": 0,
+        "parallelizable_safe_plan_ratio_min": 0.30
+      }
     },
     {
-      "id": "transactional_macro_executor",
+      "id": "behavioral_equivalence_oracles",
+      "wave": 2,
+      "theme": "proof",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Provide deterministic equivalence oracles for APIs, schemas, serialization, CLI output, database migrations, events, traces, performance budgets, and selected pure functions.",
+      "dependencies": ["effect_alias_and_commutativity_solver"],
+      "deliverables": [
+        "generators/equivalence_oracle.sh",
+        "specs/equivalence-contract.json",
+        "generators/golden_contract_miner.sh",
+        "benchmarks/equivalence-oracles/",
+        "tests/test_v20_equivalence_oracles.sh"
+      ],
+      "acceptance": [
+        "Oracles distinguish exact, normalized, observational, bounded, and intentionally-breaking equivalence.",
+        "Nondeterministic fields can only be ignored through explicit typed normalizers.",
+        "Before/after evidence includes minimized failing inputs and graph paths.",
+        "A passing unit test suite cannot override a failing declared equivalence contract."
+      ],
+      "metrics": {
+        "oracle_false_negative_rate_max": 0.01,
+        "untyped_ignored_fields": 0
+      }
+    },
+    {
+      "id": "example_to_macro_synthesis",
+      "wave": 2,
+      "theme": "macro-synthesis",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Synthesize parameterized review-only macro templates from curated before/after examples by structural differencing, capture inference, anti-unification, and negative-example checks.",
+      "dependencies": ["behavioral_equivalence_oracles", "macro_query_language_mql"],
+      "deliverables": [
+        "generators/example_to_macro.sh",
+        "generators/structural_anti_unify.sh",
+        "specs/macro-synthesis-example.json",
+        "examples/macro-synthesis/",
+        "tests/test_v20_example_to_macro.sh"
+      ],
+      "acceptance": [
+        "Generated templates infer parameters, required context, edit operations, postconditions, and forbidden matches.",
+        "One example can never produce an apply-capable macro.",
+        "Multiple examples with incompatible edits produce separate candidates or an explicit conflict.",
+        "Held-out examples measure synthesis precision and generalization."
+      ],
+      "metrics": {
+        "held_out_precision_min": 0.95,
+        "single_example_apply_promotions": 0
+      }
+    },
+    {
+      "id": "finding_to_macro_compiler",
+      "wave": 2,
+      "theme": "macro-synthesis",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Compile repeated MQL, CodeQL, Semgrep, compiler, linter, test, and runtime findings into deduplicated macro candidates with source-path evidence and remediation semantics.",
+      "dependencies": ["example_to_macro_synthesis", "parser_and_rewriter_adapter_sdk"],
+      "deliverables": [
+        "generators/finding_to_macro.sh",
+        "generators/finding_normalize.sh",
+        "specs/normalized-finding.json",
+        "adapters/findings/",
+        "tests/test_v20_finding_to_macro.sh"
+      ],
+      "acceptance": [
+        "Findings from different tools normalize to stable semantic identities and retain original provenance.",
+        "Candidates include a deterministic matcher, edit strategy, scope, evidence requirements, and counterexamples.",
+        "Duplicate findings across tools increase evidence without duplicating work.",
+        "Security-sensitive or behavior-changing findings default to simulation and human approval."
+      ],
+      "metrics": {
+        "cross_tool_dedup_precision_min": 0.98,
+        "provenance_loss": 0
+      }
+    },
+    {
+      "id": "migration_spec_to_macro_compiler",
+      "wave": 2,
+      "theme": "migration-intelligence",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Compile OpenAPI, AsyncAPI, protobuf, GraphQL, SQL schema, dependency lockfile, and configuration contract diffs into ordered migration macro plans.",
+      "dependencies": ["finding_to_macro_compiler"],
+      "deliverables": [
+        "generators/migration_spec_compile.sh",
+        "generators/contract_diff_v2.sh",
+        "specs/migration-plan.json",
+        "macros/packs/contract-migrations/",
+        "tests/test_v20_migration_spec_compiler.sh"
+      ],
+      "acceptance": [
+        "Plans separate compatible additions, deprecations, shims, breaking changes, data migrations, and consumer updates.",
+        "Cross-language producers and consumers are linked through the unified graph.",
+        "Irreversible data changes require backup, validation, and explicit approval contracts.",
+        "Plans emit staged rollout and rollback order rather than one undifferentiated patch."
+      ],
+      "metrics": {
+        "unplanned_impacted_consumers": 0,
+        "breaking_change_detection_rate": 1.0
+      }
+    },
+    {
+      "id": "counterexample_guided_macro_refinement",
+      "wave": 2,
+      "theme": "macro-learning",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Use failing fixtures, false matches, missed matches, type errors, runtime divergence, and rollback failures to deterministically refine macro predicates and promotion state.",
+      "dependencies": ["migration_spec_to_macro_compiler", "macro_conformance_and_certification_kit"],
+      "deliverables": [
+        "generators/macro_cegis.sh",
+        "generators/counterexample_minimize.sh",
+        "specs/macro-counterexample.json",
+        "generated/macros/counterexample-ledger.json",
+        "tests/test_v20_macro_cegis.sh"
+      ],
+      "acceptance": [
+        "Counterexamples are minimized, hash-addressed, assigned to a proof obligation, and retained permanently.",
+        "Refinement may narrow matching or add evidence requirements but cannot auto-weaken safety policy.",
+        "Previously fixed counterexamples become mandatory regression fixtures.",
+        "Repeated unresolved counterexamples automatically demote or retire a macro."
+      ],
+      "metrics": {
+        "counterexample_regressions": 0,
+        "automatic_safety_weakening": 0
+      }
+    },
+    {
+      "id": "macro_generating_macro_v2",
+      "wave": 2,
+      "theme": "meta-macros",
+      "priority": "high",
+      "status": "done",
+      "goal": "Create certified meta-macros that scaffold, specialize, compose, test, document, benchmark, and package new macro families from normalized evidence.",
+      "dependencies": ["counterexample_guided_macro_refinement"],
+      "deliverables": [
+        "macros/packs/meta-macro/",
+        "generators/meta_macro_execute.sh",
+        "specs/meta-macro-contract.json",
+        "examples/meta-macro/",
+        "tests/test_v20_meta_macro.sh"
+      ],
+      "acceptance": [
+        "Meta-macros generate complete reviewable source packages, never opaque executable blobs.",
+        "Generated macros inherit certification, counterexample, documentation, and release-gate templates.",
+        "The meta-macro cannot modify its own trust policy or promotion thresholds.",
+        "Generated output is deterministic for identical evidence and parameters."
+      ],
+      "metrics": {
+        "generated_package_completeness": 1.0,
+        "self_policy_mutations": 0
+      }
+    },
+    {
+      "id": "macro_lifecycle_registry_v2",
+      "wave": 2,
+      "theme": "macro-governance",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Manage macro versions, dependencies, compatibility, certificates, counterexamples, provenance, deprecation, revocation, promotion, and fleet eligibility in one deterministic registry.",
+      "dependencies": ["macro_generating_macro_v2"],
+      "deliverables": [
+        "specs/macro-registry-v2.json",
+        "generators/macro_registry_v2.sh",
+        "generators/macro_resolve.sh",
+        "generators/macro_revoke.sh",
+        "tests/test_v20_macro_registry_v2.sh"
+      ],
+      "acceptance": [
+        "Resolution is deterministic and rejects incompatible or cyclic macro dependencies.",
+        "Revoked certificates immediately remove apply eligibility without deleting audit history.",
+        "Promotion requires minimum external-repository diversity in addition to fixture counts.",
+        "Registry snapshots are signed and included in proof bundles."
+      ],
+      "metrics": {
+        "unresolved_registry_conflicts": 0,
+        "revoked_apply_eligibility": 0
+      }
+    },
+    {
+      "id": "symbol_lifecycle_macro_pack",
       "wave": 3,
-      "theme": "macro-execution",
-      "task": "Create a transactional macro executor that applies composed macro plans with workspace isolation, staged commits, rollback checkpoints, resume support, and deterministic failure handling.",
+      "theme": "macro-pack",
       "priority": "critical",
       "status": "done",
-      "deliverable": "generators/macro_transaction.sh and generated/macros/transaction-log.json.",
-      "acceptance": [
-        "Executor runs each stage in an isolated workspace before touching the target tree.",
-        "Every file change has before/after hash, rollback payload, formatter result, test selector, and run-log entry.",
-        "Partial failure triggers deterministic rollback or produces a resumable blocked state with exact failing stage.",
-        "Apply mode is impossible unless preconditions, composition, drills, policy, and affected tests all pass."
+      "goal": "Deliver convenient production macros for symbol rename, move, visibility change, split, merge, deprecate, re-export, alias, and removal across supported languages.",
+      "dependencies": ["macro_lifecycle_registry_v2", "native_rewrite_backends_wave2"],
+      "deliverables": [
+        "macros/packs/symbol-lifecycle/",
+        "fixtures/macros/symbol-lifecycle/",
+        "docs/macros/SYMBOL_LIFECYCLE.md",
+        "tests/test_v20_symbol_lifecycle_pack.sh"
       ],
-      "files": [
-        "generators/macro_transaction.sh",
-        "generators/macro_exec.sh",
-        "generators/run_log.sh",
-        "generators/artifact_cache.sh",
-        "tests/test_v12_transactional_macro_executor.sh"
-      ]
+      "acceptance": [
+        "Macros update definitions, references, imports, exports, docs, tests, and generated contracts through stable symbol identities.",
+        "Dynamic references and reflection are either updated through trusted resolvers or block apply.",
+        "Deprecation macros generate compatibility aliases and removal deadlines.",
+        "At least four macros are certified apply-capable on external fixtures."
+      ],
+      "metrics": {
+        "apply_capable_macros": 4,
+        "missed_static_references": 0
+      }
     },
     {
-      "id": "v12_macro_release_gate",
+      "id": "component_and_boundary_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Automate component extraction, module split/merge, layer enforcement, dependency inversion, facade creation, cycle breaking, and ownership-boundary repair.",
+      "dependencies": ["symbol_lifecycle_macro_pack", "effect_alias_and_commutativity_solver"],
+      "deliverables": [
+        "macros/packs/component-boundaries/",
+        "generators/boundary_plan.sh",
+        "fixtures/macros/component-boundaries/",
+        "tests/test_v20_component_boundary_pack.sh"
+      ],
+      "acceptance": [
+        "Plans preserve public contracts or explicitly introduce versioned compatibility shims.",
+        "File moves update build targets, package metadata, imports, tests, ownership, and struct fragments.",
+        "Cycle-breaking choices are ranked by semantic blast radius and migration cost.",
+        "At least three macros are certified apply-capable on multi-module external fixtures."
+      ],
+      "metrics": {
+        "apply_capable_macros": 3,
+        "new_dependency_cycles": 0
+      }
+    },
+    {
+      "id": "api_evolution_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Provide macros for endpoint, RPC, event, schema, CLI, and library API evolution with compatibility windows, adapters, shims, consumer migration, and staged removal.",
+      "dependencies": ["migration_spec_to_macro_compiler", "behavioral_equivalence_oracles"],
+      "deliverables": [
+        "macros/packs/api-evolution/",
+        "generators/api_migration_campaign.sh",
+        "fixtures/macros/api-evolution/",
+        "tests/test_v20_api_evolution_pack.sh"
+      ],
+      "acceptance": [
+        "Macros cover additive, rename, type-change, split/merge, pagination, error-model, and authentication migrations.",
+        "Every breaking migration emits a compatibility matrix and consumer completion ledger.",
+        "Generated clients and server stubs remain synchronized with source contracts.",
+        "At least four macros are certified simulate-capable and two apply-capable."
+      ],
+      "metrics": {
+        "simulate_capable_macros": 4,
+        "apply_capable_macros": 2
+      }
+    },
+    {
+      "id": "dependency_modernization_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Automate dependency upgrades, package-manager migrations, deprecated API replacement, lockfile regeneration, build-tool changes, and framework-version migrations.",
+      "dependencies": ["finding_to_macro_compiler", "hermetic_macro_transaction_runner"],
+      "deliverables": [
+        "macros/packs/dependency-modernization/",
+        "generators/dependency_migration_plan.sh",
+        "fixtures/macros/dependency-modernization/",
+        "tests/test_v20_dependency_modernization_pack.sh"
+      ],
+      "acceptance": [
+        "Plans separate mechanical edits, semantic API changes, configuration changes, and manual release-note decisions.",
+        "Lockfiles are generated only in locked hermetic environments.",
+        "Transitive vulnerabilities and license/policy constraints participate in version selection.",
+        "At least six ecosystem migrations have replayable end-to-end fixtures."
+      ],
+      "metrics": {
+        "ecosystem_migrations": 6,
+        "unlocked_lockfile_writes": 0
+      }
+    },
+    {
+      "id": "configuration_and_feature_flag_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Normalize configuration, environment variables, secrets references, feature flags, defaults, validation, documentation, and deployment manifests across code and infrastructure.",
+      "dependencies": ["unified_program_graph_v3", "native_rewrite_backends_wave1"],
+      "deliverables": [
+        "macros/packs/configuration-governance/",
+        "generators/config_surface_graph.sh",
+        "fixtures/macros/configuration-governance/",
+        "tests/test_v20_configuration_pack.sh"
+      ],
+      "acceptance": [
+        "Macros reconcile code reads, schema declarations, defaults, docs, CI, containers, and deployment manifests.",
+        "Secret values are never recorded; only typed references and providers are modeled.",
+        "Flag removal proves branch reachability and rollout completion before deleting code.",
+        "At least three macros are certified apply-capable."
+      ],
+      "metrics": {
+        "apply_capable_macros": 3,
+        "secret_value_captures": 0
+      }
+    },
+    {
+      "id": "observability_instrumentation_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Generate and normalize tracing, metrics, logs, correlation IDs, error attributes, and service/resource metadata using OpenTelemetry semantic conventions.",
+      "dependencies": ["configuration_and_feature_flag_macro_pack"],
+      "deliverables": [
+        "macros/packs/observability/",
+        "specs/telemetry-contract.json",
+        "fixtures/macros/observability/",
+        "tests/test_v20_observability_pack.sh"
+      ],
+      "acceptance": [
+        "Instrumentation preserves behavior and does not duplicate spans, metrics, or handlers.",
+        "Semantic attributes are validated against pinned convention versions.",
+        "Sensitive-data policy blocks unsafe attribute capture.",
+        "Trace-based runtime evidence can map observations back to stable graph nodes."
+      ],
+      "metrics": {
+        "duplicate_instrumentation_rate": 0,
+        "semantic_convention_compliance_min": 0.99
+      }
+    },
+    {
+      "id": "reliability_modernization_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Provide macros for error-model normalization, timeout propagation, cancellation, retry policy, resource cleanup, async migration, bounded concurrency, and idempotency keys.",
+      "dependencies": ["behavioral_equivalence_oracles", "effect_alias_and_commutativity_solver"],
+      "deliverables": [
+        "macros/packs/reliability-modernization/",
+        "generators/reliability_surface_scan.sh",
+        "fixtures/macros/reliability-modernization/",
+        "tests/test_v20_reliability_pack.sh"
+      ],
+      "acceptance": [
+        "Macros model call-chain propagation and do not insert retries around non-idempotent operations without policy evidence.",
+        "Concurrency rewrites include race, cancellation, leak, and saturation fixtures.",
+        "Behavioral oracles verify error shape, timeout behavior, and observable side effects.",
+        "At least three macros are certified simulate-capable and two apply-capable."
+      ],
+      "metrics": {
+        "simulate_capable_macros": 3,
+        "apply_capable_macros": 2
+      }
+    },
+    {
+      "id": "test_and_contract_scaffolding_macro_pack",
+      "wave": 3,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Deterministically scaffold contract tests, characterization tests, property-test harnesses, fuzz targets, fixture builders, and migration assertions from interface and data-flow evidence.",
+      "dependencies": ["behavioral_equivalence_oracles", "api_evolution_macro_pack"],
+      "deliverables": [
+        "macros/packs/test-scaffolding/",
+        "generators/test_obligation_mine.sh",
+        "generators/fuzz_target_scaffold.sh",
+        "fixtures/macros/test-scaffolding/",
+        "tests/test_v20_test_scaffolding_pack.sh"
+      ],
+      "acceptance": [
+        "Generated tests target uncovered contracts and graph paths rather than maximizing raw test count.",
+        "Assertions are derived from explicit contracts or observed characterization baselines and are labeled accordingly.",
+        "Fuzz targets declare resource limits, seed corpora, and reproducibility metadata.",
+        "AI may fill domain-specific examples only through typed leaf tasks reviewed before merge."
+      ],
+      "metrics": {
+        "generated_test_compile_rate_min": 0.98,
+        "unlabeled_characterization_assertions": 0
+      }
+    },
+    {
+      "id": "dead_code_and_architecture_cleanup_pack",
+      "wave": 4,
+      "theme": "macro-pack",
+      "priority": "high",
+      "status": "done",
+      "goal": "Safely remove unreachable code, stale flags, unused exports, abandoned adapters, orphan tests, duplicate utilities, and architecture violations using static plus runtime reachability evidence.",
+      "dependencies": ["test_and_contract_scaffolding_macro_pack", "living_runtime_trace_ingestion"],
+      "deliverables": [
+        "macros/packs/architecture-cleanup/",
+        "generators/reachability_proof.sh",
+        "fixtures/macros/architecture-cleanup/",
+        "tests/test_v20_architecture_cleanup_pack.sh"
+      ],
+      "acceptance": [
+        "Deletion requires static non-reachability, dynamic observation policy, ownership policy, and affected-test proof.",
+        "Public, reflective, serialized, plugin, and externally referenced symbols default to blocked.",
+        "Duplicate consolidation proves behavior and dependency direction before replacement.",
+        "At least three cleanup macros are certified apply-capable."
+      ],
+      "metrics": {
+        "apply_capable_macros": 3,
+        "false_dead_code_deletions": 0
+      }
+    },
+    {
+      "id": "control_and_data_flow_engine",
+      "wave": 4,
+      "theme": "semantic-analysis",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Add local and targeted global control/data-flow analysis with sources, sinks, barriers, flow states, summaries, partial-flow diagnostics, and configurable library models.",
+      "dependencies": ["unified_program_graph_v3", "parser_and_rewriter_adapter_sdk"],
+      "deliverables": [
+        "generators/control_flow_graph.sh",
+        "generators/data_flow_query.sh",
+        "specs/data-flow-model.json",
+        "models/data-flow/",
+        "tests/test_v20_data_flow_engine.sh"
+      ],
+      "acceptance": [
+        "Local flow is the default fast path; global flow is source/sink bounded and budgeted.",
+        "Flow states, sanitizers, barriers, unknown calls, and external-library summaries are explicit.",
+        "Queries return path evidence and partial-flow explanations when no full path is proven.",
+        "Precision, recall, runtime, and memory are measured per language and query class."
+      ],
+      "metrics": {
+        "local_flow_precision_min": 0.98,
+        "global_flow_precision_min": 0.95
+      }
+    },
+    {
+      "id": "living_runtime_trace_ingestion",
+      "wave": 4,
+      "theme": "runtime-intelligence",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Continuously ingest normalized traces, profiles, coverage, logs, feature-flag states, and probe observations into the evidence lattice without retaining sensitive payloads.",
+      "dependencies": ["control_and_data_flow_engine", "observability_instrumentation_macro_pack"],
+      "deliverables": [
+        "generators/runtime_trace_ingest.sh",
+        "generators/runtime_evidence_compact.sh",
+        "specs/runtime-evidence-v2.json",
+        "adapters/runtime/otel/",
+        "tests/test_v20_runtime_trace_ingestion.sh"
+      ],
+      "acceptance": [
+        "Ingestion supports OpenTelemetry JSON/OTLP exports and a stable offline fixture format.",
+        "Payload values, secrets, personal data, and high-cardinality identifiers are redacted or hashed by policy.",
+        "Observations carry environment, build, commit, sampling, freshness, and coverage provenance.",
+        "Runtime evidence can strengthen or contradict static edges but cannot erase static uncertainty."
+      ],
+      "metrics": {
+        "sensitive_payload_retention": 0,
+        "unattributed_runtime_edges_max": 0.05
+      }
+    },
+    {
+      "id": "safe_probe_synthesis_and_execution",
+      "wave": 4,
+      "theme": "runtime-intelligence",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Synthesize minimal read-only probes that target unresolved graph edges and interface assumptions, execute them in allowlisted environments, and record evidence sufficient to discharge blockers.",
+      "dependencies": ["living_runtime_trace_ingestion", "counterexample_guided_macro_refinement"],
+      "deliverables": [
+        "generators/probe_synthesize.sh",
+        "generators/probe_budget.sh",
+        "specs/probe-plan-v2.json",
+        "fixtures/runtime-probes/",
+        "tests/test_v20_probe_synthesis.sh"
+      ],
+      "acceptance": [
+        "Probe synthesis starts from a named unresolved evidence obligation and stops when that obligation is discharged or budget expires.",
+        "Probes are read-only by contract, resource-bounded, network-allowlisted, and independently auditable.",
+        "Generated commands cannot interpolate untrusted repository content into shells.",
+        "Probe outcomes update only the evidence nodes they directly support."
+      ],
+      "metrics": {
+        "unsafe_probe_executions": 0,
+        "blocker_discharge_rate_min": 0.60
+      }
+    },
+    {
+      "id": "dynamic_framework_resolver_sdk_v2",
+      "wave": 4,
+      "theme": "runtime-intelligence",
+      "priority": "high",
+      "status": "done",
+      "goal": "Let projects define deterministic resolvers for dependency injection, reflection, plugin discovery, generated clients, routes, events, ORM models, decorators, metaprogramming, and build-time code generation.",
+      "dependencies": ["safe_probe_synthesis_and_execution", "parser_and_rewriter_adapter_sdk"],
+      "deliverables": [
+        "specs/dynamic-resolver-sdk.json",
+        "generators/dynamic_resolver_harness.sh",
+        "resolvers/reference/",
+        "docs/DYNAMIC_RESOLVER_SDK.md",
+        "tests/test_v20_dynamic_resolver_sdk.sh"
+      ],
+      "acceptance": [
+        "Resolvers declare applicable frameworks, versions, evidence inputs, output edge types, and trust requirements.",
+        "Resolver output is deterministic, scoped, provenance-rich, and independently replayable.",
+        "Conflicting resolvers produce an evidence conflict with no automatic winner.",
+        "Reference resolvers cover at least twelve widely used framework patterns."
+      ],
+      "metrics": {
+        "reference_resolvers": 12,
+        "silent_resolver_conflicts": 0
+      }
+    },
+    {
+      "id": "runtime_contract_mining_and_differential_verification",
+      "wave": 4,
+      "theme": "runtime-proof",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Mine candidate runtime contracts from traces and compare before/after executions to verify routes, events, queries, latency, errors, resources, and side effects during macro simulation.",
+      "dependencies": ["dynamic_framework_resolver_sdk_v2", "behavioral_equivalence_oracles"],
+      "deliverables": [
+        "generators/runtime_contract_mine.sh",
+        "generators/differential_runtime_verify.sh",
+        "specs/mined-runtime-contract.json",
+        "benchmarks/runtime-differential/",
+        "tests/test_v20_runtime_differential.sh"
+      ],
+      "acceptance": [
+        "Mined contracts remain provisional until reviewed or repeatedly observed across declared environments.",
+        "Differential verification separates semantic divergence from timing and infrastructure noise.",
+        "Canary sampling and replay fixtures are deterministic after normalization.",
+        "Runtime divergence automatically blocks macro promotion and records a minimized counterexample."
+      ],
+      "metrics": {
+        "unexplained_runtime_divergence": 0,
+        "noise_false_positive_rate_max": 0.02
+      }
+    },
+    {
+      "id": "repository_federation_graph_v2",
       "wave": 5,
+      "theme": "multi-repo",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Build an incremental fleet graph spanning repositories, packages, services, owners, contracts, deployments, generated clients, release versions, and change campaigns.",
+      "dependencies": ["unified_program_graph_v3", "runtime_contract_mining_and_differential_verification"],
+      "deliverables": [
+        "specs/federation-graph-v2.json",
+        "generators/federation_index.sh",
+        "generators/federation_incremental.sh",
+        "generated/federation/program-graph.json",
+        "tests/test_v20_federation_graph.sh"
+      ],
+      "acceptance": [
+        "Repository identities and contract edges remain stable across clones, forks, and branch workspaces.",
+        "Access policy prevents facts from leaking between unauthorized repository partitions.",
+        "Cross-repository interface and deployment paths are queryable through MQL.",
+        "Index updates are content-addressed and avoid rescanning unchanged repositories."
+      ],
+      "metrics": {
+        "repositories_indexed": 60,
+        "cross_partition_leaks": 0
+      }
+    },
+    {
+      "id": "cross_repo_contract_propagation",
+      "wave": 5,
+      "theme": "multi-repo",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Propagate API, event, schema, package, and configuration changes through producer and consumer repositories as ordered compatibility-preserving macro plans.",
+      "dependencies": ["repository_federation_graph_v2", "api_evolution_macro_pack"],
+      "deliverables": [
+        "generators/cross_repo_impact.sh",
+        "generators/contract_propagation_plan.sh",
+        "specs/cross-repo-migration.json",
+        "fixtures/federation/contract-propagation/",
+        "tests/test_v20_contract_propagation.sh"
+      ],
+      "acceptance": [
+        "Plans identify all known producers, consumers, generated clients, deployment constraints, and owner approvals.",
+        "Compatibility shims are installed before consumers migrate and removed only after completion evidence.",
+        "Partial repository access produces explicit unknown-consumer risk.",
+        "Rollback order respects published versions and deployed dependencies."
+      ],
+      "metrics": {
+        "known_consumer_coverage": 1.0,
+        "out_of_order_breaking_rollouts": 0
+      }
+    },
+    {
+      "id": "fleet_macro_campaign_executor",
+      "wave": 5,
+      "theme": "multi-repo",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Execute certified macro campaigns across repository fleets with cohorting, concurrency, budgets, coordinated PRs, pause/resume, canaries, rollback, and campaign-level proof bundles.",
+      "dependencies": ["cross_repo_contract_propagation", "hermetic_macro_transaction_runner"],
+      "deliverables": [
+        "generators/fleet_campaign_plan.sh",
+        "generators/fleet_campaign_execute.sh",
+        "specs/fleet-campaign.json",
+        "docs/FLEET_CAMPAIGNS.md",
+        "tests/test_v20_fleet_campaign.sh"
+      ],
+      "acceptance": [
+        "Campaigns start with read-only impact analysis and a deterministic cohort plan.",
+        "Canary failure pauses later cohorts and emits exact rollback or remediation choices.",
+        "Repository failures remain isolated while campaign state stays resumable and auditable.",
+        "SCM writes require explicit user intent and idempotency keys."
+      ],
+      "metrics": {
+        "campaign_resume_rate": 1.0,
+        "duplicate_prs": 0
+      }
+    },
+    {
+      "id": "takeover_wizard_and_interface_unblocking",
+      "wave": 5,
+      "theme": "product-experience",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Turn takeover-init from a report into a guided deterministic workflow that creates a multi-file struct model, parser/resolver configuration, interface commitments, owners, test mappings, and an executable first optimization queue.",
+      "dependencies": ["dynamic_framework_resolver_sdk_v2", "macro_query_language_mql", "test_and_contract_scaffolding_macro_pack"],
+      "deliverables": [
+        "generators/takeover_wizard.sh",
+        "generators/interface_unblock.sh",
+        "specs/takeover-session.json",
+        "docs/TAKEOVER_WIZARD.md",
+        "tests/test_v20_takeover_wizard.sh"
+      ],
+      "acceptance": [
+        "The wizard is resumable, idempotent, non-destructive by default, and emits every proposed write as a macro plan.",
+        "It asks AI only for bounded domain intent, owner, or compatibility choices that cannot be derived.",
+        "Interface blocked states are discharged through concrete parser, runtime, owner, contract, or test evidence.",
+        "External benchmark repositories reach less than ten percent blocked interfaces after guided initialization."
+      ],
+      "metrics": {
+        "interface_blocked_ratio_max": 0.10,
+        "ai_task_ratio_max": 0.10
+      }
+    },
+    {
+      "id": "always_on_project_intelligence_daemon",
+      "wave": 5,
+      "theme": "product-experience",
+      "priority": "high",
+      "status": "done",
+      "goal": "Provide a local watch daemon that incrementally updates graph partitions, drift, interface commitments, affected tests, macro opportunities, and dashboard state as files and branches change.",
+      "dependencies": ["takeover_wizard_and_interface_unblocking", "unified_program_graph_v3"],
+      "deliverables": [
+        "tools/simple_modeld.sh",
+        "specs/daemon-state.json",
+        "generators/watch_invalidate.sh",
+        "docs/DAEMON.md",
+        "tests/test_v20_project_intelligence_daemon.sh"
+      ],
+      "acceptance": [
+        "The daemon is optional, local-only by default, crash-safe, and never applies changes.",
+        "File events coalesce deterministically and invalidate only affected graph/test/report partitions.",
+        "Branch changes and rebases reset stale evidence without losing reusable content-addressed facts.",
+        "CLI and plugin commands transparently consume fresh daemon state or fall back to batch mode."
+      ],
+      "metrics": {
+        "incremental_analysis_p95_seconds": 2,
+        "stale_state_reads": 0
+      }
+    },
+    {
+      "id": "project_intelligence_pr_bot_v2",
+      "wave": 5,
+      "theme": "product-experience",
+      "priority": "high",
+      "status": "done",
+      "goal": "Deliver a production PR bot that explains structural impact, interface commitments, dynamic risks, selected tests, macro opportunities, proof status, waivers, and safe autofix plans without noisy duplicate comments.",
+      "dependencies": ["always_on_project_intelligence_daemon", "fleet_macro_campaign_executor"],
+      "deliverables": [
+        "tools/project_intelligence_pr_bot.sh",
+        "specs/pr-intelligence-report-v2.json",
+        ".github/workflows/project-intelligence.yml",
+        "docs/PR_BOT_V2.md",
+        "tests/test_v20_pr_bot_v2.sh"
+      ],
+      "acceptance": [
+        "Bot comments are marker-updated, concise, stable, and link to machine-readable evidence artifacts.",
+        "Autofix PRs are created only from certified macros with explicit repository policy.",
+        "Fork, permission, secret, cancellation, rerun, stale-base, and concurrent-update cases are covered.",
+        "The bot reports why a test or reviewer was selected through graph paths."
+      ],
+      "metrics": {
+        "duplicate_comments": 0,
+        "unexplained_test_selections": 0
+      }
+    },
+    {
+      "id": "interactive_mql_cockpit_and_ide_bridge",
+      "wave": 5,
+      "theme": "product-experience",
+      "priority": "high",
+      "status": "done",
+      "goal": "Make project intelligence directly usable through terminal, Codex plugin, MCP, editor integrations, and stable deep links for graph queries, macro simulation, proof review, and approval queues.",
+      "dependencies": ["project_intelligence_pr_bot_v2", "macro_query_language_mql"],
+      "deliverables": [
+        "generators/intelligence_cockpit_v3.sh",
+        "tools/mql_repl.sh",
+        "specs/interactive-session.json",
+        "docs/INTERACTIVE_INTELLIGENCE.md",
+        "tests/test_v20_interactive_cockpit.sh"
+      ],
+      "acceptance": [
+        "Users can ask structural questions and receive deterministic graph paths, evidence, and reproducible commands.",
+        "Interactive simulation never bypasses policy, certification, dirty-worktree, or write-intent gates.",
+        "Sessions can export compact handoff bundles that another agent or human can replay.",
+        "Terminal output remains the complete baseline; graphical clients are optional projections."
+      ],
+      "metrics": {
+        "unreplayable_answers": 0,
+        "terminal_feature_parity": 1.0
+      }
+    },
+    {
+      "id": "policy_approval_and_exception_workflow_v2",
+      "wave": 5,
+      "theme": "governance",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Create typed approval queues, owner delegation, separation of duties, expiring waivers, emergency stops, policy bundles, and auditable exception workflows for macro execution.",
+      "dependencies": ["interactive_mql_cockpit_and_ide_bridge", "macro_lifecycle_registry_v2"],
+      "deliverables": [
+        "specs/policy-bundle-v2.json",
+        "specs/approval-record.json",
+        "generators/approval_queue.sh",
+        "generators/exception_audit.sh",
+        "tests/test_v20_policy_approval_v2.sh"
+      ],
+      "acceptance": [
+        "Approvals bind exact content hashes, scopes, environments, expiry, identities, and proof bundles.",
+        "Changed plans invalidate prior approval automatically.",
+        "Emergency stop and revocation prevent pending and resumed apply operations.",
+        "Waivers cannot suppress false-safe-apply, rollback, provenance, or audit-log requirements."
+      ],
+      "metrics": {
+        "stale_approval_uses": 0,
+        "unattributed_exceptions": 0
+      }
+    },
+    {
+      "id": "external_repository_corpus_60",
+      "wave": 6,
+      "theme": "benchmarking",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Build a reproducible labeled corpus of at least 60 real repositories spanning languages, frameworks, monorepos, generated code, dynamic behavior, build systems, and project maturity levels.",
+      "dependencies": ["policy_approval_and_exception_workflow_v2", "takeover_wizard_and_interface_unblocking"],
+      "deliverables": [
+        "benchmarks/external-corpus/manifest.json",
+        "benchmarks/external-corpus/labels/",
+        "generators/corpus_materialize.sh",
+        "generators/corpus_license_check.sh",
+        "tests/test_v20_external_corpus.sh"
+      ],
+      "acceptance": [
+        "Corpus entries pin repository, commit, license, acquisition method, expected capabilities, and permitted redistribution.",
+        "Training/development and held-out evaluation partitions are separated and hash-locked.",
+        "The corpus includes at least six languages, twelve frameworks, ten monorepos, and fifteen dynamic-code cases.",
+        "Private repositories can use the same manifest contract without leaking source or identifiers."
+      ],
+      "metrics": {
+        "repositories": 60,
+        "languages": 6,
+        "frameworks": 12
+      }
+    },
+    {
+      "id": "macro_gauntlet_500",
+      "wave": 6,
+      "theme": "benchmarking",
+      "priority": "critical",
+      "status": "done",
+      "goal": "Expand macro safety evaluation to at least 500 positive, negative, adversarial, composition, rollback, dynamic, concurrency, and cross-repository cases.",
+      "dependencies": ["external_repository_corpus_60", "macro_conformance_and_certification_kit"],
+      "deliverables": [
+        "benchmarks/macro-gauntlet-v2/cases.json",
+        "generators/macro_gauntlet_v2.sh",
+        "generated/benchmarks/macro-gauntlet-v2.json",
+        "docs/MACRO_GAUNTLET_V2.md",
+        "tests/test_v20_macro_gauntlet_500.sh"
+      ],
+      "acceptance": [
+        "Cases cover false matches, missed matches, stale captures, parser errors, dynamic uncertainty, effect conflicts, interrupted runs, and rollback corruption.",
+        "Held-out cases are not visible to macro synthesis or refinement.",
+        "Results report precision, recall, false-safe-apply, rollback, replay, runtime, and per-family confidence intervals.",
+        "Any false-safe-apply fails the release gate."
+      ],
+      "metrics": {
+        "cases": 500,
+        "false_safe_apply": 0
+      }
+    },
+  {
+    "id": "long_horizon_software_evolution_benchmark",
+      "wave": 6,
+      "theme": "benchmarking",
+      "priority": "critical",
+    "status": "done",
+      "goal": "Evaluate months-long software evolution through ordered historical tasks, contract preservation, repeated upgrades, branch changes, failures, resumptions, and maintenance cost rather than isolated patches.",
+      "dependencies": ["macro_gauntlet_500", "fleet_macro_campaign_executor"],
+      "deliverables": [
+        "benchmarks/evolution-v2/manifest.json",
+        "generators/evolution_replay_v2.sh",
+        "generators/evolution_score.sh",
+        "generated/benchmarks/evolution-v2-scorecard.json",
+        "tests/test_v20_evolution_benchmark.sh"
+      ],
+      "acceptance": [
+        "Tasks are derived from real release histories and preserve chronological information boundaries.",
+        "Scoring includes completed intent, regressions, architecture drift, interface stability, human approvals, runtime, and rework.",
+        "Benchmark state can resume after interruption and verifies every checkpoint hash.",
+        "Macro-dominant runs are compared with manual-agent baselines under equal tool and time budgets."
+      ],
+      "metrics": {
+        "repositories": 12,
+        "evolution_tasks": 120,
+        "zero_regression_rate_min": 0.90
+      }
+    },
+  {
+    "id": "incremental_performance_and_test_economics_v2",
+      "wave": 6,
+      "theme": "performance",
+      "priority": "critical",
+    "status": "done",
+      "goal": "Make daily intelligence cheap through partition caches, dependency-aware invalidation, worker isolation, deterministic concurrency, remote-cache adapters, and measured fast/full test economics.",
+      "dependencies": ["long_horizon_software_evolution_benchmark", "always_on_project_intelligence_daemon"],
+      "deliverables": [
+        "generators/performance_benchmark_v2.sh",
+        "generators/test_economics.sh",
+        "specs/performance-slo-v2.json",
+        "generated/performance/v2-scorecard.json",
+        "tests/test_v20_performance_v2.sh"
+      ],
+      "acceptance": [
+        "Cold, warm, one-file, one-symbol, branch-switch, and cache-corruption scenarios are measured separately.",
+        "Test selection reports saved time, cache trust, missed-test audits, and escalation reasons.",
+        "Parallel tasks use isolated output partitions and deterministic merge order.",
+        "Release tests verify both speed budgets and correctness under cache-disabled execution.",
+        "Contract, integration, benchmark, and release suites are labeled and routed independently; roadmap-only changes never trigger unrelated end-to-end autopilot runs.",
+        "Immutable benchmark and analysis artifacts are generated once per input digest and reused by downstream reports and plugin wrappers.",
+        "The test harness detects duplicate heavy phases in one run and reports per-check wall, user, and system time."
+      ],
+      "metrics": {
+        "incremental_analysis_p95_seconds": 2,
+        "affected_check_p95_seconds": 30,
+        "missed_affected_tests": 0,
+        "unlabeled_suite_max_seconds": 30,
+        "duplicate_heavy_phase_executions": 0
+      }
+    },
+  {
+    "id": "macro_pack_signing_and_supply_chain",
+      "wave": 6,
+      "theme": "supply-chain",
+      "priority": "critical",
+    "status": "done",
+      "goal": "Sign macro packs, certificates, adapters, registry snapshots, and release artifacts with provenance and policy so external packs cannot silently alter execution behavior.",
+      "dependencies": ["incremental_performance_and_test_economics_v2", "macro_lifecycle_registry_v2"],
+      "deliverables": [
+        "specs/macro-pack-manifest-v2.json",
+        "generators/macro_pack_sign.sh",
+        "generators/macro_pack_verify.sh",
+        "docs/MACRO_SUPPLY_CHAIN.md",
+        "tests/test_v20_macro_pack_signing.sh"
+      ],
+      "acceptance": [
+        "Manifests bind source, build inputs, certificates, adapters, dependencies, permissions, and content hashes.",
+        "Unsigned or tampered packs can be inspected but cannot simulate or apply under trusted policy.",
+        "Key rotation, revocation, offline verification, and reproducible packaging are covered.",
+        "Release assets include machine-verifiable provenance."
+      ],
+      "metrics": {
+        "unsigned_trusted_packs": 0,
+        "tamper_detection_rate": 1.0
+      }
+    },
+  {
+    "id": "interoperability_and_model_portability",
+      "wave": 6,
+      "theme": "ecosystem",
+      "priority": "high",
+    "status": "done",
+      "goal": "Expose the same project graph, MQL, macro simulation, proof, and approval contracts through CLI, MCP, Codex plugin, CI, and adapters for other agent and refactoring ecosystems.",
+      "dependencies": ["macro_pack_signing_and_supply_chain", "interactive_mql_cockpit_and_ide_bridge"],
+      "deliverables": [
+        "specs/project-intelligence-api-v2.json",
+        "tools/simple_model_mcp_v2.sh",
+        "adapters/openrewrite/",
+        "adapters/codeql/",
+        "adapters/semgrep/",
+        "adapters/ast-grep/",
+        "tests/test_v20_interoperability.sh"
+      ],
+      "acceptance": [
+        "All clients consume stable JSON contracts and receive equivalent deterministic decisions.",
+        "External tools contribute facts or edits only through declared adapter capabilities and provenance.",
+        "Model-specific prompts remain thin projections over the same control plane.",
+        "Conformance tests run without requiring proprietary cloud services."
+      ],
+      "metrics": {
+        "reference_ecosystem_adapters": 4,
+        "cross_client_decision_drift": 0
+      }
+    },
+  {
+    "id": "v20_production_release_gate",
+      "wave": 6,
       "theme": "release-quality",
-      "task": "Create a v1.2 macro release gate that proves the macro engine is safe, useful, compositional, transactional, and benchmark-backed.",
       "priority": "critical",
-      "status": "done",
-      "deliverable": "generators/release_slo.sh v1.2 checks and generated/releases/v1.2-macro-readiness.json.",
-      "acceptance": [
-        "Gate reads operator IR, motif discovery, template synthesis, composition, plan search, transaction logs, proof bundles, outcome ledger, family rankings, promotion report, macro gauntlet, cockpit, and advisor artifacts.",
-        "Gate fails on false-safe-apply, rollback failure, non-idempotency, missing proof bundle, unpromoted trusted pack, missed affected tests, or macro gauntlet regression.",
-        "Readiness output includes stable hashes for decisive macro artifacts and clear remediation steps.",
-        "Plugin package manifest includes v1.2 macro readiness summary when present."
+    "status": "done",
+      "goal": "Create the final v2 release gate that proves executable macro value, interface unblocking, dynamic evidence, external generality, long-horizon evolution, performance, hermetic replay, supply-chain integrity, and plugin usability.",
+      "dependencies": [
+        "interoperability_and_model_portability",
+        "macro_gauntlet_500",
+        "long_horizon_software_evolution_benchmark",
+        "incremental_performance_and_test_economics_v2"
       ],
-      "files": [
-        "generators/release_slo.sh",
-        "tools/package_codex_plugin.sh",
-        "generated/releases/v1.2-macro-readiness.json",
-        "docs/RELEASE_SLO.md",
-        "tests/test_v12_macro_release_gate.sh"
-      ]
-    },
-    {
-      "id": "ai_tool_competitive_pain_research",
-      "wave": 5,
-      "theme": "product-strategy",
-      "task": "Research mainstream AI coding tools and primary empirical evidence, identify cross-product pain points, and map each gap to a deterministic macro-wisdom capability that this project can implement and gate.",
-      "priority": "critical",
-      "status": "done",
-      "deliverable": "generators/ai_tool_pain_research.sh and generated/research/ai-tool-pain-points.json/md.",
-      "acceptance": [
-        "Research covers at least six mainstream tools and uses versioned public sources with explicit claim provenance.",
-        "Every pain point maps to a deterministic macro response, concrete artifacts, and a measurable success criterion.",
-        "Vendor documentation establishes product behavior while surveys and primary studies establish cross-product pain; inferred gaps are labeled as inference.",
-        "The report is reproducible offline, keeps AI as a leaf worker, is exposed through the plugin and MCP, and is required by the v1.2 release gate."
+      "deliverables": [
+        "generators/release_slo_v2.sh",
+        "specs/release-slo-v2.json",
+        "generated/releases/v2-production-readiness.json",
+        "docs/RELEASE_SLO_V2.md",
+        "tests/test_v20_release_gate.sh"
       ],
-      "files": [
-        "generators/ai_tool_pain_research.sh",
-        "specs/ai-tool-pain-research.json",
-        "generated/research/ai-tool-pain-points.json",
-        "codex/skills/simple-model-project-intelligence/references/command-manifest.json",
-        "tests/test_v12_ai_tool_pain_research.sh"
-      ]
+      "acceptance": [
+        "The gate verifies all program_targets from clean, cache-disabled, hermetic runs where applicable.",
+        "At least 24 macros are apply-capable, 40 simulate-capable, and 16 families are represented with zero false-safe-apply.",
+        "External and held-out evidence is required; self-optimization alone cannot satisfy readiness.",
+        "The plugin package includes signed maturity, benchmark, proof, performance, and compatibility summaries."
+      ],
+      "metrics": {
+        "release_gate_failures": 0,
+        "program_targets_met": 1.0
+      }
     }
   ]
 }

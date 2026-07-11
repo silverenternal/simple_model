@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-07-11T00:00:00Z",
+  "gates": {
+    "analyze": {
+      "parser_files_min": 10,
+      "parser_languages_min": 2,
+      "symbol_count_min": 5,
+      "semantic_nodes_min": 5
+    },
+    "simulate": {
+      "plan_actions_min": 1,
+      "score_delta_min": -100
+    },
+    "apply": {
+      "plan_actions_min": 1,
+      "max_skipped": 5,
+      "max_failed": 0
+    },
+    "replay": {
+      "required": true
+    },
+    "generalization": {
+      "success_ratio_min": 100,
+      "fixture_min": 1
+    }
+  },
+  "classification": {
+    "max_score": 5,
+    "labels": [
+      {
+        "level": "none",
+        "min_gates": 0
+      },
+      {
+        "level": "foundational",
+        "min_gates": 1
+      },
+      {
+        "level": "intermediate",
+        "min_gates": 2
+      },
+      {
+        "level": "core",
+        "min_gates": 3
+      },
+      {
+        "level": "advanced",
+        "min_gates": 4
+      }
+    ]
+  }
+}

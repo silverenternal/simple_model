@@ -1,0 +1,1 @@
+{"schema_version":"1.0","language":"python","backend":"native","operations":["symbol_rename","import_edit","declaration_insert","declaration_remove","call_site_rewrite","signature_migration"],"formatter":"preserve","fallback_policy":"review_only"}

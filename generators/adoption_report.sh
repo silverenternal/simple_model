@@ -4,12 +4,14 @@ SELF_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="."
 STRUCT="${STRUCT_FILE:-./struct.json}"
 OUT="generated/adoption-report"
+BENCHMARK=""
 JSON_OUT=0
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --root) ROOT="$2"; shift 2 ;;
     --struct|-s) STRUCT="$2"; shift 2 ;;
     --output-dir) OUT="$2"; shift 2 ;;
+    --benchmark) BENCHMARK="$2"; shift 2 ;;
     --json) JSON_OUT=1; shift ;;
     *) echo "unknown arg: $1" >&2; exit 64 ;;
   esac
@@ -19,8 +21,15 @@ ROOT="$(cd "$ROOT" && pwd)"
 audit=$(bash "$SELF_DIR/adoption_audit.sh" --root "$ROOT" --struct "$STRUCT" --json || true)
 ir=$(bash "$SELF_DIR/semantic_interface_ir.sh" --root "$ROOT" --struct "$STRUCT" --output "$OUT/interface-ir.json" --json || true)
 score=$(bash "$SELF_DIR/optimization_score.sh" --root "$ROOT" --struct "$STRUCT" --output-dir "$OUT" --json || true)
-bench=$(bash "$SELF_DIR/benchmark_scorecard.sh" . --json || true)
-comp=$(bash "$SELF_DIR/competitive_scorecard.sh" --benchmark generated/benchmarks/scorecard.json --json || true)
+if [[ -n "$BENCHMARK" ]]; then
+  [[ -f "$BENCHMARK" ]] || { echo "benchmark artifact not found: $BENCHMARK" >&2; exit 66; }
+  bench=$(jq . "$BENCHMARK")
+  benchmark_for_competitive="$BENCHMARK"
+else
+  bench=$(bash "$SELF_DIR/benchmark_scorecard.sh" . --json || true)
+  benchmark_for_competitive="generated/benchmarks/scorecard.json"
+fi
+comp=$(bash "$SELF_DIR/competitive_scorecard.sh" --benchmark "$benchmark_for_competitive" --json || true)
 dynamic=$(bash "$SELF_DIR/dynamic_surface_scan.sh" --root "$ROOT" --struct "$STRUCT" --output "$OUT/dynamic-surfaces.json" --json || jq -n '{nodes:[],summary:{nodes:0}}')
 perf='{}'
 [[ -f generated/performance/scorecard.json ]] && perf=$(jq . generated/performance/scorecard.json)

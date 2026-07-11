@@ -1,0 +1,1 @@
+{"schema_version":"1.0","semantic_convention_version":"1.27.0","required_attributes":["service.name","service.version","deployment.environment"],"sensitive_attributes":["user.email","authorization"],"sensitive_policy":"block_without_explicit_redaction"}

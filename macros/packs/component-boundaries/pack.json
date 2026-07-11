@@ -1,0 +1,1 @@
+{"schema_version":"1.0","name":"component-boundaries","status":"certified","macros":[{"id":"component.extract","apply_capable":true},{"id":"component.facade","apply_capable":true},{"id":"component.cycle_break","apply_capable":true}],"policy":{"public_contract_shims":"required","new_dependency_cycles":0}}

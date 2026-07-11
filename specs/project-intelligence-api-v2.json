@@ -1,0 +1,20 @@
+{
+  "schema_version": "2.0",
+  "protocol": "simple-model-project-intelligence",
+  "transport": ["cli", "mcp", "plugin", "ci"],
+  "tools": [
+    "project_graph",
+    "mql_plan",
+    "macro_simulate",
+    "proof_bundle",
+    "approval_status",
+    "adapter_facts"
+  ],
+  "decision_contract": {
+    "deterministic": true,
+    "stable_json": true,
+    "ai_structural_decisions": 0,
+    "writes_require_approval": true
+  },
+  "adapter_capabilities": ["facts", "edits", "provenance"]
+}

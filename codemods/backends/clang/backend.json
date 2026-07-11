@@ -1,0 +1,1 @@
+{"schema_version":"1.0","languages":["c","cpp"],"backend":"clang-compatible","compilation_database_required":true,"operations":["symbol_rename","import_edit","declaration_insert","declaration_remove","call_site_rewrite","signature_migration"],"unsupported_policy":"review_only"}

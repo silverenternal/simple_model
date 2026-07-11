@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Unified Program Graph v3",
+  "type": "object",
+  "required": ["schema_version", "ok", "graph_hash", "identity_policy", "summary", "nodes", "edges", "partitions"],
+  "properties": {
+    "schema_version": {"const": "3.0"},
+    "ok": {"type": "boolean"},
+    "graph_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "identity_policy": {
+      "type": "object",
+      "required": ["version", "path_rename_stable", "unrelated_edit_stable"],
+      "properties": {
+        "version": {"const": "upg-v3-semantic-identity"},
+        "path_rename_stable": {"type": "boolean"},
+        "unrelated_edit_stable": {"type": "boolean"}
+      }
+    },
+    "nodes": {"type": "array", "items": {"$ref": "#/$defs/node"}},
+    "edges": {"type": "array", "items": {"$ref": "#/$defs/edge"}},
+    "partitions": {"type": "array"},
+    "summary": {"type": "object"}
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "required": ["class", "confidence", "provenance", "freshness", "invalidation_keys"],
+      "properties": {
+        "class": {"enum": ["declared", "parsed", "inferred", "runtime", "cross_repository", "unknown"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "provenance": {"type": "array", "items": {"type": "string"}},
+        "freshness": {"enum": ["current", "stale", "unknown"]},
+        "invalidation_keys": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "node": {
+      "type": "object", "required": ["id", "kind", "repository", "evidence"],
+      "properties": {"id": {"type": "string"}, "kind": {"type": "string"}, "repository": {"type": "string"}, "evidence": {"$ref": "#/$defs/evidence"}}
+    },
+    "edge": {
+      "type": "object", "required": ["id", "kind", "from", "to", "repository", "evidence"],
+      "properties": {"id": {"type": "string"}, "kind": {"type": "string"}, "from": {"type": "string"}, "to": {"type": "string"}, "repository": {"type": "string"}, "evidence": {"$ref": "#/$defs/evidence"}}
+    }
+  }
+}

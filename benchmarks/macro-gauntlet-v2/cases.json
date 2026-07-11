@@ -1,0 +1,5027 @@
+{
+  "schema_version": "2.0",
+  "cases": [
+    {
+      "id": "gauntlet-001",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-002",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-003",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-004",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-005",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-006",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-007",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-008",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-009",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-010",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-011",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-012",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-013",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-014",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-015",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-016",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-017",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-018",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-019",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-020",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-021",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-022",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-023",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-024",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-025",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-026",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-027",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-028",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-029",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-030",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-031",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-032",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-033",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-034",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-035",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-036",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-037",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-038",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-039",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-040",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-041",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-042",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-043",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-044",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-045",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-046",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-047",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-048",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-049",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-050",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-051",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-052",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-053",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-054",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-055",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-056",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-057",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-058",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-059",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-060",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-061",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-062",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-063",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-064",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-065",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-066",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-067",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-068",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-069",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-070",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-071",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-072",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-073",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-074",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-075",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-076",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-077",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-078",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-079",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-080",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-081",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-082",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-083",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-084",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-085",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-086",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-087",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-088",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-089",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-090",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-091",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-092",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-093",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-094",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-095",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-096",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-097",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-098",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-099",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-100",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-101",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-102",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-103",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-104",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-105",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-106",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-107",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-108",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-109",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-110",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-111",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-112",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-113",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-114",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-115",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-116",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-117",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-118",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-119",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-120",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-121",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-122",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-123",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-124",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-125",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-126",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-127",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-128",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-129",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-130",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-131",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-132",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-133",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-134",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-135",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-136",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-137",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-138",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-139",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-140",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-141",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-142",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-143",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-144",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-145",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-146",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-147",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-148",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-149",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-150",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-151",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-152",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-153",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-154",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-155",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-156",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-157",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-158",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-159",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-160",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-161",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-162",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-163",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-164",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-165",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-166",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-167",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-168",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-169",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-170",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-171",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-172",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-173",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-174",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-175",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-176",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-177",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-178",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-179",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-180",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-181",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-182",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-183",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-184",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-185",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-186",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-187",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-188",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-189",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-190",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-191",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-192",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-193",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-194",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-195",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-196",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-197",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-198",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-199",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-200",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-201",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-202",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-203",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-204",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-205",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-206",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-207",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-208",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-209",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-210",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-211",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-212",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-213",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-214",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-215",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-216",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-217",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-218",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-219",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-220",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-221",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-222",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-223",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-224",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-225",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-226",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-227",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-228",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-229",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-230",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-231",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-232",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-233",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-234",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-235",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-236",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-237",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-238",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-239",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-240",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-241",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-242",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-243",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-244",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-245",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-246",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-247",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-248",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-249",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-250",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-251",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-252",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-253",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-254",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-255",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-256",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-257",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-258",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-259",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-260",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-261",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-262",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-263",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-264",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-265",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-266",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-267",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-268",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-269",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-270",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-271",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-272",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-273",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-274",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-275",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-276",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-277",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-278",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-279",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-280",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-281",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-282",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-283",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-284",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-285",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-286",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-287",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-288",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-289",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-290",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-291",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-292",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-293",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-294",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-295",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-296",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-297",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-298",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-299",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-300",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-301",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-302",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-303",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-304",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-305",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-306",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-307",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-308",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-309",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-310",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-311",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-312",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-313",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-314",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-315",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-316",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-317",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-318",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-319",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-320",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-321",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-322",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-323",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-324",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-325",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-326",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-327",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-328",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-329",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-330",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-331",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-332",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-333",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-334",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-335",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-336",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-337",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-338",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-339",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-340",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-341",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-342",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-343",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-344",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-345",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-346",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-347",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-348",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-349",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-350",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-351",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-352",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-353",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-354",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-355",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-356",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-357",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-358",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-359",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-360",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-361",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-362",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-363",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-364",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-365",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-366",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-367",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-368",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-369",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-370",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-371",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-372",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-373",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-374",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-375",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-376",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-377",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-378",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-379",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-380",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-381",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-382",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-383",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-384",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-385",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-386",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-387",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-388",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-389",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-390",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-391",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-392",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-393",
+      "kind": "positive",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-394",
+      "kind": "negative",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-395",
+      "kind": "adversarial",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-396",
+      "kind": "composition",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-397",
+      "kind": "rollback",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-398",
+      "kind": "dynamic",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-399",
+      "kind": "concurrency",
+      "partition": "development",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-400",
+      "kind": "cross_repository",
+      "partition": "development",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-401",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-402",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-403",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-404",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-405",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-406",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-407",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-408",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-409",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-410",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-411",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-412",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-413",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-414",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-415",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-416",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-417",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-418",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-419",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-420",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-421",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-422",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-423",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-424",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-425",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-426",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-427",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-428",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-429",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-430",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-431",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-432",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-433",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-434",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-435",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-436",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-437",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-438",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-439",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-440",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-441",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-442",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-443",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-444",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-445",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-446",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-447",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-448",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-449",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-450",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-451",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-452",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-453",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-454",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-455",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-456",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-457",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-458",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-459",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-460",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-461",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-462",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-463",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-464",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-465",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-466",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-467",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-468",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-469",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-470",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-471",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-472",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-473",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-474",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-475",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-476",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-477",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-478",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-479",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-480",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-481",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-482",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-483",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-484",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-485",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-486",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-487",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-488",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-489",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-490",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-491",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-492",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-493",
+      "kind": "rollback",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-494",
+      "kind": "dynamic",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-495",
+      "kind": "concurrency",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    },
+    {
+      "id": "gauntlet-496",
+      "kind": "cross_repository",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "parser_error"
+    },
+    {
+      "id": "gauntlet-497",
+      "kind": "positive",
+      "partition": "held_out",
+      "expected_decision": "review_only",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "dynamic_uncertainty"
+    },
+    {
+      "id": "gauntlet-498",
+      "kind": "negative",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "effect_conflict"
+    },
+    {
+      "id": "gauntlet-499",
+      "kind": "adversarial",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "interrupted_run"
+    },
+    {
+      "id": "gauntlet-500",
+      "kind": "composition",
+      "partition": "held_out",
+      "expected_decision": "safe_or_review",
+      "false_safe_apply": false,
+      "rollback_ready": true,
+      "replay_deterministic": true,
+      "fixture": "stale_capture"
+    }
+  ],
+  "held_out_partition": "gauntlet-401..gauntlet-500",
+  "categories": [
+    "positive",
+    "negative",
+    "adversarial",
+    "composition",
+    "rollback",
+    "dynamic",
+    "concurrency",
+    "cross_repository"
+  ],
+  "thresholds": {
+    "false_safe_apply": 0,
+    "precision_min": 0.99,
+    "recall_min": 0.97,
+    "rollback_success": 1,
+    "replay_determinism": 1
+  },
+  "metrics": {
+    "cases": 500,
+    "false_safe_apply": 0
+  }
+}

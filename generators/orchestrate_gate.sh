@@ -56,6 +56,7 @@ done
 
 [[ -n "$STRUCT_FILE" ]] || { echo "[FAIL] --struct required" >&2; exit 2; }
 [[ -f "$STRUCT_FILE" ]] || { echo "[FAIL] struct not found: $STRUCT_FILE" >&2; exit 2; }
+resolve_struct_includes
 
 mkdir -p "$(dirname "$OUT_FILE")"
 

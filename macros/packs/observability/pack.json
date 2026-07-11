@@ -1,0 +1,1 @@
+{"schema_version":"1.0","name":"observability","status":"certified","semantic_convention_version":"1.27.0","policy":{"duplicate_instrumentation_rate":0,"sensitive_attribute_capture":"blocked"}}

@@ -1,0 +1,1 @@
+{"schema_version":"1.0","language":"go","backend":"native","operations":["symbol_rename","import_edit","declaration_insert","declaration_remove","call_site_rewrite","signature_migration"],"formatter":"gofmt_if_available","fallback_policy":"review_only"}
