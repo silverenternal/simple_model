@@ -31,7 +31,24 @@ jobs:
           else
             echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
           fi
-      - run: plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-release --version "${{ steps.version.outputs.version }}" --dry-run --json | jq -e '.ok == true'
+      - name: Run self-release gate
+        shell: bash
+        run: |
+          report="$RUNNER_TEMP/simple-model-self-release.json"
+          set +e
+          plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh \
+            self-release --version "${{ steps.version.outputs.version }}" --dry-run --json > "$report"
+          command_rc=$?
+          set -e
+          jq '{
+            ok,
+            mode,
+            version,
+            command_exit_code:'"$command_rc"',
+            failed_checks:[.self_check.checks[]? | select(.ok|not) | {name,severity,exit_code,evidence,remediation}],
+            failed_stages:[.stages[]? | select(.ok|not)]
+          }' "$report"
+          jq -e --argjson command_rc "$command_rc" '.ok == true and $command_rc == 0' "$report"
       - run: bash tools/package_codex_plugin.sh --version "${{ steps.version.outputs.version }}" | jq -e '.ok == true and .manifest_sha256'
       - uses: actions/upload-artifact@v4
         with:
