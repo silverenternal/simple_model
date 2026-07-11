@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "fixtures": [
+    {
+      "id": "ts-python-go-monorepo",
+      "languages": ["typescript", "python", "go", "json", "yaml"],
+      "expected": {
+        "symbols_min": 4,
+        "dynamic_edges_min": 3,
+        "safe_macros": ["boundary-repair.safe-export"],
+        "unsafe_macros": ["framework-repair.dynamic-route"],
+        "affected_tests": ["api", "worker", "go"]
+      },
+      "adversarial": [
+        "partial_migration",
+        "generated_client",
+        "env_gated_route",
+        "stale_test",
+        "ownership_drift"
+      ]
+    }
+  ],
+  "thresholds": {
+    "symbol_recall_proxy": 0.75,
+    "dynamic_edge_recall_proxy": 0.65,
+    "affected_test_recall": 0.95,
+    "false_safe_apply": 0,
+    "macro_drill_success": 1.0
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "required_symbol_fields": [
+    "id",
+    "stable_id",
+    "language",
+    "kind",
+    "name",
+    "path",
+    "structural_signature",
+    "confidence",
+    "invalidation_key"
+  ],
+  "identity_inputs": [
+    "language",
+    "package",
+    "qualified_name",
+    "kind",
+    "structural_signature"
+  ],
+  "conflict_policy": "review_required"
+}

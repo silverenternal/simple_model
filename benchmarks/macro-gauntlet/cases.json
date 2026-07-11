@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "cases": [
+    {"id": "safe-boundary-repair", "kind": "safe", "expected": "safe_or_review", "fixtures": ["boundary_drift"]},
+    {"id": "unsafe-dynamic-route", "kind": "dynamic", "expected": "review_or_gather_evidence", "fixtures": ["dynamic_evidence_gap"]},
+    {"id": "conflicting-write-set", "kind": "conflict", "expected": "composition_reject", "fixtures": ["write_set_conflict"]},
+    {"id": "rollback-required", "kind": "rollback", "expected": "transaction_rollback_ready", "fixtures": ["rollback_scope"]}
+  ],
+  "thresholds": {
+    "false_safe_apply": 0,
+    "rollback_success": 1,
+    "composition_rejection_accuracy": 1,
+    "discovery_recall": 0.75
+  }
+}

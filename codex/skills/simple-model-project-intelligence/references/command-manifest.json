@@ -1,134 +1,503 @@
 {
-  "schema_version": "1.1",
+  "schema_version": "1.2",
   "commands": [
     {
-      "name": "doctor",
-      "description": "Diagnose plugin, toolchain, and target repository readiness.",
+      "name": "accuracy-scorecard",
+      "description": "Run labeled messy-repo accuracy and regression scorecard.",
       "required_args": [],
-      "optional_args": ["--target-root", "--struct", "--json"],
-      "output": "human or JSON diagnostics",
-      "example": "simple_model_pi.sh --target-root /path/to/repo doctor --json",
-      "tests": ["tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "accuracy scorecard JSON",
+      "example": "simple_model_pi.sh accuracy-scorecard --json",
+      "tests": [
+        "tests/test_v11_accuracy_scorecard.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "adopt",
+      "description": "One-command external repository adoption flow: doctor, semantic graph, fast check, and adoption report.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "adoption flow JSON",
+      "example": "simple_model_pi.sh --target-root /repo adopt --json",
+      "tests": [
+        "tests/test_v10_external_plugin_ux.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "adoption-cockpit",
+      "description": "Generate terminal, JSON, Markdown, and HTML adoption cockpit report.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "adoption cockpit artifacts",
+      "example": "simple_model_pi.sh adoption-cockpit --json",
+      "tests": [
+        "tests/test_v11_adoption_cockpit.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "ai-tool-research",
+      "description": "Render a versioned competitive pain-point study and map each gap to deterministic macro capabilities.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "AI coding tool research JSON and Markdown",
+      "example": "simple_model_pi.sh ai-tool-research --json",
+      "tests": [
+        "tests/test_v12_ai_tool_pain_research.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "adoption-report",
+      "description": "Generate a repository adoption report with audit, semantic graph, score, benchmark, and competitive context.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "adoption report JSON and Markdown",
+      "example": "simple_model_pi.sh --target-root /path/to/repo adoption-report --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "affected-check",
+      "description": "Run only checks affected by a changed-file list through deterministic impact selection.",
+      "required_args": [],
+      "optional_args": [
+        "--changed-files",
+        "--jobs",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "smart test runner JSON or summary",
+      "example": "simple_model_pi.sh affected-check --changed-files generators/autopilot.sh --json",
+      "tests": [
+        "tests/test_v09_test_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "artifact-cache",
+      "description": "Inspect or store shared content-addressed artifacts for scans, tests, simulations, and reports.",
+      "required_args": [],
+      "optional_args": [
+        "--cache",
+        "--command",
+        "--inputs",
+        "--result",
+        "--lookup",
+        "--store",
+        "--json"
+      ],
+      "output": "artifact cache JSON",
+      "example": "simple_model_pi.sh artifact-cache --command 'semantic-graph' --inputs struct.json --lookup --json",
+      "tests": [
+        "tests/test_v10_artifact_cache.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "audit",
+      "description": "Report source files not represented by struct component paths.",
+      "required_args": [],
+      "optional_args": [
+        "repo",
+        "--struct"
+      ],
+      "output": "adoption audit JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/struct.json audit",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "autofix-plan",
+      "description": "Create a safe dry-run PR plan for policy-allowed low-risk macro improvements.",
+      "required_args": [],
+      "optional_args": [
+        "--plan",
+        "--json"
+      ],
+      "output": "autofix PR plan JSON",
+      "example": "simple_model_pi.sh autofix-plan --plan generated/optimization/plan.json --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "autopilot",
+      "description": "Run phased adoption, semantic graph, scoring, macro synthesis, simulation, policy, and report flow.",
+      "required_args": [],
+      "optional_args": [
+        "--dry-run",
+        "--apply",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "autopilot JSON and terminal report",
+      "example": "simple_model_pi.sh autopilot --dry-run --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "benchmark",
+      "description": "Run semantic plugin benchmark scorecard for parser accuracy, adoption quality, macro safety, and runtime readiness.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--json"
+      ],
+      "output": "benchmark scorecard JSON and Markdown",
+      "example": "simple_model_pi.sh benchmark --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "benchmark-check",
+      "description": "Run benchmark validation shards through the smart runner.",
+      "required_args": [],
+      "optional_args": [
+        "--jobs",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "smart test runner JSON or summary",
+      "example": "simple_model_pi.sh benchmark-check --json",
+      "tests": [
+        "tests/test_v09_plugin_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "codemod",
+      "description": "Run a simulate-first production codemod backend with idempotency and rollback metadata.",
+      "required_args": [
+        "--spec"
+      ],
+      "optional_args": [
+        "--target-root",
+        "--output",
+        "--simulate",
+        "--apply",
+        "--json"
+      ],
+      "output": "codemod result JSON",
+      "example": "simple_model_pi.sh codemod --spec generated/codemods/spec.json --simulate --json",
+      "tests": [
+        "tests/test_v10_codemod_backends.sh"
+      ],
       "release_gate": true
     },
     {
       "name": "commands",
       "description": "List available wrapper commands and their metadata.",
       "required_args": [],
-      "optional_args": ["--json"],
+      "optional_args": [
+        "--json"
+      ],
       "output": "human list or command manifest JSON",
       "example": "simple_model_pi.sh commands --json",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "self-check",
-      "description": "Run the plugin lifecycle gate and write self-audit JSON/Markdown reports.",
+      "name": "competitive-scorecard",
+      "description": "Compare simple_model production capabilities against adjacent repository intelligence and codemod tools.",
       "required_args": [],
-      "optional_args": ["--json", "--output-dir"],
-      "output": "human or JSON self-check report",
-      "example": "simple_model_pi.sh self-check --json",
-      "tests": ["tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--benchmark",
+        "--json"
+      ],
+      "output": "competitive capability scorecard JSON",
+      "example": "simple_model_pi.sh competitive-scorecard --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "self-audit",
-      "description": "Generate or print the latest plugin self-audit report.",
+      "name": "confidence-plan",
+      "description": "Rank optimizer recommendations by evidence confidence, expected value, rollback cost, and dynamic risk.",
       "required_args": [],
-      "optional_args": ["--json", "--output-dir"],
-      "output": "human summary or JSON self-audit report",
-      "example": "simple_model_pi.sh self-audit --json",
-      "tests": ["tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "confidence-aware optimization plan JSON",
+      "example": "simple_model_pi.sh confidence-plan --json",
+      "tests": [
+        "tests/test_v11_confidence_optimizer.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "self-release",
-      "description": "Validate and package a plugin release, with optional GitHub publish.",
-      "required_args": ["--version"],
-      "optional_args": ["--dry-run", "--publish", "--json"],
-      "output": "release validation JSON",
-      "example": "simple_model_pi.sh self-release --version 0.6.0 --dry-run --json",
-      "tests": ["tests/test_plugin_package.sh"],
-      "release_gate": true
-    },
-    {
-      "name": "macros",
-      "description": "List deterministic code and execution macros available to the optimizer.",
+      "name": "context-pack",
+      "description": "Compile task-specific Codex context packs from graph, score, policy, tests, and macro options.",
       "required_args": [],
-      "optional_args": ["--json"],
-      "output": "human summary or macro registry JSON",
-      "example": "simple_model_pi.sh macros --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--workflow",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "Codex context pack JSON and Markdown",
+      "example": "simple_model_pi.sh context-pack --workflow optimize --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "macro-suggest",
-      "description": "Generate declarative macro specs from deterministic repo facts.",
+      "name": "contracts",
+      "description": "Build contract graph from OpenAPI, GraphQL, gRPC, AsyncAPI, database, and event schema files.",
       "required_args": [],
-      "optional_args": ["--target-root", "--struct", "--output-dir", "--json"],
-      "output": "macro suggestion JSON and per-spec files",
-      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json macro-suggest --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--json"
+      ],
+      "output": "contract graph JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo contracts --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "macro-compile",
-      "description": "Compile declarative macro specs into an executable optimization plan.",
+      "name": "dashboard",
+      "description": "Generate a static Project Intelligence dashboard.",
       "required_args": [],
-      "optional_args": ["--suggestions", "--output-dir", "--json"],
-      "output": "compiled plan JSON",
-      "example": "simple_model_pi.sh macro-compile --suggestions generated/optimization/macro-suggestions.json --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
-      "release_gate": true
+      "optional_args": [
+        "output"
+      ],
+      "output": "HTML file",
+      "example": "simple_model_pi.sh dashboard generated/dashboard.html",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": false
     },
     {
-      "name": "macro-run",
-      "description": "Execute a generated optimization plan in dry-run or apply mode.",
-      "required_args": ["--plan"],
-      "optional_args": ["--dry-run", "--apply", "--macro", "--json"],
-      "output": "human or JSON macro execution report",
-      "example": "simple_model_pi.sh macro-run --plan generated/optimization/plan.json --dry-run --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
-      "release_gate": true
-    },
-    {
-      "name": "score",
-      "description": "Compute deterministic architecture health score from repo facts.",
+      "name": "deep-parser-probe",
+      "description": "Run deep parser backend probes and syntax evidence checks for the target repository.",
       "required_args": [],
-      "optional_args": ["--target-root", "--struct", "--output-dir", "--json"],
-      "output": "score JSON or terminal summary",
-      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json score --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--target-root",
+        "--json"
+      ],
+      "output": "parser probe JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo deep-parser-probe --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "optimize",
-      "description": "Plan and execute deterministic macro optimization for a target repository.",
+      "name": "doctor",
+      "description": "Diagnose plugin, toolchain, and target repository readiness.",
       "required_args": [],
-      "optional_args": ["--target-root", "--struct", "--dry-run", "--apply", "--output-dir", "--json"],
-      "output": "terminal report plus JSON/Markdown optimization artifacts",
-      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json optimize --dry-run",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--json"
+      ],
+      "output": "human or JSON diagnostics",
+      "example": "simple_model_pi.sh --target-root /path/to/repo doctor --json",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "optimize-loop",
-      "description": "Run score-driven macro suggestion, compilation, execution, validation, and rollback loop.",
+      "name": "dynamic-case-study",
+      "description": "Run the local dynamic governance case study and emit reproducible proof artifacts.",
       "required_args": [],
-      "optional_args": ["--target-root", "--struct", "--budget", "--dry-run", "--apply", "--output-dir", "--json"],
-      "output": "loop JSON or terminal report",
-      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json optimize-loop --budget 3 --dry-run --json",
-      "tests": ["tests/test_macro_optimizer.sh", "tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--json"
+      ],
+      "output": "dynamic case study JSON and Markdown reports",
+      "example": "simple_model_pi.sh dynamic-case-study --json",
+      "tests": [
+        "tests/test_dynamic_case_study.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "validate",
-      "description": "Run simple_model validate, check-all, lint, and drift summaries.",
+      "name": "dynamic-check",
+      "description": "Run dynamic governance test shards through the smart runner.",
       "required_args": [],
-      "optional_args": [],
-      "output": "validation logs and JSON summaries",
-      "example": "simple_model_pi.sh validate",
-      "tests": ["tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--jobs",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "smart test runner JSON or summary",
+      "example": "simple_model_pi.sh dynamic-check --json",
+      "tests": [
+        "tests/test_v09_plugin_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "dynamic-edges",
+      "description": "Resolve dynamic surfaces into confidence-scored semantic graph edges.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "dynamic edge JSON",
+      "example": "simple_model_pi.sh dynamic-edges --json",
+      "tests": [
+        "tests/test_v11_dynamic_edges.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "dynamic-merge",
+      "description": "Merge runtime observations into the dynamic surface graph and compute observed/probe-gap drift.",
+      "required_args": [],
+      "optional_args": [
+        "--surfaces",
+        "--observations",
+        "--output",
+        "--json"
+      ],
+      "output": "observed dynamic surface graph JSON",
+      "example": "simple_model_pi.sh dynamic-merge --surfaces generated/intelligence/dynamic-surfaces.json --observations generated/intelligence/runtime-observations.json --json",
+      "tests": [
+        "tests/test_dynamic_runtime_probe.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "dynamic-surface",
+      "description": "Extract runtime dynamic surfaces including routes, DI, plugins, event buses, env gates, generated code, reflection, imports, and unsafe mutation.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "dynamic surface IR JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo dynamic-surface --json",
+      "tests": [
+        "tests/test_dynamic_governance.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "external-eval",
+      "description": "Run safe local-only external repository adoption evaluation.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "external repository evaluation JSON",
+      "example": "simple_model_pi.sh --target-root /repo external-eval --json",
+      "tests": [
+        "tests/test_v11_external_repo_eval.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "facts",
+      "description": "Emit normalized code facts for a target repository.",
+      "required_args": [],
+      "optional_args": [
+        "repo",
+        "--struct"
+      ],
+      "output": "code facts JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo facts",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "fast-check",
+      "description": "Run the fast deterministic validation shard through the smart runner and cache.",
+      "required_args": [],
+      "optional_args": [
+        "--jobs",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "smart test runner JSON or summary",
+      "example": "simple_model_pi.sh fast-check --jobs 2 --json",
+      "tests": [
+        "tests/test_v09_plugin_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "framework-resolvers",
+      "description": "Generate deterministic framework resolver pack metadata for dynamic governance.",
+      "required_args": [],
+      "optional_args": [
+        "--output-dir",
+        "--json"
+      ],
+      "output": "framework resolver pack JSON",
+      "example": "simple_model_pi.sh framework-resolvers --json",
+      "tests": [
+        "tests/test_v10_framework_resolvers.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "framework-surfaces",
+      "description": "Extract framework routes and public runtime surfaces into semantic graph inputs.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--json"
+      ],
+      "output": "framework surfaces JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo framework-surfaces --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
@@ -138,78 +507,1058 @@
       "optional_args": [],
       "output": "test logs",
       "example": "simple_model_pi.sh full-check",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": false
+    },
+    {
+      "name": "index-cache",
+      "description": "Build incremental semantic index cache keyed by content, struct hash, and parser version.",
+      "required_args": [],
+      "optional_args": [
+        "--cache",
+        "--json"
+      ],
+      "output": "index cache JSON",
+      "example": "simple_model_pi.sh index-cache --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
     },
     {
       "name": "ingest",
       "description": "Draft a struct model from an existing repository.",
       "required_args": [],
-      "optional_args": ["repo", "output"],
+      "optional_args": [
+        "repo",
+        "output"
+      ],
       "output": "struct JSON",
       "example": "simple_model_pi.sh --target-root /path/to/repo ingest",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": false
-    },
-    {
-      "name": "audit",
-      "description": "Report source files not represented by struct component paths.",
-      "required_args": [],
-      "optional_args": ["repo", "--struct"],
-      "output": "adoption audit JSON",
-      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/struct.json audit",
-      "tests": ["tests/test_plugin_package.sh"],
-      "release_gate": true
     },
     {
       "name": "interfaces",
       "description": "Scan public interfaces and compare them with struct exports.",
       "required_args": [],
-      "optional_args": ["repo", "--struct"],
+      "optional_args": [
+        "repo",
+        "--struct"
+      ],
       "output": "interface scan JSON",
       "example": "simple_model_pi.sh --target-root /path/to/repo interfaces",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "facts",
-      "description": "Emit normalized code facts for a target repository.",
+      "name": "lsp-symbols",
+      "description": "Discover optional LSP symbol indexing readiness and normalize workspace evidence.",
       "required_args": [],
-      "optional_args": ["repo", "--struct"],
-      "output": "code facts JSON",
-      "example": "simple_model_pi.sh --target-root /path/to/repo facts",
-      "tests": ["tests/test_plugin_package.sh"],
+      "optional_args": [
+        "--target-root",
+        "--output",
+        "--json"
+      ],
+      "output": "LSP symbols JSON",
+      "example": "simple_model_pi.sh lsp-symbols --json",
+      "tests": [
+        "tests/test_v10_deep_parsers.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-advisor",
+      "description": "Advise external repositories which macro workflows are safe, useful, or blocked.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "macro advisor report JSON",
+      "example": "simple_model_pi.sh macro-advisor --json",
+      "tests": [
+        "tests/test_v12_macro_external_repo_advisor.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "interface-stability",
+      "description": "Generate evidence-backed stability commitments and breaking-change policy for discovered interfaces.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "interface stability commitment JSON and Markdown",
+      "example": "simple_model_pi.sh --target-root /repo interface-stability --json",
+      "tests": [
+        "tests/test_v12_interface_stability_commitment.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-cockpit",
+      "description": "Generate macro cockpit JSON, Markdown, and HTML reports.",
+      "required_args": [],
+      "optional_args": [
+        "--output-dir",
+        "--json"
+      ],
+      "output": "macro cockpit artifacts",
+      "example": "simple_model_pi.sh macro-cockpit --json",
+      "tests": [
+        "tests/test_v12_macro_cockpit.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-compile",
+      "description": "Compile declarative macro specs into an executable optimization plan.",
+      "required_args": [],
+      "optional_args": [
+        "--suggestions",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "compiled plan JSON",
+      "example": "simple_model_pi.sh macro-compile --suggestions generated/optimization/macro-suggestions.json --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-compose",
+      "description": "Analyze safe composition of macro operators.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro composition report JSON",
+      "example": "simple_model_pi.sh macro-compose --json",
+      "tests": [
+        "tests/test_v12_macro_composition.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-drill",
+      "description": "Run dry-run/apply/second-apply/rollback drill for apply-capable codemods.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--spec",
+        "--output",
+        "--json"
+      ],
+      "output": "macro drill report JSON",
+      "example": "simple_model_pi.sh macro-drill --json",
+      "tests": [
+        "tests/test_v11_macro_drills.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-family-ranker",
+      "description": "Rank macro families by observed value, safety, maturity, and generality.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro family ranking JSON",
+      "example": "simple_model_pi.sh macro-family-ranker --json",
+      "tests": [
+        "tests/test_v12_macro_family_ranker.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-family-suggest",
+      "description": "Generate reusable macro families from repeated semantic findings.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "macro family JSON",
+      "example": "simple_model_pi.sh macro-family-suggest --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-gauntlet",
+      "description": "Run adversarial macro benchmark gauntlet.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro gauntlet scorecard JSON",
+      "example": "simple_model_pi.sh macro-gauntlet --json",
+      "tests": [
+        "tests/test_v12_macro_gauntlet.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-generate",
+      "description": "Generate review-only macro candidates from repeated optimizer findings.",
+      "required_args": [],
+      "optional_args": [
+        "--findings",
+        "--output",
+        "--json"
+      ],
+      "output": "macro candidate JSON",
+      "example": "simple_model_pi.sh macro-generate --json",
+      "tests": [
+        "tests/test_v11_macro_generation.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-ledger",
+      "description": "Record macro outcomes in a local hash-linked ledger.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro outcome ledger JSON",
+      "example": "simple_model_pi.sh macro-ledger --json",
+      "tests": [
+        "tests/test_v12_macro_outcome_ledger.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-motifs",
+      "description": "Discover macro candidates from semantic graph motifs.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "macro motif candidate JSON",
+      "example": "simple_model_pi.sh macro-motifs --json",
+      "tests": [
+        "tests/test_v12_macro_motif_discovery.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-operator-ir",
+      "description": "Normalize macros into typed optimization operator IR.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro operator IR JSON",
+      "example": "simple_model_pi.sh macro-operator-ir --json",
+      "tests": [
+        "tests/test_v12_macro_operator_ir.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-plan-search",
+      "description": "Search deterministic macro plans under value, risk, runtime, and rollback budgets.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro plan search JSON",
+      "example": "simple_model_pi.sh macro-plan-search --json",
+      "tests": [
+        "tests/test_v12_macro_plan_search.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-preconditions",
+      "description": "Evaluate semantic, policy, dynamic, and test preconditions before macro apply.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--macro",
+        "--output",
+        "--json"
+      ],
+      "output": "macro precondition report JSON",
+      "example": "simple_model_pi.sh macro-preconditions --json",
+      "tests": [
+        "tests/test_v11_macro_preconditions.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-promotion",
+      "description": "Gate promotion of synthesized macro templates into trusted macro packs.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro promotion report JSON",
+      "example": "simple_model_pi.sh macro-promotion --json",
+      "tests": [
+        "tests/test_v12_macro_promotion_gate.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-proof-bundle",
+      "description": "Package macro plan evidence into a replayable proof bundle.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro proof bundle JSON and Markdown",
+      "example": "simple_model_pi.sh macro-proof-bundle --json",
+      "tests": [
+        "tests/test_v12_macro_proof_bundle.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-rank",
+      "description": "Rank generated macro candidates by expected value, risk, and confidence.",
+      "required_args": [],
+      "optional_args": [
+        "--suggestions",
+        "--json"
+      ],
+      "output": "ranked macro candidates JSON",
+      "example": "simple_model_pi.sh macro-rank --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-run",
+      "description": "Execute a generated optimization plan in dry-run or apply mode.",
+      "required_args": [
+        "--plan"
+      ],
+      "optional_args": [
+        "--dry-run",
+        "--apply",
+        "--macro",
+        "--json"
+      ],
+      "output": "human or JSON macro execution report",
+      "example": "simple_model_pi.sh macro-run --plan generated/optimization/plan.json --dry-run --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-simulate",
+      "description": "Run macro plans in an isolated copy and report diffs, validations, score delta, and rollback feasibility.",
+      "required_args": [
+        "--plan"
+      ],
+      "optional_args": [
+        "--output-dir",
+        "--json"
+      ],
+      "output": "macro simulation JSON",
+      "example": "simple_model_pi.sh macro-simulate --plan generated/optimization/plan.json --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-suggest",
+      "description": "Generate declarative macro specs from deterministic repo facts.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "macro suggestion JSON and per-spec files",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json macro-suggest --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-templates",
+      "description": "Synthesize review-only macro templates from motif clusters.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "macro template JSON",
+      "example": "simple_model_pi.sh macro-templates --json",
+      "tests": [
+        "tests/test_v12_macro_template_synthesis.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macro-transaction",
+      "description": "Simulate transactional macro plan execution with rollback and resume evidence.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--output",
+        "--json"
+      ],
+      "output": "macro transaction log JSON",
+      "example": "simple_model_pi.sh macro-transaction --json",
+      "tests": [
+        "tests/test_v12_transactional_macro_executor.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "macros",
+      "description": "List deterministic code and execution macros available to the optimizer.",
+      "required_args": [],
+      "optional_args": [
+        "--json"
+      ],
+      "output": "human summary or macro registry JSON",
+      "example": "simple_model_pi.sh macros --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "onboard",
+      "description": "Run one-command target repo onboarding with struct draft, audit, semantic graph, score, and context pack.",
+      "required_args": [],
+      "optional_args": [
+        "--output-dir",
+        "--json"
+      ],
+      "output": "onboarding JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo onboard --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "optimization-graph",
+      "description": "Build deterministic Optimization Graph IR across struct, interfaces, dynamic surfaces, tests, owners, and macro candidates.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "optimization graph JSON",
+      "example": "simple_model_pi.sh optimization-graph --json",
+      "tests": [
+        "tests/test_v09_optimizer_concurrency.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "optimize",
+      "description": "Plan and execute deterministic macro optimization for a target repository.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--dry-run",
+        "--apply",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "terminal report plus JSON/Markdown optimization artifacts",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json optimize --dry-run",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "optimize-loop",
+      "description": "Run score-driven macro suggestion, compilation, execution, validation, and rollback loop.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--budget",
+        "--dry-run",
+        "--apply",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "loop JSON or terminal report",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json optimize-loop --budget 3 --dry-run --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "optimizer-report",
+      "description": "Render evidence-rich optimizer explainability reports for selected and rejected candidates.",
+      "required_args": [],
+      "optional_args": [
+        "--search",
+        "--graph",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "optimizer report JSON and Markdown",
+      "example": "simple_model_pi.sh optimizer-report --json",
+      "tests": [
+        "tests/test_v10_optimizer_reports.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "optimizer-search",
+      "description": "Rank safe structural improvements from the Optimization Graph with deterministic decision traces.",
+      "required_args": [],
+      "optional_args": [
+        "--graph",
+        "--output",
+        "--budget",
+        "--mode",
+        "--json"
+      ],
+      "output": "optimizer search JSON",
+      "example": "simple_model_pi.sh optimizer-search --budget 5 --json",
+      "tests": [
+        "tests/test_v09_optimizer_concurrency.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "parser-backends",
+      "description": "Report parser backend capabilities and fallback confidence for target repo languages.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--json"
+      ],
+      "output": "parser backend capability JSON or terminal summary",
+      "example": "simple_model_pi.sh --target-root /path/to/repo parser-backends --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "parser-tiers",
+      "description": "Generate parser tier coverage, backend confidence, and release-gate parser evidence.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--output",
+        "--json"
+      ],
+      "output": "parser tier registry JSON",
+      "example": "simple_model_pi.sh parser-tiers --json",
+      "tests": [
+        "tests/test_v11_parser_tiers.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "performance-benchmark",
+      "description": "Generate performance scorecard for graph generation, test selection, cache reuse, and parallel validation.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--jobs",
+        "--json"
+      ],
+      "output": "performance scorecard JSON",
+      "example": "simple_model_pi.sh performance-benchmark --jobs 2 --json",
+      "tests": [
+        "tests/test_v09_performance_slo.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "performance-dashboard",
+      "description": "Render performance and concurrency dashboard from generated JSON artifacts.",
+      "required_args": [],
+      "optional_args": [
+        "--scorecard",
+        "--test-report",
+        "--output",
+        "--json"
+      ],
+      "output": "performance dashboard HTML and JSON summary",
+      "example": "simple_model_pi.sh performance-dashboard --json",
+      "tests": [
+        "tests/test_v09_performance_slo.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "plugin-check",
+      "description": "Run plugin package and command-surface test shards through the smart runner.",
+      "required_args": [],
+      "optional_args": [
+        "--jobs",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "smart test runner JSON or summary",
+      "example": "simple_model_pi.sh plugin-check --json",
+      "tests": [
+        "tests/test_v09_plugin_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "policy",
+      "description": "Evaluate macro, waiver, release, and CI policy against a plan.",
+      "required_args": [],
+      "optional_args": [
+        "--plan",
+        "--policy",
+        "--json"
+      ],
+      "output": "policy decision JSON",
+      "example": "simple_model_pi.sh policy --plan generated/optimization/plan.json --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
       "release_gate": true
     },
     {
       "name": "pr-gate",
       "description": "Run impact, interface/dependency gates, risk, tests, and review routing.",
       "required_args": [],
-      "optional_args": ["repo", "files", "--struct"],
+      "optional_args": [
+        "repo",
+        "files",
+        "--struct"
+      ],
       "output": "PR gate JSON",
       "example": "simple_model_pi.sh --target-root /path/to/repo pr-gate /path/to/repo src/api/server.ts",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": true
     },
     {
-      "name": "dashboard",
-      "description": "Generate a static Project Intelligence dashboard.",
+      "name": "production-benchmark",
+      "description": "Run production benchmark scorecard across deep parsing, semantic graph, cache, scheduler, and optimizer readiness.",
       "required_args": [],
-      "optional_args": ["output"],
-      "output": "HTML file",
-      "example": "simple_model_pi.sh dashboard generated/dashboard.html",
-      "tests": ["tests/test_plugin_package.sh"],
-      "release_gate": false
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "production benchmark JSON",
+      "example": "simple_model_pi.sh production-benchmark --json",
+      "tests": [
+        "tests/test_v10_production_benchmark.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "project-structure",
+      "description": "Mine project structure, workspaces, layers, generated code, and adoption candidates.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "project structure JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo project-structure --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "release-slo",
+      "description": "Evaluate plugin release quality SLOs before publishing.",
+      "required_args": [],
+      "optional_args": [
+        "--version",
+        "--json"
+      ],
+      "output": "release SLO JSON",
+      "example": "simple_model_pi.sh release-slo --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
     },
     {
       "name": "resolve",
       "description": "Resolve multi-file struct includes.",
       "required_args": [],
-      "optional_args": ["--struct"],
+      "optional_args": [
+        "--struct"
+      ],
       "output": "resolved struct JSON",
       "example": "simple_model_pi.sh --struct struct.json resolve",
-      "tests": ["tests/test_plugin_package.sh"],
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
       "release_gate": false
+    },
+    {
+      "name": "runtime-contracts",
+      "description": "Generate runtime contracts from Dynamic Surface IR for safe observation and replay.",
+      "required_args": [],
+      "optional_args": [
+        "--surfaces",
+        "--output",
+        "--json"
+      ],
+      "output": "runtime contracts JSON",
+      "example": "simple_model_pi.sh runtime-contracts --json",
+      "tests": [
+        "tests/test_v10_runtime_contracts.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "runtime-probe",
+      "description": "Plan or execute repository-local allowlisted runtime probes and capture dynamic observations.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--policy",
+        "--output",
+        "--execute",
+        "--json"
+      ],
+      "output": "runtime observation JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo runtime-probe --execute --json",
+      "tests": [
+        "tests/test_dynamic_runtime_probe.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "scheduler-plan",
+      "description": "Plan a deterministic parallel scheduler DAG and detect write-set conflicts without executing tasks.",
+      "required_args": [
+        "--tasks"
+      ],
+      "optional_args": [
+        "--output",
+        "--jobs",
+        "--json"
+      ],
+      "output": "scheduler plan JSON",
+      "example": "simple_model_pi.sh scheduler-plan --tasks generated/tasks.json --json",
+      "tests": [
+        "tests/test_v09_concurrency.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "score",
+      "description": "Compute deterministic architecture health score from repo facts.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "score JSON or terminal summary",
+      "example": "simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json score --json",
+      "tests": [
+        "tests/test_macro_optimizer.sh",
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "score-calibrate",
+      "description": "Calibrate deterministic optimizer score weights from benchmark fixtures.",
+      "required_args": [],
+      "optional_args": [
+        "--corpus",
+        "--output",
+        "--json"
+      ],
+      "output": "score model JSON",
+      "example": "simple_model_pi.sh score-calibrate --json",
+      "tests": [
+        "tests/test_v10_score_calibration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "self-audit",
+      "description": "Generate or print the latest plugin self-audit report.",
+      "required_args": [],
+      "optional_args": [
+        "--json",
+        "--output-dir"
+      ],
+      "output": "human summary or JSON self-audit report",
+      "example": "simple_model_pi.sh self-audit --json",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "self-check",
+      "description": "Run the plugin lifecycle gate and write self-audit JSON/Markdown reports.",
+      "required_args": [],
+      "optional_args": [
+        "--json",
+        "--output-dir"
+      ],
+      "output": "human or JSON self-check report",
+      "example": "simple_model_pi.sh self-check --json",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "self-release",
+      "description": "Validate and package a plugin release, with optional GitHub publish.",
+      "required_args": [
+        "--version"
+      ],
+      "optional_args": [
+        "--dry-run",
+        "--publish",
+        "--json"
+      ],
+      "output": "release validation JSON",
+      "example": "simple_model_pi.sh self-release --version 0.6.0 --dry-run --json",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "semantic-graph",
+      "description": "Build Semantic Graph v2 from deep parser facts, interfaces, dynamic surfaces, and tests.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "semantic graph JSON",
+      "example": "simple_model_pi.sh semantic-graph --json",
+      "tests": [
+        "tests/test_v10_semantic_graph.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "semantic-graph-incremental",
+      "description": "Generate semantic graph v2.1 with content-addressed incremental diff evidence.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--diff-output",
+        "--json"
+      ],
+      "output": "semantic graph and graph diff JSON",
+      "example": "simple_model_pi.sh semantic-graph-incremental --json",
+      "tests": [
+        "tests/test_v11_incremental_semantic_graph.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "semantic-ir",
+      "description": "Build normalized semantic interface IR from symbols, framework surfaces, and contracts.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "semantic interface IR JSON",
+      "example": "simple_model_pi.sh --target-root /path/to/repo semantic-ir --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "symbol-index",
+      "description": "Generate stable cross-language symbol identities and conflict diagnostics.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "semantic symbol index JSON",
+      "example": "simple_model_pi.sh symbol-index --json",
+      "tests": [
+        "tests/test_v11_symbol_identity.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "test-cache",
+      "description": "Inspect or update the content-addressed test cache for deterministic validation outputs.",
+      "required_args": [],
+      "optional_args": [
+        "--cache",
+        "--command",
+        "--lookup",
+        "--store",
+        "--result",
+        "--json"
+      ],
+      "output": "test cache lookup/store JSON",
+      "example": "simple_model_pi.sh test-cache --command 'bash tests/test_v04_roadmap.sh' --lookup --json",
+      "tests": [
+        "tests/test_v09_test_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "test-graph",
+      "description": "Map tests to semantic graph surfaces and report missing test coverage.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--json"
+      ],
+      "output": "test graph JSON",
+      "example": "simple_model_pi.sh test-graph --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "test-plan",
+      "description": "Build the deterministic test impact DAG used by fast, affected, plugin, dynamic, benchmark, and full gates.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output",
+        "--json"
+      ],
+      "output": "test impact DAG JSON",
+      "example": "simple_model_pi.sh test-plan --json",
+      "tests": [
+        "tests/test_v09_test_acceleration.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "takeover-init",
+      "description": "Generate a macro-dominant ordered takeover workflow for a large half-built repository.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--struct",
+        "--output-dir",
+        "--json"
+      ],
+      "output": "takeover initialization JSON and Markdown",
+      "example": "simple_model_pi.sh --target-root /repo takeover-init --json",
+      "tests": [
+        "tests/test_v12_takeover_init.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "tree-sitter-scan",
+      "description": "Extract structural code facts with tree-sitter when available and confidence-tagged portable parser fallback.",
+      "required_args": [],
+      "optional_args": [
+        "--target-root",
+        "--output",
+        "--json"
+      ],
+      "output": "tree-sitter facts JSON",
+      "example": "simple_model_pi.sh tree-sitter-scan --json",
+      "tests": [
+        "tests/test_v10_deep_parsers.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "validate",
+      "description": "Run simple_model validate, check-all, lint, and drift summaries.",
+      "required_args": [],
+      "optional_args": [],
+      "output": "validation logs and JSON summaries",
+      "example": "simple_model_pi.sh validate",
+      "tests": [
+        "tests/test_plugin_package.sh"
+      ],
+      "release_gate": true
+    },
+    {
+      "name": "workspace-graph",
+      "description": "Build monorepo workspace graph with packages, components, and boundary metadata.",
+      "required_args": [],
+      "optional_args": [
+        "--output",
+        "--json"
+      ],
+      "output": "workspace graph JSON",
+      "example": "simple_model_pi.sh workspace-graph --json",
+      "tests": [
+        "tests/test_v07_roadmap.sh"
+      ],
+      "release_gate": true
     }
   ]
 }

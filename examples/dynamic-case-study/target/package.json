@@ -1,0 +1,7 @@
+{
+  "name": "dynamic-case-study",
+  "main": "src/server.ts",
+  "exports": {
+    ".": "./src/server.ts"
+  }
+}

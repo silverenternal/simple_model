@@ -8,8 +8,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Simple Model Project Intelligence",
-    "shortDescription": "Analyze and gate large repos with simple_model.",
-    "longDescription": "Adds a Codex skill for using simple_model to ingest large in-progress repositories, resolve multi-file struct.json models, scan interfaces, emit code facts, route PR risk, generate dashboards, and run deterministic Project Intelligence gates.",
+    "shortDescription": "Take over and optimize large repos with deterministic macros.",
+    "longDescription": "Adds deterministic Project Intelligence for large in-progress repositories: takeover initialization, multi-file struct.json models, structural interface parsing, stability commitments, semantic and dynamic-edge governance, transactional macro optimization, affected-test selection, rollback proofs, dashboards, and release gates. AI is limited to bounded leaf clarifications while macros own structural decisions.",
     "developerName": "simple_model maintainers",
     "category": "Productivity",
     "capabilities": [
@@ -19,6 +19,8 @@
     ],
     "defaultPrompt": [
       "Use $simple-model-project-intelligence to audit this repo.",
+      "Take over this half-built repository and issue interface stability commitments.",
+      "Find safe structural optimizations and prove them with transactional macros.",
       "Run Project Intelligence gates for my current changes.",
       "Help adopt this large repo into struct.json."
     ],

@@ -33,6 +33,7 @@ STRUCT_ABS="$(cd "$(dirname "$STRUCT")" && pwd)/$(basename "$STRUCT")"
 adoption=$(bash "$SELF_DIR/adoption_audit.sh" --root "$ROOT" --struct "$STRUCT_ABS" --json || true)
 interface=$(bash "$SELF_DIR/interface_scan.sh" --root "$ROOT" --struct "$STRUCT_ABS" --json || true)
 imports=$(bash "$SELF_DIR/import_graph_scan.sh" --root "$ROOT" --struct "$STRUCT_ABS" --json || true)
+registry=$(bash "$SELF_DIR/macro_registry.sh" --json || jq -n '{macros:[]}')
 struct_json=$(jq . "$STRUCT_ABS")
 
 suggestions=$(jq -n \
@@ -42,7 +43,8 @@ suggestions=$(jq -n \
   --argjson struct_json "$struct_json" \
   --argjson adoption "$adoption" \
   --argjson interface "$interface" \
-  --argjson imports "$imports" '
+  --argjson imports "$imports" \
+  --argjson registry "$registry" '
   def spec($id; $template; $trigger; $description; $selector; $rewrite; $safety; $evidence):
     {
       schema_version:"1.0",
@@ -109,6 +111,7 @@ suggestions=$(jq -n \
       root:$root,
       struct:$struct,
       templates:["field_sync", "include_split", "path_adoption"],
+      registry:$registry,
       summary:{
         suggestions:($specs|length),
         auto_apply:($specs|map(select(.safety.auto_apply == true))|length),

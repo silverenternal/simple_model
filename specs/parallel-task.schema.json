@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simple-model.local/parallel-task.schema.json",
+  "title": "simple_model Parallel Task Plan",
+  "type": "object",
+  "required": ["schema_version", "tasks"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "mode": { "enum": ["plan", "execute"] },
+    "tasks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "command"],
+        "properties": {
+          "id": { "type": "string" },
+          "command": { "type": "string" },
+          "cwd": { "type": "string" },
+          "inputs": { "type": "array", "items": { "type": "string" } },
+          "outputs": { "type": "array", "items": { "type": "string" } },
+          "deps": { "type": "array", "items": { "type": "string" } },
+          "timeout": { "type": "integer", "minimum": 1 },
+          "resource": { "type": "string" },
+          "cache": { "type": "boolean" }
+        }
+      }
+    }
+  }
+}

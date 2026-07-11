@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "required": [
+    "id",
+    "family",
+    "parameters",
+    "selector_schema",
+    "adapter_requirements",
+    "fixtures_required",
+    "expected_score_delta",
+    "promotion_criteria",
+    "apply_capable"
+  ],
+  "promotion_policy": "review_only_until_proven"
+}

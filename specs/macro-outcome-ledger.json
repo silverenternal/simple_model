@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "entry_fields": [
+    "entry_hash",
+    "previous_hash",
+    "operator_id",
+    "repo_fingerprint",
+    "motif_id",
+    "decision",
+    "score_delta",
+    "runtime_ms",
+    "affected_tests",
+    "rollback_result",
+    "review_reason",
+    "final_status"
+  ],
+  "privacy": {
+    "store_full_source": false,
+    "redactable_paths": true
+  }
+}

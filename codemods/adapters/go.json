@@ -1,0 +1,1 @@
+{"language":"go","tier":"native_ast","operations":["import_rewrite","package_boundary","interface_update","handler_registration"],"formatter":"gofmt","unsupported_policy":"review_only"}

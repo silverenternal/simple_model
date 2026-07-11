@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Scheduler Run",
+  "type": "object",
+  "required": ["schema_version", "ok", "summary", "plan", "results"],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "ok": {"type": "boolean"},
+    "summary": {"type": "object"},
+    "plan": {"type": "object"},
+    "results": {"type": "array"}
+  }
+}

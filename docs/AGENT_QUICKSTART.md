@@ -92,16 +92,19 @@ or together via `for t in tests/test_*.sh; do bash "$t" || exit 1; done`.
 | `tests/test_v05_roadmap.sh` | 23 | v0.5 hardening: strict facts, cache, signatures, waivers, PR Markdown, MCP v2, dashboard, release contracts. |
 | `tests/test_plugin_package.sh` | 41 | v0.6 Codex plugin package: marketplace, manifest, skill sync, cross-repo wrapper, doctor environment matrix, self-check schema, README command contract, self-release stages, release manifest, failure fixtures, CI, MCP bridge. |
 | `tests/test_macro_optimizer.sh` | 37 | Macro optimizer regression: registry contract, generated macro specs, spec compilation, scoring, deterministic planning, dry-run immutability, apply/rollback metadata, score-gated loops, struct include split, export/import sync, plugin/MCP optimize reports, and bad macro failure. |
+| `tests/test_v07_roadmap.sh` | 38 | v0.7 semantic/macro/plugin roadmap: semantic IR, parser backend matrix, deep parser probes, project structure, framework/contract graphs, Macro IR v2, simulation, policy, context packs, autopilot, onboarding, 20+ case benchmark, competitive scorecard, adoption report, release SLO, MCP/plugin command exposure, safe-codemod policy denial, and roadmap closure. |
 | `tests/test_agent_eval_harness.sh` | 1 | Generic adapter work-record harness smoke test. |
 | `tests/test_evolution_harness.sh` | 1 | Long-horizon evolution harness smoke test. |
 | `tests/test_chimeric_e2e.sh` | 26 | The chimeric verify modes (contract/golden/invariants/round-trip) still pass — Gate reuses these. Zero regression. |
 | `tests/test_animations.sh` | 23 | Animation library regression: single-line overwrite, no `\033[2J`, color reset, TTY fallback. |
 
-Total: **308 green assertions** across 14 suites as of v0.6.
+Total: **346 green assertions** across 15 suites as of v0.7.
 
 ## 5. Shipped roadmap surface
 
-The v0.3 roadmap items in `todo.json` are implemented. Use these entry points:
+The previously shipped roadmap items are summarized in
+`todo.json.previous_milestone`; the top-level `todo.json.todos` list is the next
+product roadmap. Use these implemented entry points:
 
 - `./bootstrap.sh --target dispatch --plan` — worktree-isolated dispatch plan.
 - `bash generators/orchestrate_collect.sh` — bounded leaf summary collector.
@@ -124,6 +127,9 @@ The v0.3 roadmap items in `todo.json` are implemented. Use these entry points:
 - `bash tests/test_plugin_package.sh` — validate plugin packaging and cross-repo skill UX.
 - `generators/macro_suggest.sh` + `generators/macro_compile.sh` + `generators/optimization_loop.sh` — generated macro specs, compiled plans, score-gated execution, and rollback metadata.
 - `bash tests/test_macro_optimizer.sh` — validate macro optimization on a generic target repo fixture.
+- `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root <repo> takeover-init --json` — emit the ordered macro-dominant adoption protocol, blockers, and bounded AI leaf clarifications.
+- `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root <repo> interface-stability --json` — issue evidence-backed stability commitments for discovered public interfaces.
+- `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh ai-tool-research --json` — render the offline, versioned competitive research and macro-wisdom capability map.
 - `docs/ip/provisional-draft.md` — provisional patent draft for attorney review.
 
 ## 6. Multi-file struct

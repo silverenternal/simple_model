@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "tiers": [
+    "native_ast",
+    "tree_sitter",
+    "lsp",
+    "structural_fallback",
+    "generated",
+    "unsupported"
+  ],
+  "confidence_floor": {
+    "critical": 0.8,
+    "safe_apply": 0.82,
+    "review": 0.6
+  },
+  "languages": {
+    "typescript": {"preferred": ["tree_sitter", "lsp", "structural_fallback"], "extensions": [".ts", ".tsx"]},
+    "javascript": {"preferred": ["tree_sitter", "lsp", "structural_fallback"], "extensions": [".js", ".jsx", ".mjs", ".cjs"]},
+    "python": {"preferred": ["native_ast", "lsp", "structural_fallback"], "extensions": [".py"]},
+    "go": {"preferred": ["native_ast", "lsp", "structural_fallback"], "extensions": [".go"]},
+    "rust": {"preferred": ["tree_sitter", "lsp", "structural_fallback"], "extensions": [".rs"]},
+    "java": {"preferred": ["tree_sitter", "lsp", "structural_fallback"], "extensions": [".java"]},
+    "ruby": {"preferred": ["tree_sitter", "structural_fallback"], "extensions": [".rb"]},
+    "json": {"preferred": ["native_ast"], "extensions": [".json"]},
+    "yaml": {"preferred": ["native_ast", "structural_fallback"], "extensions": [".yaml", ".yml"]},
+    "toml": {"preferred": ["native_ast", "structural_fallback"], "extensions": [".toml"]}
+  },
+  "release_gate": {
+    "fail_on_unsupported_critical_language": true,
+    "fail_on_low_confidence_safe_apply": true,
+    "require_invalidation_key": true
+  }
+}

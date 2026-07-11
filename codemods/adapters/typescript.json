@@ -1,0 +1,1 @@
+{"language":"typescript","tier":"syntax_aware","operations":["import_rewrite","export_rewrite","route_registration","config_reference"],"formatter":"prettier_or_preserve","unsupported_policy":"review_only"}

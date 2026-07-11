@@ -61,6 +61,8 @@ plan=$(jq -n \
         evidence:$evidence,
         validations:$m.validations,
         writes:$m.writes,
+        execution_tier:($m.execution_tier // "struct_only"),
+        policy:{simulation_required:(($m.execution_tier // "struct_only") == "safe_codemod" or ($m.execution_tier // "struct_only") == "risky_codemod"), policy_required:true, approval_required:(($m.execution_tier // "") == "risky_codemod")},
         status:"planned",
         priority:$priority
       };

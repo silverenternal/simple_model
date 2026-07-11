@@ -62,7 +62,11 @@ plan=$(jq -n \
   --arg struct "$STRUCT" \
   --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   --argjson suggestions "$(jq . "$SUGGESTIONS")" '
+  def registry_macro($id): ($suggestions.registry.macros[]? | select(.id == $id)) // {};
   def action($spec; $macro_id; $target; $evidence; $priority):
+    (registry_macro($macro_id)) as $rm
+    | ($rm.execution_tier // "struct_only") as $tier
+    |
     {
       id:("compiled." + $spec.id),
       macro_id:$macro_id,
@@ -75,6 +79,8 @@ plan=$(jq -n \
       evidence:$evidence,
       validations:[],
       writes:["struct.json"],
+      execution_tier:$tier,
+      policy:{simulation_required:($tier == "safe_codemod" or $tier == "risky_codemod"), policy_required:true, approval_required:($tier == "risky_codemod")},
       status:"planned",
       priority:$priority,
       compiled_from:$spec.id

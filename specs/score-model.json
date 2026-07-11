@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Calibrated Score Model",
+  "type": "object",
+  "required": ["schema_version", "weights", "thresholds", "evidence"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "weights": {"type": "object"},
+    "thresholds": {"type": "object"},
+    "evidence": {"type": "object"}
+  }
+}

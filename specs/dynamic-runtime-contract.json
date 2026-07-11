@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Dynamic Runtime Contract",
+  "type": "object",
+  "required": ["schema_version", "contracts"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "contracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "surface_id", "allowed_commands", "expected_observations", "secrets_policy", "network_policy"],
+        "properties": {
+          "id": {"type": "string"},
+          "surface_id": {"type": "string"},
+          "allowed_commands": {"type": "array"},
+          "expected_observations": {"type": "array"},
+          "secrets_policy": {"type": "string"},
+          "network_policy": {"type": "string"}
+        }
+      }
+    }
+  }
+}

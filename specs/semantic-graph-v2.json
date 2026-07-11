@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Semantic Graph v2",
+  "type": "object",
+  "required": ["schema_version", "ok", "summary", "nodes", "edges", "graph_hash"],
+  "properties": {
+    "schema_version": {"const": "2.0"},
+    "ok": {"type": "boolean"},
+    "graph_hash": {"type": "string"},
+    "summary": {"type": "object"},
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "path", "hash", "confidence", "evidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"type": "string"},
+          "path": {"type": "string"},
+          "hash": {"type": "string"},
+          "confidence": {"type": "number"},
+          "evidence": {"type": "object"}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "from", "to", "confidence", "evidence"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"type": "string"},
+          "from": {"type": "string"},
+          "to": {"type": "string"},
+          "confidence": {"type": "number"},
+          "evidence": {"type": "object"}
+        }
+      }
+    }
+  }
+}

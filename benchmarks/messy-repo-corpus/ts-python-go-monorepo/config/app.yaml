@@ -1,0 +1,4 @@
+routes:
+  generated_client: apps/generated/client.ts
+tests:
+  stale: true

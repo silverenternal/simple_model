@@ -20,6 +20,34 @@ def emit(line: int, kind: str, name: str, signature: str, parser: str) -> None:
         print(f"{line}\t{kind}\t{name}\t{signature.strip()}\t{parser}")
 
 
+def py_signature(node: ast.AST) -> str:
+    if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+        return ""
+    args = []
+    for a in node.args.posonlyargs:
+        args.append(a.arg)
+    if node.args.posonlyargs:
+        args.append("/")
+    for a in node.args.args:
+        args.append(a.arg)
+    if node.args.vararg:
+        args.append("*" + node.args.vararg.arg)
+    elif node.args.kwonlyargs:
+        args.append("*")
+    for a in node.args.kwonlyargs:
+        args.append(a.arg)
+    if node.args.kwarg:
+        args.append("**" + node.args.kwarg.arg)
+    returns = ""
+    if node.returns is not None:
+        try:
+            returns = " -> " + ast.unparse(node.returns)
+        except Exception:
+            returns = " -> ?"
+    prefix = "async def" if isinstance(node, ast.AsyncFunctionDef) else "def"
+    return f"{prefix} {node.name}({', '.join(args)}){returns}"
+
+
 def parse_python(path: Path) -> int:
     try:
         text = path.read_text(encoding="utf-8")
@@ -30,9 +58,9 @@ def parse_python(path: Path) -> int:
         if isinstance(node, ast.ClassDef):
             emit(node.lineno, "class", node.name, f"class {node.name}", "python_ast")
         elif isinstance(node, ast.AsyncFunctionDef):
-            emit(node.lineno, "async def", node.name, f"async def {node.name}", "python_ast")
+            emit(node.lineno, "async def", node.name, py_signature(node), "python_ast")
         elif isinstance(node, ast.FunctionDef):
-            emit(node.lineno, "def", node.name, f"def {node.name}", "python_ast")
+            emit(node.lineno, "def", node.name, py_signature(node), "python_ast")
     return 0
 
 

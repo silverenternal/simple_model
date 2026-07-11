@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model macro contract v4",
+  "type": "object",
+  "required": [
+    "id",
+    "mode",
+    "preconditions",
+    "write_set",
+    "idempotency",
+    "rollback",
+    "formatter_policy",
+    "affected_tests"
+  ],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "mode": {"enum": ["review", "simulate", "apply"]},
+    "preconditions": {
+      "type": "object",
+      "required": ["graph_nodes", "edge_types", "confidence_floor", "dynamic_evidence"],
+      "properties": {
+        "graph_nodes": {"type": "array", "items": {"type": "string"}},
+        "edge_types": {"type": "array", "items": {"type": "string"}},
+        "confidence_floor": {"type": "number", "minimum": 0, "maximum": 1},
+        "dynamic_evidence": {"enum": ["none", "weak_allowed", "observed_or_generated", "trusted_only"]}
+      }
+    },
+    "write_set": {"type": "array", "items": {"type": "string"}},
+    "idempotency": {"type": "object"},
+    "rollback": {"type": "object"},
+    "formatter_policy": {"type": "string"},
+    "affected_tests": {"type": "array", "items": {"type": "string"}}
+  }
+}

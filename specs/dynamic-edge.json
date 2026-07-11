@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "edge_kinds": [
+    "route_binding",
+    "dependency_injection",
+    "event_subscription",
+    "reflection_reference",
+    "generated_client",
+    "env_gate",
+    "plugin_registration",
+    "runtime_observed"
+  ],
+  "evidence_classes": [
+    "structural",
+    "config_derived",
+    "runtime_observed",
+    "generated",
+    "waived"
+  ],
+  "trust_states": [
+    "trusted",
+    "weak",
+    "stale",
+    "denied"
+  ]
+}

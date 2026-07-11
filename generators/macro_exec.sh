@@ -7,6 +7,8 @@ MODE="dry-run"
 OUT_DIR="generated/optimization"
 JSON_OUT=0
 ONLY_MACRO=""
+SIMULATION=""
+POLICY_FILE=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -15,6 +17,8 @@ while [[ $# -gt 0 ]]; do
         --apply) MODE="apply"; shift ;;
         --output-dir) OUT_DIR="$2"; shift 2 ;;
         --macro) ONLY_MACRO="$2"; shift 2 ;;
+        --simulation) SIMULATION="$2"; shift 2 ;;
+        --policy) POLICY_FILE="$2"; shift 2 ;;
         --json) JSON_OUT=1; shift ;;
         -h|--help)
             echo "macro_exec.sh --plan generated/optimization/plan.json [--dry-run|--apply] [--macro <id>] [--json]"
@@ -33,6 +37,18 @@ ROOT="$(jq -r '.root' "$PLAN")"
 STRUCT="$(jq -r '.struct' "$PLAN")"
 [[ -d "$ROOT" ]] || { echo "[FAIL] root not found: $ROOT" >&2; exit 2; }
 [[ -f "$STRUCT" ]] || { echo "[FAIL] struct not found: $STRUCT" >&2; exit 2; }
+dynamic_before=$(bash "$SELF_DIR/dynamic_surface_scan.sh" --root "$ROOT" --struct "$STRUCT" --output "$OUT_DIR/dynamic-surfaces.before.json" --json 2>/dev/null || jq -n '{nodes:[],summary:{nodes:0}}')
+
+if [[ "$MODE" == "apply" ]]; then
+    policy_args=(--plan "$PLAN" --json)
+    [[ -n "$SIMULATION" ]] && policy_args+=(--simulation "$SIMULATION")
+    [[ -n "$POLICY_FILE" ]] && policy_args+=(--policy "$POLICY_FILE")
+    policy_args+=(--dynamic "$OUT_DIR/dynamic-surfaces.before.json")
+    if ! policy_report=$(bash "$SELF_DIR/policy_eval.sh" "${policy_args[@]}" 2>/dev/null); then
+        jq -n --arg mode "$MODE" --arg plan "$PLAN" --arg policy_report "${policy_report:-}" '{schema_version:"1.0", ok:false, mode:$mode, error:"macro_policy_denied", plan:$plan, evidence:$policy_report, remediation:"Run macro_simulate and policy_eval, or lower macro risk/tier."}'
+        exit 1
+    fi
+fi
 
 hash_file() {
     if command -v sha256sum >/dev/null 2>&1; then
@@ -191,12 +207,15 @@ done <<<"$actions"
 
 results_json="[]"
 [[ ${#results[@]} -gt 0 ]] && results_json=$(printf '%s\n' "${results[@]}" | jq -s '.')
+dynamic_after=$(bash "$SELF_DIR/dynamic_surface_scan.sh" --root "$ROOT" --struct "$STRUCT" --output "$OUT_DIR/dynamic-surfaces.after.json" --json 2>/dev/null || jq -n '{nodes:[],summary:{nodes:0}}')
 record=$(jq -n \
   --arg mode "$MODE" \
   --arg root "$ROOT" \
   --arg struct "$STRUCT" \
   --arg generated_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
   --argjson results "$results_json" \
+  --argjson dynamic_before "$dynamic_before" \
+  --argjson dynamic_after "$dynamic_after" \
   '{
     schema_version:"1.0",
     ok:all($results[]; .ok),
@@ -212,6 +231,12 @@ record=$(jq -n \
       failed:($results|map(select(.ok|not))|length)
     },
     results:$results,
+    dynamic:{
+      before:$dynamic_before.summary,
+      after:$dynamic_after.summary,
+      before_hashes:($dynamic_before.nodes | map({id,hash,risk_level,verification_status})),
+      after_hashes:($dynamic_after.nodes | map({id,hash,risk_level,verification_status}))
+    },
     rollback:{
       backups:[$results[].result.backup?],
       manifest:"generated/optimization/rollback.json"
@@ -219,7 +244,7 @@ record=$(jq -n \
   }')
 
 printf '%s\n' "$record" > "$OUT_DIR/execution.json"
-jq '{schema_version, generated_at, root, struct, backups:.rollback.backups, results:[.results[] | {macro_id,status,result}]}' <<<"$record" > "$OUT_DIR/rollback.json"
+jq '{schema_version, generated_at, root, struct, backups:.rollback.backups, dynamic:.dynamic, results:[.results[] | {macro_id,status,result}]}' <<<"$record" > "$OUT_DIR/rollback.json"
 {
     echo "# Project Optimization Execution"
     echo

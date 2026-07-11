@@ -1,0 +1,11 @@
+{
+  "schema_version": "1.0",
+  "conflict_types": [
+    "write_set_conflict",
+    "graph_effect_conflict",
+    "dynamic_risk_conflict",
+    "rollback_scope_conflict",
+    "test_coverage_gap"
+  ],
+  "stage_policy": "deterministic_parallel_when_independent"
+}

@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "allowed_commands": ["bash scripts/probe.sh"],
+  "probes": [
+    {
+      "id": "fixture-runtime-discovery",
+      "description": "Emit local runtime dynamic observations for the case-study fixture.",
+      "command": "bash scripts/probe.sh",
+      "cwd": ".",
+      "parser": "json-lines",
+      "enabled": true
+    }
+  ]
+}

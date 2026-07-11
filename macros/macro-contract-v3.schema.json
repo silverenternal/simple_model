@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "simple_model Macro Contract v3",
+  "type": "object",
+  "required": ["schema_version", "id", "macro_id", "risk", "idempotency_key", "write_set", "rollback", "policy", "affected_tests"],
+  "properties": {
+    "schema_version": {"const": "3.0"},
+    "id": {"type": "string"},
+    "macro_id": {"type": "string"},
+    "risk": {"type": "string"},
+    "idempotency_key": {"type": "string", "minLength": 8},
+    "write_set": {"type": "array", "items": {"type": "string"}},
+    "rollback": {"type": "object", "required": ["strategy"]},
+    "policy": {"type": "object", "required": ["simulation_required", "apply_allowed"]},
+    "affected_tests": {"type": "array", "items": {"type": "string"}},
+    "edits": {"type": "array"}
+  }
+}

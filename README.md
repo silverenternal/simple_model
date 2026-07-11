@@ -295,3 +295,29 @@ MIT. See `LICENSE`.
 ---
 
 Built with bash ≥ 4 and jq. Zero other dependencies.
+### Production Optimizer Flow
+
+For large half-built repositories, use the plugin flow:
+
+```bash
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json adopt --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json semantic-graph --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh production-benchmark --json
+```
+
+This builds deep parser facts, Semantic Graph v2, fast validation, adoption
+reports, and production readiness evidence before any macro apply workflow.
+
+For v1.1 production adoption, use the confidence-gated flow:
+
+```bash
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json parser-tiers --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json semantic-graph-incremental --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json macro-preconditions --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json confidence-plan --json
+codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json adoption-cockpit --json
+```
+
+This separates safe-now, review-first, gather-evidence, and do-not-touch queues.
+Low-confidence parser evidence and untrusted dynamic edges cannot produce
+automatic apply recommendations.

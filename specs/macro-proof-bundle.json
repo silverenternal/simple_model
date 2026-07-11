@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "required": [
+    "operator_ir",
+    "motif_evidence",
+    "preconditions",
+    "composition",
+    "plan_search",
+    "drill_report",
+    "affected_tests",
+    "rollback_manifest",
+    "score_delta_proof",
+    "bundle_hash"
+  ]
+}

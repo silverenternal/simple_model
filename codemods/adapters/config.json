@@ -1,0 +1,1 @@
+{"language":"config","tier":"structured","operations":["json_set","yaml_set","toml_set"],"formatter":"canonical_structured","unsupported_policy":"review_only"}

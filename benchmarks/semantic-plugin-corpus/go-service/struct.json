@@ -1,0 +1,1 @@
+{"schema_version":"3.0","modules":[{"name":"service","description":"service","components":[{"name":"GoService","description":"go service","path":"main.go","exports":["StartServer"],"imports":[]}]}]}

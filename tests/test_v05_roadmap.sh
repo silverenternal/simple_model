@@ -53,5 +53,5 @@ check "adoption playbook exists" test -f docs/ADOPTION_PLAYBOOK.md
 check "evolution metrics" bash -c "bash examples/evolution-bench/run.sh | jq -e '.metrics.cache_invalidations == 1'"
 diff=$(bash generators/interface_diff.sh --root "$TMP_DIR" --struct "$TMP_DIR/struct.json" --json)
 check "release contract" bash -c "echo '$diff' | bash generators/release_contract.sh --json | jq -e '.summary.additive >= 1'"
-check "todo roadmap implemented" bash -c "jq -e '.status == \"implemented\" and ([.todos[]|select(.status==\"pending\")]|length == 0)' todo.json"
+check "todo roadmap v1.2 completed" bash -c "jq -e '.version == \"1.2-macro-maximalist-deterministic-optimizer-roadmap\" and .status == \"completed\" and ([.todos[]|select(.status!=\"done\")]|length == 0) and ([.todos[]|select(.priority==\"critical\")]|length >= 9) and all(.todos[]; (.acceptance|length) >= 4 and (.files|length) >= 5)' todo.json"
 echo "  passed: $pass"; echo "  failed: $fail"; exit $EXIT_CODE

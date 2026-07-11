@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "boundary-drift",
+      "factors": {
+        "boundary_drift": 5,
+        "dynamic_risk": 1,
+        "test_coverage": 3,
+        "rollback_cost": 1
+      },
+      "expected_rank": 1
+    },
+    {
+      "id": "dynamic-unsafe",
+      "factors": {
+        "boundary_drift": 2,
+        "dynamic_risk": 5,
+        "test_coverage": 1,
+        "rollback_cost": 4
+      },
+      "expected_rank": 3
+    },
+    {
+      "id": "test-gap",
+      "factors": {
+        "boundary_drift": 3,
+        "dynamic_risk": 1,
+        "test_coverage": 0,
+        "rollback_cost": 2
+      },
+      "expected_rank": 2
+    }
+  ]
+}

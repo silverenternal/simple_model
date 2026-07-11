@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simple-model.local/policy.schema.json",
+  "title": "simple_model Policy",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schema_version": { "type": "string" },
+    "macro": {
+      "type": "object",
+      "properties": {
+        "max_risk": { "enum": ["low", "medium", "high", "critical"] },
+        "allowed_tiers": {
+          "type": "array",
+          "items": { "enum": ["advisory", "exec_readonly", "struct_only", "safe_codemod", "risky_codemod"] }
+        },
+        "allowed_packs": { "type": "array", "items": { "type": "string" } },
+        "require_clean_worktree": { "type": "boolean" },
+        "require_simulation": { "type": "boolean" },
+        "dynamic": {
+          "type": "object",
+          "properties": {
+            "require_runtime_evidence": { "type": "boolean" },
+            "deny_dynamic_unsafe_without_waiver": { "type": "boolean" },
+            "allowed_risk_levels": {
+              "type": "array",
+              "items": {
+                "enum": ["static_only", "dynamic_known", "dynamic_observed", "dynamic_unverified", "dynamic_unsafe"]
+              }
+            }
+          }
+        }
+      }
+    },
+    "release": {
+      "type": "object",
+      "properties": {
+        "allow_breaking_contracts": { "type": "boolean" },
+        "require_benchmark_scorecard": { "type": "boolean" }
+      }
+    }
+  }
+}

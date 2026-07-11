@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "name": "boundary-repair",
+  "description": "Production repair macros for module boundary drift, public export drift, import drift, and test ownership drift.",
+  "safety": {
+    "apply_default": "simulate-first",
+    "requires_idempotency": true,
+    "requires_rollback": true
+  },
+  "macros": [
+    {
+      "id": "boundary.export_sync",
+      "kind": "structured_code",
+      "languages": ["typescript", "python", "go"],
+      "repairs": ["public_exports", "struct_exports"],
+      "backend": "codemod_backend"
+    },
+    {
+      "id": "boundary.import_sync",
+      "kind": "structured_code",
+      "languages": ["typescript", "python", "go", "rust"],
+      "repairs": ["declared_imports", "unused_boundary_edges"],
+      "backend": "codemod_backend"
+    },
+    {
+      "id": "boundary.test_owner_sync",
+      "kind": "metadata",
+      "languages": ["shell", "json"],
+      "repairs": ["test_ownership", "affected_test_mapping"],
+      "backend": "codemod_backend"
+    }
+  ]
+}

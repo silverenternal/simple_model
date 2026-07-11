@@ -514,6 +514,757 @@ case "$cmd" in
             jq -r '"Result:\n  applied: " + (.summary.applied|tostring) + "\n  dry-run: " + (.summary.dry_run|tostring) + "\n  skipped: " + (.summary.skipped|tostring) + "\n  failed: " + (.summary.failed|tostring) + "\n\nReports:\n  plan: generated/optimization/plan.json\n  execution: generated/optimization/execution.json\n  rollback: generated/optimization/rollback.json"' <<<"$exec_result"
         fi
         ;;
+    parser-backends)
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/parser_backends.sh "${args[@]}"
+        ;;
+    deep-parser-probe)
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/deep_parser_probe.sh "${args[@]}"
+        ;;
+    semantic-ir)
+        out="$SIMPLE_HOME/generated/intelligence/interface-ir.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown semantic-ir arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/semantic_interface_ir.sh "${args[@]}"
+        ;;
+    tree-sitter-scan)
+        out="$SIMPLE_HOME/generated/intelligence/tree-sitter-facts.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown tree-sitter-scan arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/tree_sitter_scan.sh "${args[@]}"
+        ;;
+    lsp-symbols)
+        out="$SIMPLE_HOME/generated/intelligence/lsp-symbols.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown lsp-symbols arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/lsp_symbol_index.sh "${args[@]}"
+        ;;
+    semantic-graph)
+        out="$SIMPLE_HOME/generated/intelligence/semantic-graph.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown semantic-graph arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/semantic_graph.sh "${args[@]}"
+        ;;
+    codemod)
+        spec=""; out="$SIMPLE_HOME/generated/codemods/result.json"; mode="simulate"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --spec) spec="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --simulate) mode="simulate"; shift ;;
+                --apply) mode="apply"; shift ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown codemod arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        [[ -n "$spec" ]] || { echo "[FAIL] codemod requires --spec" >&2; exit 64; }
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --spec "$spec" --output "$out" "--$mode")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/codemod_backend.sh "${args[@]}"
+        ;;
+    score-calibrate)
+        out="$SIMPLE_HOME/generated/optimization/score-model.json"; corpus="$SIMPLE_HOME/benchmarks/optimizer-corpus"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --corpus) corpus="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown score-calibrate arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--corpus "$corpus" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/score_calibrate.sh "${args[@]}"
+        ;;
+    optimizer-report)
+        search="$SIMPLE_HOME/generated/optimization/search.json"; graph="$SIMPLE_HOME/generated/optimization/graph.json"; out_dir="$SIMPLE_HOME/generated/optimization"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --search) search="$2"; shift 2 ;;
+                --graph) graph="$2"; shift 2 ;;
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown optimizer-report arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--search "$search" --graph "$graph" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/optimizer_report.sh "${args[@]}"
+        ;;
+    project-structure)
+        out="$SIMPLE_HOME/generated/intelligence/project-structure.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown project-structure arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/project_structure_miner.sh "${args[@]}"
+        ;;
+    framework-surfaces)
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/framework_surfaces.sh "${args[@]}"
+        ;;
+    dynamic-surface)
+        out="$SIMPLE_HOME/generated/intelligence/dynamic-surfaces.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown dynamic-surface arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/dynamic_surface_scan.sh "${args[@]}"
+        ;;
+    runtime-probe)
+        out="$SIMPLE_HOME/generated/intelligence/runtime-observations.json"; mode="plan"; policy=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --policy) policy="$2"; shift 2 ;;
+                --execute) mode="execute"; shift ;;
+                --dry-run|--plan) mode="plan"; shift ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown runtime-probe arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --output "$out")
+        [[ -n "$policy" ]] && args+=(--policy "$policy")
+        [[ "$mode" == "execute" ]] && args+=(--execute)
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/runtime_probe.sh "${args[@]}"
+        ;;
+    dynamic-merge)
+        surfaces="$SIMPLE_HOME/generated/intelligence/dynamic-surfaces.json"
+        observations="$SIMPLE_HOME/generated/intelligence/runtime-observations.json"
+        out="$SIMPLE_HOME/generated/intelligence/dynamic-surfaces.observed.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --surfaces) surfaces="$2"; shift 2 ;;
+                --observations) observations="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown dynamic-merge arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--surfaces "$surfaces" --observations "$observations" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/dynamic_observation_merge.sh "${args[@]}"
+        ;;
+    contracts)
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/contract_graph.sh "${args[@]}"
+        ;;
+    macro-rank)
+        suggestions="$SIMPLE_HOME/generated/optimization/macro-suggestions.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --suggestions) suggestions="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown macro-rank arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--suggestions "$suggestions")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/macro_rank.sh "${args[@]}"
+        ;;
+    macro-simulate)
+        plan="$SIMPLE_HOME/generated/optimization/plan.json"; out_dir="$SIMPLE_HOME/generated/optimization"; jobs=1
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --plan) plan="$2"; shift 2 ;;
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --jobs) jobs="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown macro-simulate arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--plan "$plan" --output-dir "$out_dir" --jobs "$jobs")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/macro_simulate.sh "${args[@]}"
+        ;;
+    macro-family-suggest)
+        out_dir="$SIMPLE_HOME/macros/families"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown macro-family-suggest arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/macro_family_suggest.sh "${args[@]}"
+        ;;
+    context-pack)
+        workflow="optimize"; out_dir="$SIMPLE_HOME/generated/codex/context-packs"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --workflow) workflow="$2"; shift 2 ;;
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown context-pack arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --workflow "$workflow" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/codex_context_pack.sh "${args[@]}"
+        ;;
+    autopilot)
+        mode="dry-run"; out_dir="$SIMPLE_HOME/generated/autopilot"; jobs=2; budget=5; check_mode="fast"; changed_files=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --dry-run) mode="dry-run"; shift ;;
+                --apply) mode="apply"; shift ;;
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --jobs) jobs="$2"; shift 2 ;;
+                --budget) budget="$2"; shift 2 ;;
+                --mode) check_mode="$2"; shift 2 ;;
+                --changed-files) changed_files="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown autopilot arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir" "--$mode" --jobs "$jobs" --budget "$budget" --mode "$check_mode")
+        [[ -n "$changed_files" ]] && args+=(--changed-files "$changed_files")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/autopilot.sh "${args[@]}"
+        ;;
+    optimization-graph)
+        out="$SIMPLE_HOME/generated/optimization/graph.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown optimization-graph arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/optimization_graph.sh "${args[@]}"
+        ;;
+    optimizer-search)
+        graph="$SIMPLE_HOME/generated/optimization/graph.json"; out="$SIMPLE_HOME/generated/optimization/search.json"; budget=5; mode="greedy"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --graph) graph="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --budget) budget="$2"; shift 2 ;;
+                --mode) mode="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown optimizer-search arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--graph "$graph" --output "$out" --budget "$budget" --mode "$mode")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/optimizer_search.sh "${args[@]}"
+        ;;
+    test-plan)
+        out="$SIMPLE_HOME/generated/tests/test-impact-dag.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown test-plan arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/test_impact_dag.sh "${args[@]}"
+        ;;
+    test-cache)
+        cache="$SIMPLE_HOME/generated/.cache/simple_model/test-cache.json"; command="bash tests/test_v04_roadmap.sh"; mode="lookup"; result=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --cache) cache="$2"; shift 2 ;;
+                --command) command="$2"; shift 2 ;;
+                --lookup) mode="lookup"; shift ;;
+                --store) mode="store"; shift ;;
+                --result) result="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown test-cache arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--cache "$cache" --root "$SIMPLE_HOME" --command "$command" "--$mode")
+        [[ -n "$result" ]] && args+=(--result "$result")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/test_cache.sh "${args[@]}"
+        ;;
+    fast-check|affected-check|dynamic-check|plugin-check|benchmark-check)
+        mode="fast"; changed_files=""; jobs=2; out_dir="$SIMPLE_HOME/generated/tests"
+        [[ "$cmd" == "affected-check" ]] && mode="affected"
+        [[ "$cmd" == "dynamic-check" ]] && mode="dynamic"
+        [[ "$cmd" == "plugin-check" ]] && mode="plugin"
+        [[ "$cmd" == "benchmark-check" ]] && mode="benchmark"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --changed-files) changed_files="$2"; shift 2 ;;
+                --jobs) jobs="$2"; shift 2 ;;
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown $cmd arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--mode "$mode" --jobs "$jobs" --output-dir "$out_dir")
+        [[ -n "$changed_files" ]] && args+=(--changed-files "$changed_files")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        tools/test_runner.sh "${args[@]}"
+        ;;
+    scheduler-plan)
+        tasks="$SIMPLE_HOME/specs/parallel-task.schema.json"; out="$SIMPLE_HOME/generated/runs/parallel-scheduler.json"; jobs=2
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --tasks) tasks="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --jobs) jobs="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown scheduler-plan arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--tasks "$tasks" --output "$out" --jobs "$jobs" --plan)
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/parallel_scheduler.sh "${args[@]}"
+        ;;
+    performance-benchmark)
+        out_dir="$SIMPLE_HOME/generated/performance"; jobs=2
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --jobs) jobs="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown performance-benchmark arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir" --jobs "$jobs")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/performance_benchmark.sh "${args[@]}"
+        ;;
+    performance-dashboard)
+        scorecard="$SIMPLE_HOME/generated/performance/scorecard.json"; test_report="$SIMPLE_HOME/generated/tests/test-runner.json"; out="$SIMPLE_HOME/generated/performance/dashboard.html"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --scorecard) scorecard="$2"; shift 2 ;;
+                --test-report) test_report="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown performance-dashboard arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--scorecard "$scorecard" --test-report "$test_report" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/performance_dashboard.sh "${args[@]}"
+        ;;
+    artifact-cache)
+        cache="$SIMPLE_HOME/generated/.cache/simple_model/artifacts/index.json"; command=""; inputs=""; result=""; mode="lookup"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --cache) cache="$2"; shift 2 ;;
+                --command) command="$2"; shift 2 ;;
+                --inputs) inputs="$2"; shift 2 ;;
+                --result) result="$2"; shift 2 ;;
+                --lookup) mode="lookup"; shift ;;
+                --store) mode="store"; shift ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown artifact-cache arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--cache "$cache" --root "$TARGET_ROOT" --command "$command" --inputs "$inputs" "--$mode")
+        [[ -n "$result" ]] && args+=(--result "$result")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/artifact_cache.sh "${args[@]}"
+        ;;
+    framework-resolvers)
+        out_dir="$SIMPLE_HOME/resolvers/frameworks"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown framework-resolvers arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/framework_resolver_pack.sh "${args[@]}"
+        ;;
+    runtime-contracts)
+        surfaces="$SIMPLE_HOME/generated/intelligence/dynamic-surfaces.json"; out="$SIMPLE_HOME/generated/intelligence/runtime-contracts.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --surfaces) surfaces="$2"; shift 2 ;;
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown runtime-contracts arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--surfaces "$surfaces" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/runtime_contracts.sh "${args[@]}"
+        ;;
+    production-benchmark)
+        out_dir="$SIMPLE_HOME/generated/benchmarks"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown production-benchmark arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/production_benchmark.sh "${args[@]}"
+        ;;
+    adopt)
+        out_dir="$SIMPLE_HOME/generated/adopt"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown adopt arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        mkdir -p "$out_dir"
+        doctor_json=$("$0" --target-root "$TARGET_ROOT" --struct "$STRUCT_PATH" doctor --json)
+        semantic_json=$(generators/semantic_graph.sh --root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out_dir/semantic-graph.json" --json)
+        tests_json=$(tools/test_runner.sh --mode fast --jobs 2 --output-dir "$out_dir/tests" --json || true)
+        adoption_json=$(generators/adoption_report.sh --root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir/adoption-report" --json || true)
+        report=$(jq -n --arg target "$TARGET_ROOT" --arg struct "$STRUCT_PATH" --argjson doctor "$doctor_json" --argjson semantic "$semantic_json" --argjson tests "$tests_json" --argjson adoption "$adoption_json" '{
+          schema_version:"1.0", ok:($doctor.ok and $semantic.ok and ($tests.ok // true)),
+          target_root:$target, struct:$struct,
+          phases:{doctor:$doctor.checks, semantic_graph:$semantic.summary, fast_check:$tests.summary, adoption:$adoption.adoption},
+          artifacts:{semantic_graph:"semantic-graph.json", tests:"tests/test-runner.json", adoption_report:"adoption-report/adoption-report.md"},
+          next_commands:["simple_model_pi.sh optimizer-search --json","simple_model_pi.sh autopilot --mode fast --json"]
+        }')
+        printf '%s\n' "$report" > "$out_dir/adopt.json"
+        if [[ "$JSON_OUT" == "1" ]]; then printf '%s\n' "$report"; else jq -r '"Adopt ok=" + (.ok|tostring) + " semantic_nodes=" + (.phases.semantic_graph.nodes|tostring)' <<<"$report"; fi
+        ;;
+    onboard)
+        out_dir="$SIMPLE_HOME/generated/onboard"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown onboard arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/onboard.sh "${args[@]}"
+        ;;
+    index-cache)
+        cache="$SIMPLE_HOME/generated/.cache/simple_model/index-cache.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --cache) cache="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown index-cache arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --cache "$cache")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/index_cache.sh "${args[@]}"
+        ;;
+    workspace-graph)
+        out="$SIMPLE_HOME/generated/intelligence/workspace-graph.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown workspace-graph arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/workspace_graph.sh "${args[@]}"
+        ;;
+    policy)
+        plan="$SIMPLE_HOME/generated/optimization/plan.json"; policy_file=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --plan) plan="$2"; shift 2 ;;
+                --policy) policy_file="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown policy arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--plan "$plan")
+        [[ -n "$policy_file" ]] && args+=(--policy "$policy_file")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/policy_eval.sh "${args[@]}" || true
+        ;;
+    autofix-plan)
+        plan="$SIMPLE_HOME/generated/optimization/plan.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --plan) plan="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown autofix-plan arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--plan "$plan")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/autofix_pr_plan.sh "${args[@]}"
+        ;;
+    test-graph)
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/test_graph.sh "${args[@]}"
+        ;;
+    benchmark)
+        cd "$SIMPLE_HOME"
+        if [[ "$JSON_OUT" == "1" ]]; then
+            generators/benchmark_scorecard.sh "$TARGET_ROOT" --json
+        else
+            generators/benchmark_scorecard.sh "$TARGET_ROOT"
+        fi
+        ;;
+    competitive-scorecard)
+        benchmark_file="$SIMPLE_HOME/generated/benchmarks/scorecard.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --benchmark) benchmark_file="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown competitive-scorecard arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--benchmark "$benchmark_file")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/competitive_scorecard.sh "${args[@]}"
+        ;;
+    adoption-report)
+        out_dir="$SIMPLE_HOME/generated/adoption-report"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output-dir) out_dir="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown adoption-report arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/adoption_report.sh "${args[@]}"
+        ;;
+    release-slo)
+        version="$(plugin_version)"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --version) version="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown release-slo arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        args=(--version "$version")
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        generators/release_slo.sh "${args[@]}"
+        ;;
+    parser-tiers)
+        out="$SIMPLE_HOME/generated/intelligence/parser-tiers.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown parser-tiers arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/parser_tier_registry.sh "${args[@]}"
+        ;;
+    symbol-index)
+        out="$SIMPLE_HOME/generated/intelligence/symbol-index.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown symbol-index arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/symbol_identity.sh "${args[@]}"
+        ;;
+    semantic-graph-incremental)
+        out="$SIMPLE_HOME/generated/intelligence/semantic-graph.json"; diff_out="$SIMPLE_HOME/generated/intelligence/semantic-graph-diff.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --diff-output) diff_out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown semantic-graph-incremental arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out" --diff-output "$diff_out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/semantic_graph_incremental.sh "${args[@]}"
+        ;;
+    dynamic-edges)
+        out="$SIMPLE_HOME/generated/intelligence/dynamic-edges.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown dynamic-edges arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/dynamic_edge_resolver.sh "${args[@]}"
+        ;;
+    macro-preconditions)
+        out="$SIMPLE_HOME/generated/macros/precondition-report.json"; macro=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --macro) macro="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown macro-preconditions arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out"); [[ -n "$macro" ]] && args+=(--macro "$macro"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/macro_preconditions.sh "${args[@]}"
+        ;;
+    macro-drill)
+        out="$SIMPLE_HOME/generated/macros/drill-report.json"; spec=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --spec) spec="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown macro-drill arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --output "$out"); [[ -n "$spec" ]] && args+=(--spec "$spec"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/macro_drill.sh "${args[@]}"
+        ;;
+    macro-generate)
+        out="$SIMPLE_HOME/generated/macros/candidates.json"; findings=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --findings) findings="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown macro-generate arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--output "$out"); [[ -n "$findings" ]] && args+=(--findings "$findings"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/macro_generate_from_findings.sh "${args[@]}"
+        ;;
+    accuracy-scorecard)
+        out="$SIMPLE_HOME/generated/benchmarks/accuracy-scorecard.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown accuracy-scorecard arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/accuracy_scorecard.sh "${args[@]}"
+        ;;
+    external-eval)
+        out="$SIMPLE_HOME/generated/adoption/eval-report.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown external-eval arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/external_repo_eval.sh "${args[@]}"
+        ;;
+    confidence-plan)
+        out="$SIMPLE_HOME/generated/optimization/confidence-plan.json"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output) out="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown confidence-plan arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/confidence_optimizer.sh "${args[@]}"
+        ;;
+    adoption-cockpit)
+        out_dir="$SIMPLE_HOME/generated/adoption"
+        while [[ $# -gt 0 ]]; do
+            case "$1" in --output-dir) out_dir="$2"; shift 2 ;; --json) JSON_OUT=1; shift ;; *) echo "[FAIL] unknown adoption-cockpit arg: $1" >&2; exit 64 ;; esac
+        done
+        cd "$SIMPLE_HOME"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out_dir"); [[ "$JSON_OUT" == "1" ]] && args+=(--json); generators/adoption_cockpit.sh "${args[@]}"
+        ;;
+    macro-operator-ir|macro-motifs|macro-templates|macro-compose|macro-plan-search|macro-transaction|macro-proof-bundle|macro-ledger|macro-family-ranker|macro-promotion|macro-gauntlet|macro-cockpit|macro-advisor|takeover-init|interface-stability|ai-tool-research)
+        out=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --output|--output-dir) out="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) echo "[FAIL] unknown $cmd arg: $1" >&2; exit 64 ;;
+            esac
+        done
+        cd "$SIMPLE_HOME"
+        case "$cmd" in
+            macro-operator-ir) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/operator-ir.json"; args=(--output "$out") ;;
+            macro-motifs) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/motif-candidates.json"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out") ;;
+            macro-templates) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/templates.json"; args=(--output "$out") ;;
+            macro-compose) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/composition-report.json"; args=(--output "$out") ;;
+            macro-plan-search) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/plan-search.json"; args=(--output "$out") ;;
+            macro-transaction) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/transaction-log.json"; args=(--root "$TARGET_ROOT" --output "$out") ;;
+            macro-proof-bundle) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/proof-bundle.json"; args=(--output "$out") ;;
+            macro-ledger) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/outcome-ledger.json"; args=(--output "$out") ;;
+            macro-family-ranker) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/family-rankings.json"; args=(--output "$out") ;;
+            macro-promotion) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/promotion-report.json"; args=(--output "$out") ;;
+            macro-gauntlet) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/benchmarks/macro-gauntlet-scorecard.json"; args=(--output "$out") ;;
+            macro-cockpit) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros"; args=(--output-dir "$out") ;;
+            macro-advisor) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/macros/advisor-report.json"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out") ;;
+            takeover-init) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/adoption"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output-dir "$out") ;;
+            interface-stability) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/adoption/interface-stability.json"; args=(--root "$TARGET_ROOT" --struct "$STRUCT_PATH" --output "$out") ;;
+            ai-tool-research) [[ -n "$out" ]] || out="$SIMPLE_HOME/generated/research/ai-tool-pain-points.json"; args=(--output "$out") ;;
+        esac
+        [[ "$JSON_OUT" == "1" ]] && args+=(--json)
+        case "$cmd" in
+            macro-operator-ir) generators/macro_operator_ir.sh "${args[@]}" ;;
+            macro-motifs) generators/macro_discover_motifs.sh "${args[@]}" ;;
+            macro-templates) generators/macro_template_synth.sh "${args[@]}" ;;
+            macro-compose) generators/macro_compose.sh "${args[@]}" ;;
+            macro-plan-search) generators/macro_plan_search.sh "${args[@]}" ;;
+            macro-transaction) generators/macro_transaction.sh "${args[@]}" ;;
+            macro-proof-bundle) generators/macro_proof_bundle.sh "${args[@]}" ;;
+            macro-ledger) generators/macro_outcome_ledger.sh "${args[@]}" ;;
+            macro-family-ranker) generators/macro_family_ranker.sh "${args[@]}" ;;
+            macro-promotion) generators/macro_promotion_gate.sh "${args[@]}" ;;
+            macro-gauntlet) generators/macro_gauntlet.sh "${args[@]}" ;;
+            macro-cockpit) generators/macro_cockpit.sh "${args[@]}" ;;
+            macro-advisor) generators/macro_advisor.sh "${args[@]}" ;;
+            takeover-init) generators/takeover_init.sh "${args[@]}" ;;
+            interface-stability) generators/interface_stability_commitment.sh "${args[@]}" ;;
+            ai-tool-research) generators/ai_tool_pain_research.sh "${args[@]}" ;;
+        esac
+        ;;
+    dynamic-case-study)
+        cd "$SIMPLE_HOME"
+        bash examples/dynamic-case-study/run.sh
+        ;;
     validate)
         cd "$SIMPLE_HOME"
         ./bootstrap.sh --validate
@@ -523,11 +1274,19 @@ case "$cmd" in
         ;;
     full-check)
         cd "$SIMPLE_HOME"
+        jobs=2
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --jobs) jobs="$2"; shift 2 ;;
+                --json) JSON_OUT=1; shift ;;
+                *) shift ;;
+            esac
+        done
         ./bootstrap.sh --validate
         ./bootstrap.sh --check-all
         ./bootstrap.sh --lint --json | jq '.summary'
         ./bootstrap.sh --drift --json | jq '.summary'
-        for t in tests/test_*.sh; do bash "$t" || exit 1; done
+        tools/test_runner.sh --mode full --jobs "$jobs"
         ;;
     ingest)
         repo="${1:-$TARGET_ROOT}"; out="${2:-$TARGET_ROOT/struct.ingested.json}"
@@ -550,7 +1309,15 @@ case "$cmd" in
         generators/code_facts.sh --root "$repo" --struct "$STRUCT_PATH" --json
         ;;
     pr-gate)
-        repo="${1:-$TARGET_ROOT}"; files="${2:-}"
+        repo="$TARGET_ROOT"; files=""
+        while [[ $# -gt 0 ]]; do
+            case "$1" in
+                --json) JSON_OUT=1; shift ;;
+                --files) files="$2"; shift 2 ;;
+                --target-root) repo="$2"; shift 2 ;;
+                *) if [[ "$repo" == "$TARGET_ROOT" ]]; then repo="$1"; else files="$1"; fi; shift ;;
+            esac
+        done
         cd "$SIMPLE_HOME"
         if [[ -n "$files" ]]; then
             generators/pr_gate.sh --root "$repo" --struct "$STRUCT_PATH" --files "$files" --json

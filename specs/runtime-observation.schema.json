@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "title": "Runtime Observation",
+  "type": "object",
+  "required": ["schema_version", "ok", "observations"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "ok": { "type": "boolean" },
+    "root": { "type": "string" },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "probes": { "type": "integer", "minimum": 0 },
+        "executed": { "type": "integer", "minimum": 0 },
+        "observations": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind", "name", "source"],
+        "properties": {
+          "kind": { "type": "string" },
+          "name": { "type": "string" },
+          "path": { "type": "string" },
+          "source": { "type": "string" },
+          "evidence": { "type": "object" },
+          "hash": { "type": "string" }
+        }
+      }
+    }
+  }
+}

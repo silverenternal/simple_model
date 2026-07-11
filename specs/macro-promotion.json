@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0",
+  "required_evidence": [
+    "labeled_fixtures",
+    "operator_ir",
+    "composition",
+    "drill_success",
+    "affected_test_recall",
+    "false_safe_apply_zero",
+    "positive_score_delta",
+    "proof_bundle"
+  ]
+}

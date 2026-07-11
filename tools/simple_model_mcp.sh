@@ -47,11 +47,13 @@ call_plugin() {
   args=(--target-root "$target")
   [[ -n "$struct" ]] && args+=(--struct "$struct")
   case "$command" in
-    doctor|commands|self-check|self-audit|macros|score|macro-suggest) args+=(--json "$command") ;;
-    macro-compile) args+=(--json "$command") ;;
-    optimize|optimize-loop) args+=(--json "$command" --dry-run) ;;
+    doctor|commands|self-check|self-audit|macros|score|macro-suggest|parser-backends|deep-parser-probe|semantic-ir|tree-sitter-scan|lsp-symbols|semantic-graph|semantic-graph-incremental|parser-tiers|symbol-index|dynamic-edges|project-structure|framework-surfaces|dynamic-surface|runtime-probe|dynamic-merge|runtime-contracts|dynamic-case-study|contracts|macro-rank|macro-family-suggest|macro-preconditions|macro-drill|macro-generate|macro-operator-ir|macro-motifs|macro-templates|macro-compose|macro-plan-search|macro-transaction|macro-proof-bundle|macro-ledger|macro-family-ranker|macro-promotion|macro-gauntlet|macro-cockpit|macro-advisor|takeover-init|interface-stability|ai-tool-research|context-pack|index-cache|workspace-graph|policy|autofix-plan|test-graph|benchmark|accuracy-scorecard|competitive-scorecard|external-eval|adoption-report|adoption-cockpit|release-slo|optimization-graph|optimizer-search|optimizer-report|confidence-plan|score-calibrate|test-plan|test-cache|artifact-cache|fast-check|affected-check|dynamic-check|plugin-check|benchmark-check|scheduler-plan|framework-resolvers|performance-benchmark|performance-dashboard|production-benchmark|adopt) args+=(--json "$command") ;;
+    macro-compile|macro-simulate) args+=(--json "$command") ;;
+    optimize|optimize-loop|autopilot) args+=(--json "$command" --dry-run) ;;
+    onboard) args+=(--json "$command") ;;
     interfaces|facts|audit|resolve) args+=("$command") ;;
     pr-gate) args+=("$command" "$target"); [[ -n "$files" ]] && args+=("$files") ;;
+    macro-run) jq -n --arg name "$plugin_name" '{error:"write_tool_disabled", name:$name, hint:"Use macro-simulate first; CLI macro-run --apply requires explicit local intent."}'; return 0 ;;
     self-release) jq -n --arg name "$plugin_name" '{error:"write_tool_disabled", name:$name, hint:"Run self-release from the CLI so publish intent is explicit."}'; return 0 ;;
     *) jq -n --arg name "$plugin_name" '{error:"unknown_plugin_tool", name:$name}'; return 0 ;;
   esac

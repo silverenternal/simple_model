@@ -1,0 +1,24 @@
+{
+  "schema_version": "1.0",
+  "name": "framework-repair",
+  "description": "Production repair macros for route registration drift, generated client drift, config/schema drift, and dynamic runtime contract gaps.",
+  "safety": {
+    "apply_default": "simulate-first",
+    "dynamic_policy": "deny-unobserved-unsafe",
+    "requires_runtime_contract_for_dynamic_apply": true
+  },
+  "macros": [
+    {
+      "id": "framework.route_contract_sync",
+      "frameworks": ["nextjs", "nestjs", "express", "fastapi", "django", "rails", "spring"],
+      "repairs": ["route_registration", "handler_contract"],
+      "backend": "codemod_backend"
+    },
+    {
+      "id": "framework.config_schema_sync",
+      "frameworks": ["terraform", "kubernetes", "openapi", "grpc"],
+      "repairs": ["config_schema", "generated_artifact_provenance"],
+      "backend": "codemod_backend"
+    }
+  ]
+}

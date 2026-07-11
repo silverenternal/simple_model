@@ -37,6 +37,7 @@ report=$(jq '
         invalid:($invalid|length)
       },
       macros:.macros,
+      packs:(.packs // []),
       invalid:$invalid
     }
 ' "$REGISTRY")

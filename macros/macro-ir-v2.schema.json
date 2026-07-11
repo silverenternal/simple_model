@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://simple-model.local/macro-ir-v2.schema.json",
+  "title": "simple_model Macro IR v2",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema_version", "id", "kind", "selector", "reads", "writes", "preconditions", "postconditions", "invariants", "safety", "rollback"],
+  "properties": {
+    "schema_version": { "const": "2.0" },
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]*$" },
+    "kind": { "enum": ["macro_ir_v2"] },
+    "family": { "type": "string" },
+    "selector": { "type": "object" },
+    "reads": { "type": "array", "items": { "type": "string" } },
+    "writes": { "type": "array", "items": { "type": "string" } },
+    "preconditions": { "type": "array", "items": { "type": "string" } },
+    "postconditions": { "type": "array", "items": { "type": "string" } },
+    "invariants": { "type": "array", "items": { "type": "string" } },
+    "safety": {
+      "type": "object",
+      "required": ["risk", "dry_run_required", "idempotency_key"],
+      "properties": {
+        "risk": { "enum": ["low", "medium", "high", "critical"] },
+        "dry_run_required": { "type": "boolean" },
+        "auto_apply": { "type": "boolean" },
+        "idempotency_key": { "type": "string" }
+      }
+    },
+    "rollback": {
+      "type": "object",
+      "required": ["strategy"],
+      "properties": {
+        "strategy": { "enum": ["backup_restore", "delete_generated", "advisory_only"] },
+        "manifest": { "type": "string" }
+      }
+    },
+    "evidence": { "type": "object" }
+  }
+}

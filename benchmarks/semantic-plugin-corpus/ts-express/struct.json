@@ -1,0 +1,1 @@
+{"schema_version":"3.0","modules":[{"name":"api","description":"api","components":[{"name":"Server","description":"server","path":"src/server.ts","exports":["startServer","serverHealth"],"imports":[]}]}]}

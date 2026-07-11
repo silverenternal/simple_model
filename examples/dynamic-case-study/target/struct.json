@@ -1,0 +1,32 @@
+{
+  "schema_version": "3.0",
+  "modules": [
+    {
+      "name": "app",
+      "description": "Dynamic fixture app",
+      "components": [
+        {
+          "name": "Server",
+          "description": "HTTP entrypoint",
+          "path": "src/server.ts",
+          "exports": ["startServer"],
+          "imports": []
+        },
+        {
+          "name": "Plugins",
+          "description": "Runtime plugin loader",
+          "path": "src/plugins.ts",
+          "exports": ["loadPlugin"],
+          "imports": []
+        },
+        {
+          "name": "GeneratedClient",
+          "description": "Generated API client",
+          "path": "src/generated/client.ts",
+          "exports": ["getPet"],
+          "imports": []
+        }
+      ]
+    }
+  ]
+}

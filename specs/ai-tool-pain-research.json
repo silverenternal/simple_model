@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "required": [
+    "as_of",
+    "tools",
+    "pain_points",
+    "macro_wisdom_bets",
+    "automation_model"
+  ],
+  "minimums": {
+    "tools": 6,
+    "pain_points": 6,
+    "macro_wisdom_bets": 6
+  },
+  "invariants": {
+    "all_claims_have_sources": true,
+    "all_pain_points_have_macro_response": true,
+    "ai_is_leaf_only": true,
+    "report_generation_requires_network": false
+  }
+}
+

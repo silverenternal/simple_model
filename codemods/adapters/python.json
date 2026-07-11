@@ -1,0 +1,1 @@
+{"language":"python","tier":"native_ast","operations":["import_rewrite","module_move","fastapi_route","django_registration","config_reference"],"formatter":"python_compile_then_preserve","unsupported_policy":"review_only"}

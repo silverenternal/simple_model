@@ -1,0 +1,8 @@
+{
+  "project": "messy-fixture",
+  "modules": [
+    {"name": "web", "components": [{"name": "Routes", "path": "apps/web/routes.ts"}]},
+    {"name": "worker", "components": [{"name": "Jobs", "path": "services/worker/jobs.py"}]},
+    {"name": "api", "components": [{"name": "Server", "path": "services/api/server.go"}]}
+  ]
+}

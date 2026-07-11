@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "required": [
+    "id",
+    "family",
+    "mode",
+    "input_selectors",
+    "graph_effects",
+    "write_effects",
+    "preconditions",
+    "postconditions",
+    "affected_tests",
+    "rollback_scope",
+    "score_factors"
+  ],
+  "modes": ["review", "simulate", "apply"],
+  "validation": {
+    "require_typed_selectors": true,
+    "require_bounded_write_effects": true,
+    "require_rollback_scope": true,
+    "reject_ambiguous_effects": true
+  }
+}

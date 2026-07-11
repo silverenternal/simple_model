@@ -1,369 +1,437 @@
 {
   "name": "simple_model",
-  "version": "0.6-plugin-skill-roadmap",
-  "status": "implemented",
-  "positioning": "A repo-native Project Intelligence control plane that can also be consumed as a Codex skill/plugin: easy to install, easy to invoke from arbitrary repos, deterministic in CI, and useful to maintainers who did not author simple_model.",
-  "implementation_audit": {
-    "as_of": "2026-07-08",
-    "summary": "The v0.5 Project Intelligence core and Codex skill/plugin exist and are published, but the plugin experience is still a developer-grade wrapper. The next roadmap should harden installation, invocation, packaging, release automation, cross-repo use, diagnostics, examples, and telemetry-free adoption UX.",
-    "current_strengths": [
-      "A repo-local Codex skill exists at codex/skills/simple-model-project-intelligence.",
-      "A plugin package exists at plugins/simple-model-project-intelligence with the skill bundled.",
-      "A repo-local marketplace exists at .agents/plugins/marketplace.json.",
-      "The README documents clone, marketplace add, and plugin install commands.",
-      "The plugin release path now has a deterministic v0.6 packager and version policy.",
-      "The skill wrapper can call validate, ingest, audit, interface scan, facts, PR gate, dashboard, and resolve commands."
-    ],
-    "major_gaps": [
-      {
-        "area": "installation",
-        "gap": "Install instructions are documented but not self-tested in CI or by an install smoke script. Users may hit Codex CLI version differences without guidance.",
-        "severity": "high"
-      },
-      {
-        "area": "plugin packaging",
-        "gap": "The plugin duplicates the skill directory, so source skill and bundled plugin skill can drift. There is no sync check or release packager.",
-        "severity": "high"
-      },
-      {
-        "area": "cross-repo usability",
-        "gap": "The wrapper assumes it can find the simple_model root, but usage from an arbitrary target repository is awkward and does not support a configured toolchain path.",
-        "severity": "high"
-      },
-      {
-        "area": "first-run UX",
-        "gap": "There is no doctor command that verifies bash, jq, Codex CLI, plugin registration, writable output dirs, and target repo readiness.",
-        "severity": "high"
-      },
-      {
-        "area": "command discoverability",
-        "gap": "The skill explains commands, but the wrapper does not expose structured command metadata, examples, or next-step suggestions.",
-        "severity": "medium"
-      },
-      {
-        "area": "release automation",
-        "gap": "Plugin zips and GitHub releases were created manually. There is no deterministic release script that validates, packages, tags, and publishes assets.",
-        "severity": "medium"
-      },
-      {
-        "area": "examples",
-        "gap": "There is no small external fixture repo showing clone -> plugin install -> ingest -> PR gate end to end.",
-        "severity": "medium"
-      },
-      {
-        "area": "documentation",
-        "gap": "README has installation commands, but lacks troubleshooting, version compatibility, uninstall/update flows, and the expected new-thread boundary after plugin install.",
-        "severity": "medium"
-      }
-    ],
-    "planning_principle": "Treat the plugin as a product surface, not only a packaging artifact. Every install, invocation, and release path should be deterministic, scripted, and testable."
-  },
+  "version": "1.2-macro-maximalist-deterministic-optimizer-roadmap",
+  "status": "completed",
+  "as_of": "2026-07-10",
+  "positioning": "Turn macros from safe codemod units into a deterministic project-optimization substrate: discoverable from semantic graph motifs, composable into verified plans, executable through bounded search, and self-improving through benchmark evidence.",
+  "principle": "The hard advantage is not writing more macros by hand. The hard advantage is making macros behave like typed, testable, reversible optimization operators over a semantic project graph.",
+  "why_this_can_be_hard_for_others": [
+    "Most coding agents treat code changes as conversational edits; simple_model already has struct, semantic graph, risk gates, macro contracts, rollback, benchmark scorecards, and plugin command surfaces.",
+    "Most codemod systems are strong at known migrations but weak at project-specific discovery. simple_model can derive macro candidates from adoption gaps, graph motifs, dynamic edges, tests, ownership, and score deltas.",
+    "Most static-analysis tools stop at findings. simple_model can turn repeated findings into review-only macro candidates, prove preconditions, run drills, and route safe subsets into deterministic apply queues.",
+    "Most AI workflows do not preserve replayable evidence. simple_model can attach graph paths, parser confidence, run logs, rollback manifests, affected tests, and release SLO outcomes to each macro decision."
+  ],
+  "north_star": "Given a messy large repository, simple_model should discover structural improvement patterns, synthesize typed macro operators, search for the best macro plan under risk and runtime budgets, prove safety through drills and tests, apply only evidence-sufficient changes, and learn which macro families work across projects.",
   "success_criteria": {
-    "plugin_readiness": [
-      "A new user can install the plugin from a fresh clone by following one README section.",
-      "A smoke test verifies marketplace metadata, plugin manifest, bundled skill, wrapper help, and at least one wrapper command.",
-      "Source skill and plugin-bundled skill cannot drift without a failing test.",
-      "The wrapper can run from either the simple_model repo or a separate target repo with an explicit SIMPLE_MODEL_HOME.",
-      "A release script can validate, package, tag, and upload the plugin zip repeatably."
+    "macro_power": [
+      "Macros are typed operators with inputs, outputs, graph preconditions, write-set effects, score effects, rollback semantics, and affected-test selectors.",
+      "Macro candidates can be generated from graph motifs and repeated findings without becoming apply-capable until fixtures, proofs, and policy gates pass.",
+      "Multiple macros can be composed into plans only when their read/write sets, graph effects, dynamic risks, and rollback scopes are compatible.",
+      "The optimizer can search macro plans under budget and explain why selected plans dominate alternatives."
     ],
-    "quality_bar": [
-      "Every new command has --help output and stable exit codes.",
-      "Every plugin/skill metadata file is validated in tests.",
-      "No global Codex config is modified by tests.",
-      "Documentation covers install, update, uninstall, troubleshooting, and release assets.",
-      "The plugin remains telemetry-free and repo-local by default."
+    "production_safety": [
+      "Every apply path has dry-run, precondition proof, conflict analysis, idempotency drill, rollback drill, affected-test proof, and replay log.",
+      "Unsafe dynamic edges, low parser confidence, missing tests, or ownership conflicts automatically downgrade actions to review-first or gather-evidence.",
+      "Macro plan execution is transactional: partial failure yields deterministic rollback and a resumable run record.",
+      "Release gates include false-safe-apply, rollback failure, non-idempotency, missed affected tests, and benchmark regression thresholds."
+    ],
+    "learning_loop": [
+      "Macro outcomes feed a local corpus with success/failure, score delta, runtime, review reason, rollback cost, and changed graph motifs.",
+      "The system can rank macro families by observed value across fixtures and local repos.",
+      "Generated macro templates are promoted only after crossing deterministic evidence thresholds.",
+      "Reports show which macro families are not worth automating yet."
     ]
   },
+  "waves": [
+    {
+      "wave": 1,
+      "name": "Typed Macro Operator Algebra",
+      "objective": "Define macros as first-class optimization operators with graph effects, type constraints, conflict rules, and proof obligations."
+    },
+    {
+      "wave": 2,
+      "name": "Macro Discovery And Synthesis",
+      "objective": "Generate high-quality macro candidates from semantic graph motifs, repeated findings, benchmark labels, and repository-specific drift patterns."
+    },
+    {
+      "wave": 3,
+      "name": "Compositional Macro Planner",
+      "objective": "Search, rank, compose, and execute macro plans under deterministic safety, risk, runtime, and rollback constraints."
+    },
+    {
+      "wave": 4,
+      "name": "Macro Outcome Learning",
+      "objective": "Use local evidence to rank macro families, promote candidates, reject weak automations, and feed release-grade benchmarks."
+    },
+    {
+      "wave": 5,
+      "name": "Macro Product Surface",
+      "objective": "Make the plugin expose macro intelligence as a guided workflow: discover, prove, plan, simulate, apply, rollback, and report."
+    }
+  ],
   "todos": [
     {
-      "id": "plugin_install_smoke_test",
-      "wave": 1,
-      "task": "Add a deterministic smoke test for the repo-local Codex plugin package.",
-      "priority": "high",
+      "id": "graph_motif_macro_discovery",
+      "wave": 2,
+      "theme": "macro-discovery",
+      "task": "Discover macro candidates from semantic graph motifs such as boundary drift, orphaned exports, duplicated routes, stale generated clients, missing tests, ownership splits, and dynamic evidence gaps.",
+      "priority": "critical",
       "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "plugin_release_ci",
-        "plugin_install_docs_v2"
-      ],
-      "current_gap": "Plugin validation was run manually with a temporary PyYAML environment and is not part of the test suite.",
-      "deliverable": "tests/test_plugin_package.sh",
+      "deliverable": "generators/macro_discover_motifs.sh and generated/macros/motif-candidates.json.",
       "acceptance": [
-        "Validates .agents/plugins/marketplace.json with jq",
-        "Validates plugins/simple-model-project-intelligence/.codex-plugin/plugin.json with jq",
-        "Validates bundled skill frontmatter and agents/openai.yaml",
-        "Asserts wrapper help exits 0",
-        "Asserts no TODO placeholders remain in plugin/skill files"
+        "Discovery consumes Semantic Graph v2.1, dynamic edges, parser tiers, symbol identity, and test impact DAG.",
+        "Each motif candidate includes graph path evidence, confidence, expected operator family, missing proof obligations, and review reason.",
+        "Candidates are clustered by repeated structure rather than file-name heuristics.",
+        "Low-confidence motifs are emitted as gather-evidence actions, not apply-capable macros."
       ],
       "files": [
-        "tests/test_plugin_package.sh",
-        ".agents/plugins/marketplace.json",
-        "plugins/simple-model-project-intelligence/.codex-plugin/plugin.json"
+        "generators/macro_discover_motifs.sh",
+        "generators/semantic_graph_incremental.sh",
+        "generators/dynamic_edge_resolver.sh",
+        "generators/test_impact_dag.sh",
+        "tests/test_v12_macro_motif_discovery.sh"
       ]
     },
     {
-      "id": "skill_plugin_sync_check",
-      "wave": 1,
-      "task": "Prevent drift between the source skill and the plugin-bundled skill.",
-      "priority": "high",
+      "id": "half_built_project_takeover_init",
+      "wave": 5,
+      "theme": "plugin-product",
+      "task": "Create a macro-dominant initialization workflow for taking over a large half-built project: diagnose, ingest, tier parsers, build semantic graph, discover macro motifs, generate initialization steps, and isolate the few AI leaf tasks.",
+      "priority": "critical",
       "status": "done",
-      "audience": "maintainers",
-      "blocks": [
-        "plugin_release_packager"
-      ],
-      "current_gap": "codex/skills/simple-model-project-intelligence and plugins/.../skills/simple-model-project-intelligence are duplicated manually.",
-      "deliverable": "A sync script and test that compare file hashes or refresh the bundled copy deterministically.",
+      "deliverable": "generators/takeover_init.sh and generated/adoption/takeover-init.json/md.",
       "acceptance": [
-        "A check reports exact files that differ",
-        "A sync mode refreshes the plugin-bundled skill from codex/skills",
-        "The test suite fails if the two skill copies drift",
-        "Generated caches and non-skill files are ignored"
+        "Workflow produces ordered initialization phases with deterministic commands and artifacts.",
+        "Macros own structural decisions; AI tasks are emitted only as bounded leaf clarifications with explicit inputs and outputs.",
+        "Initialization report includes readiness, blockers, macro-safe actions, review actions, evidence gaps, and next commands.",
+        "Plugin exposes takeover-init as a read-only command for external repositories."
       ],
       "files": [
-        "tools/sync_codex_plugin.sh",
-        "tests/test_plugin_package.sh"
-      ]
-    },
-    {
-      "id": "wrapper_cross_repo_mode",
-      "wave": 1,
-      "task": "Make simple_model_pi.sh ergonomic from arbitrary target repositories.",
-      "priority": "high",
-      "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "plugin_target_repo_fixture",
-        "doctor_command"
-      ],
-      "current_gap": "The wrapper mainly assumes execution from the simple_model repo and does not clearly separate toolchain root from target repo.",
-      "deliverable": "Cross-repo wrapper mode with SIMPLE_MODEL_HOME and --target-root support.",
-      "acceptance": [
-        "SIMPLE_MODEL_HOME can point to the simple_model checkout",
-        "--target-root selects the repository being analyzed",
-        "Wrapper commands work when CWD is outside simple_model",
-        "Error messages explain how to set SIMPLE_MODEL_HOME",
-        "Existing repo-root usage remains backward compatible"
-      ],
-      "files": [
+        "generators/takeover_init.sh",
+        "generators/macro_advisor.sh",
+        "generators/external_repo_eval.sh",
         "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "tests/test_plugin_package.sh"
+        "tests/test_v12_takeover_init.sh"
       ]
     },
     {
-      "id": "doctor_command",
-      "wave": 1,
-      "task": "Add a doctor command for plugin and skill readiness diagnostics.",
+      "id": "interface_stability_commitment",
+      "wave": 5,
+      "theme": "release-quality",
+      "task": "Generate interface stability commitments for half-built projects by combining interface scans, semantic graph evidence, dynamic edges, macro plans, and explicit AI leaf-review requests.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/interface_stability_commitment.sh and generated/adoption/interface-stability.json/md.",
+      "acceptance": [
+        "Commitment classifies interfaces as stable, provisional, experimental, deprecated, or blocked with evidence.",
+        "Breaking-change policy, compatibility window, owner/reviewer requirements, and affected tests are emitted per interface group.",
+        "Macro recommendations dominate remediation; AI tasks only request missing intent, owner, or compatibility decisions.",
+        "Release SLO and takeover init can consume the stability commitment artifact."
+      ],
+      "files": [
+        "generators/interface_stability_commitment.sh",
+        "generators/interface_scan.sh",
+        "generators/semantic_graph_incremental.sh",
+        "generators/release_slo.sh",
+        "tests/test_v12_interface_stability_commitment.sh"
+      ]
+    },
+    {
+      "id": "macro_benchmark_gauntlet",
+      "wave": 4,
+      "theme": "macro-learning",
+      "task": "Expand benchmarks into a macro gauntlet that tests operator discovery, synthesis, composition, transaction execution, rollback, and promotion across adversarial repo fixtures.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "benchmarks/macro-gauntlet/ and generators/macro_gauntlet.sh.",
+      "acceptance": [
+        "Gauntlet includes safe, unsafe, ambiguous, dynamic, generated-code, conflicting-write, stale-test, and ownership-conflict cases.",
+        "Metrics include discovery recall, false-safe-apply, composition rejection accuracy, transaction rollback success, runtime, and score delta.",
+        "Gauntlet can run offline and produces deterministic JSON/Markdown scorecards.",
+        "Release SLO includes macro gauntlet thresholds."
+      ],
+      "files": [
+        "benchmarks/macro-gauntlet/",
+        "generators/macro_gauntlet.sh",
+        "generated/benchmarks/macro-gauntlet-scorecard.json",
+        "docs/MACRO_PACKS.md",
+        "tests/test_v12_macro_gauntlet.sh"
+      ]
+    },
+    {
+      "id": "macro_cockpit_v2",
+      "wave": 5,
+      "theme": "plugin-product",
+      "task": "Upgrade adoption cockpit into a macro cockpit that guides discover, prove, compose, simulate, apply, rollback, and promote workflows.",
       "priority": "high",
       "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "plugin_install_docs_v2"
-      ],
-      "current_gap": "Users have no single command to diagnose missing jq, old bash, missing Codex CLI, bad marketplace registration, or invalid target repo paths.",
-      "deliverable": "simple_model_pi.sh doctor",
+      "deliverable": "generators/macro_cockpit.sh and generated/macros/cockpit.json/md/html.",
       "acceptance": [
-        "Checks bash version, jq, git, and optional gh/codex availability",
-        "Checks simple_model root discovery",
-        "Checks plugin manifest and marketplace JSON parse",
-        "Checks target repo path when provided",
-        "Emits JSON mode for machine-readable diagnostics",
-        "Exits non-zero only for hard blockers"
+        "Cockpit shows discovered motifs, synthesized templates, safe plans, blocked plans, proof bundles, outcome rankings, and promotion status.",
+        "Terminal output remains concise with top safe actions, top review actions, top evidence gaps, and top retired macro ideas.",
+        "HTML report is static and local-only.",
+        "Plugin exposes macro-cockpit as a read-only command by default."
       ],
       "files": [
+        "generators/macro_cockpit.sh",
+        "generators/adoption_cockpit.sh",
         "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "tests/test_plugin_package.sh"
+        "generated/macros/cockpit.json",
+        "tests/test_v12_macro_cockpit.sh"
       ]
     },
     {
-      "id": "plugin_command_manifest",
-      "wave": 1,
-      "task": "Expose wrapper command metadata for discoverability and future MCP/tool generation.",
-      "priority": "medium",
+      "id": "macro_composition_analyzer",
+      "wave": 3,
+      "theme": "macro-planning",
+      "task": "Analyze whether multiple macro operators can be safely composed by checking read/write conflicts, graph-effect conflicts, dynamic risk escalation, test coverage overlap, and rollback scope compatibility.",
+      "priority": "critical",
       "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "mcp_plugin_bridge"
-      ],
-      "current_gap": "The wrapper has help text but no structured command catalog with descriptions, args, outputs, and examples.",
-      "deliverable": "codex/skills/.../references/command-manifest.json plus wrapper command list --json.",
+      "deliverable": "generators/macro_compose.sh and generated/macros/composition-report.json.",
       "acceptance": [
-        "Command manifest lists validate, full-check, ingest, audit, interfaces, facts, pr-gate, dashboard, resolve, and doctor",
-        "Each command declares required args, optional args, output type, and example invocation",
-        "simple_model_pi.sh commands --json emits the manifest",
-        "README references the command discovery path"
+        "Composition rejects conflicting write sets, incompatible graph effects, unbounded rollback scopes, and unsafe dynamic dependencies.",
+        "Independent operators can be grouped into parallel stages with deterministic ordering.",
+        "Composition output includes accepted groups, rejected pairs, conflict reasons, and required affected tests.",
+        "The scheduler can consume composition stages as task input."
       ],
       "files": [
-        "codex/skills/simple-model-project-intelligence/references/command-manifest.json",
-        "codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh",
-        "plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/references/command-manifest.json"
+        "generators/macro_compose.sh",
+        "generators/parallel_scheduler.sh",
+        "specs/macro-composition.json",
+        "generated/macros/composition-report.json",
+        "tests/test_v12_macro_composition.sh"
       ]
     },
     {
-      "id": "plugin_target_repo_fixture",
-      "wave": 2,
-      "task": "Add a minimal external target repo fixture for end-to-end plugin usage.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "plugin_demo_script",
-        "plugin_install_docs_v2"
-      ],
-      "current_gap": "Existing tests prove generators, but not the user journey of using the plugin against a separate half-built repo.",
-      "deliverable": "examples/plugin-target-repo fixture.",
-      "acceptance": [
-        "Fixture contains a small Python or TypeScript app with public interfaces and tests",
-        "Plugin wrapper can ingest the fixture",
-        "Plugin wrapper can scan interfaces for the fixture",
-        "Plugin wrapper can run a PR gate against fixture changes",
-        "Fixture remains small enough for fast tests"
-      ],
-      "files": [
-        "examples/plugin-target-repo/",
-        "tests/test_plugin_package.sh"
-      ]
-    },
-    {
-      "id": "plugin_demo_script",
-      "wave": 2,
-      "task": "Create a one-command demo for the plugin user journey.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "plugin-users",
-      "blocks": [
-        "plugin_release_ci"
-      ],
-      "current_gap": "Users must mentally stitch together install, ingest, audit, interface scan, and PR gate steps.",
-      "deliverable": "examples/plugin-demo/run.sh",
-      "acceptance": [
-        "Runs without modifying global Codex config",
-        "Uses the target repo fixture",
-        "Shows ingest, audit, interface scan, facts, dashboard, and PR gate",
-        "Emits a concise summary with output paths",
-        "Has a test smoke path"
-      ],
-      "files": [
-        "examples/plugin-demo/run.sh",
-        "examples/plugin-target-repo/",
-        "tests/test_plugin_package.sh"
-      ]
-    },
-    {
-      "id": "plugin_install_docs_v2",
-      "wave": 2,
-      "task": "Upgrade README plugin documentation into a complete install/update/uninstall/troubleshooting guide.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "plugin-users",
-      "blocks": [],
-      "current_gap": "README now shows install commands but lacks compatibility, update, uninstall, troubleshooting, and release asset guidance.",
-      "deliverable": "README plugin section plus docs/CODEX_PLUGIN.md.",
-      "acceptance": [
-        "Documents clone-based install",
-        "Documents release zip usage",
-        "Documents update/reinstall flow after new releases",
-        "Documents uninstall or marketplace removal path where supported",
-        "Documents starting a new Codex thread after install/update",
-        "Documents common failures and doctor command usage"
-      ],
-      "files": [
-        "README.md",
-        "docs/CODEX_PLUGIN.md"
-      ]
-    },
-    {
-      "id": "plugin_release_packager",
-      "wave": 2,
-      "task": "Add a deterministic release packager for the Codex plugin.",
+      "id": "macro_external_repo_advisor",
+      "wave": 5,
+      "theme": "plugin-product",
+      "task": "Add an external-repo macro advisor that tells users exactly which macro workflows are worth running in their project and which need more evidence first.",
       "priority": "high",
       "status": "done",
-      "audience": "maintainers",
-      "blocks": [
-        "plugin_release_ci"
-      ],
-      "current_gap": "The original v0.5.0 plugin zip was created manually; v0.6 adds a deterministic packager with sync/validation steps.",
-      "deliverable": "tools/package_codex_plugin.sh",
+      "deliverable": "generators/macro_advisor.sh and generated/macros/advisor-report.json.",
       "acceptance": [
-        "Runs skill/plugin sync check first",
-        "Validates plugin manifest and skill metadata",
-        "Creates dist/simple-model-project-intelligence-plugin-<version>.zip",
-        "Includes only plugin package files, not generated build artifacts",
-        "Prints sha256 checksum"
+        "Advisor consumes external eval, parser tiers, semantic graph, macro family rankings, and macro cockpit artifacts.",
+        "Advisor outputs safe-now, simulate-first, review-first, gather-evidence, and avoid lists.",
+        "Advisor includes command lines users can run next without requiring global state or network.",
+        "Advisor refuses apply recommendations for repos with dirty worktrees unless explicitly allowed and rollback proof exists."
       ],
       "files": [
+        "generators/macro_advisor.sh",
+        "generators/external_repo_eval.sh",
+        "codex/skills/simple-model-project-intelligence/references/commands.md",
+        "generated/macros/advisor-report.json",
+        "tests/test_v12_macro_external_repo_advisor.sh"
+      ]
+    },
+    {
+      "id": "macro_family_ranker",
+      "wave": 4,
+      "theme": "macro-learning",
+      "task": "Rank macro families by observed usefulness, safety, runtime, rollback reliability, and cross-repo generality.",
+      "priority": "high",
+      "status": "done",
+      "deliverable": "generators/macro_family_ranker.sh and generated/macros/family-rankings.json.",
+      "acceptance": [
+        "Ranker consumes outcome ledger, accuracy scorecard, benchmark corpus labels, and plugin adoption reports.",
+        "Families receive value, safety, generality, maturity, and promotion scores.",
+        "Ranker identifies families that should remain review-only or be retired.",
+        "Adoption cockpit shows the top useful macro families for the target repo."
+      ],
+      "files": [
+        "generators/macro_family_ranker.sh",
+        "generators/adoption_cockpit.sh",
+        "generated/macros/family-rankings.json",
+        "benchmarks/messy-repo-corpus/labels.json",
+        "tests/test_v12_macro_family_ranker.sh"
+      ]
+    },
+    {
+      "id": "macro_operator_ir_v1",
+      "wave": 1,
+      "theme": "operator-algebra",
+      "task": "Create a typed Macro Operator IR that models every macro as an optimization operator over semantic graph nodes and repository files.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "specs/macro-operator-ir.json and generators/macro_operator_ir.sh.",
+      "acceptance": [
+        "IR includes operator id, input graph selectors, output graph effects, write-set effects, preconditions, postconditions, affected tests, rollback scope, and score factors.",
+        "Existing macro packs can be normalized into Macro Operator IR without losing v3/v4 contract evidence.",
+        "Operators distinguish review-only, simulate-capable, and apply-capable modes.",
+        "Validation rejects operators with ambiguous write effects, missing rollback scope, or untyped graph selectors."
+      ],
+      "files": [
+        "specs/macro-operator-ir.json",
+        "generators/macro_operator_ir.sh",
+        "generators/macro_registry.sh",
+        "macros/registry.json",
+        "tests/test_v12_macro_operator_ir.sh"
+      ]
+    },
+    {
+      "id": "macro_outcome_ledger",
+      "wave": 4,
+      "theme": "macro-learning",
+      "task": "Record every macro simulation, drill, apply, rollback, review decision, and benchmark result into a local outcome ledger.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/macro_outcome_ledger.sh and generated/macros/outcome-ledger.json.",
+      "acceptance": [
+        "Ledger records operator id, repo fingerprint, motif id, decision, score delta, runtime, affected tests, rollback result, review reason, and final status.",
+        "Ledger entries are append-only, hash-linked, and redactable for external repo use.",
+        "Outcome records can be generated from existing run logs and benchmark artifacts.",
+        "The ledger never stores secrets or full source content."
+      ],
+      "files": [
+        "generators/macro_outcome_ledger.sh",
+        "generators/run_log.sh",
+        "specs/macro-outcome-ledger.json",
+        "generated/macros/outcome-ledger.json",
+        "tests/test_v12_macro_outcome_ledger.sh"
+      ]
+    },
+    {
+      "id": "macro_plan_search",
+      "wave": 3,
+      "theme": "macro-planning",
+      "task": "Implement deterministic macro plan search that selects the best sequence or parallel stages of macro operators under score, risk, runtime, and rollback budgets.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/macro_plan_search.sh and generated/macros/plan-search.json.",
+      "acceptance": [
+        "Search considers expected value, evidence confidence, dynamic risk, test cost, rollback cost, ownership risk, and composition constraints.",
+        "Search emits selected, rejected, dominated, deferred, and gather-evidence candidates with reasons.",
+        "Plans are deterministic across repeated runs and include stable hashes.",
+        "The confidence optimizer consumes plan search output instead of ranking isolated macro candidates only."
+      ],
+      "files": [
+        "generators/macro_plan_search.sh",
+        "generators/confidence_optimizer.sh",
+        "generators/score_delta_proof.sh",
+        "generated/macros/plan-search.json",
+        "tests/test_v12_macro_plan_search.sh"
+      ]
+    },
+    {
+      "id": "macro_promotion_gate",
+      "wave": 4,
+      "theme": "macro-learning",
+      "task": "Create a promotion gate that upgrades synthesized macro templates to trusted macro packs only after deterministic evidence thresholds are met.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/macro_promotion_gate.sh and generated/macros/promotion-report.json.",
+      "acceptance": [
+        "Promotion requires labeled fixtures, operator IR validation, composition compatibility, drill success, affected-test recall, false-safe-apply zero, and positive score delta.",
+        "Promotion writes a signed local manifest entry with source template hash and proof bundle hash.",
+        "Failed promotion explains missing evidence and required next fixtures.",
+        "Release SLO blocks trusted macro packs that lack promotion records."
+      ],
+      "files": [
+        "generators/macro_promotion_gate.sh",
+        "macros/registry.json",
+        "specs/macro-promotion.json",
+        "generated/macros/promotion-report.json",
+        "tests/test_v12_macro_promotion_gate.sh"
+      ]
+    },
+    {
+      "id": "macro_proof_bundle",
+      "wave": 3,
+      "theme": "macro-execution",
+      "task": "Emit a macro proof bundle that packages all evidence needed to review, replay, or audit a macro plan.",
+      "priority": "high",
+      "status": "done",
+      "deliverable": "generators/macro_proof_bundle.sh and generated/macros/proof-bundle.json.",
+      "acceptance": [
+        "Proof bundle includes operator IR, motif evidence, preconditions, composition report, plan search, drill report, affected tests, diffs, rollback manifest, and score delta proof.",
+        "Bundle has a stable content hash and can be replay-verified without network access.",
+        "Markdown rendering summarizes safe-now, review-first, and blocked reasons for humans.",
+        "Release SLO fails if apply-capable macro plans lack proof bundles."
+      ],
+      "files": [
+        "generators/macro_proof_bundle.sh",
+        "generators/report_render.sh",
+        "specs/macro-proof-bundle.json",
+        "generated/macros/proof-bundle.json",
+        "tests/test_v12_macro_proof_bundle.sh"
+      ]
+    },
+    {
+      "id": "macro_template_synthesis_engine",
+      "wave": 2,
+      "theme": "macro-discovery",
+      "task": "Synthesize reusable macro templates from clusters of motif candidates while keeping them review-only until fixtures and drills prove safety.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/macro_template_synth.sh and generated/macros/templates.json.",
+      "acceptance": [
+        "Templates include parameters, graph selector schema, code edit adapter requirements, fixtures required, expected score delta, and promotion criteria.",
+        "Template synthesis deduplicates repeated candidates into reusable macro families.",
+        "Generated templates cannot be apply-capable until operator IR validation, preconditions, drill coverage, and benchmark thresholds pass.",
+        "Reports distinguish hand-authored packs, synthesized templates, and promoted templates."
+      ],
+      "files": [
+        "generators/macro_template_synth.sh",
+        "generators/macro_generate_from_findings.sh",
+        "specs/macro-template.json",
+        "generated/macros/templates.json",
+        "tests/test_v12_macro_template_synthesis.sh"
+      ]
+    },
+    {
+      "id": "transactional_macro_executor",
+      "wave": 3,
+      "theme": "macro-execution",
+      "task": "Create a transactional macro executor that applies composed macro plans with workspace isolation, staged commits, rollback checkpoints, resume support, and deterministic failure handling.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/macro_transaction.sh and generated/macros/transaction-log.json.",
+      "acceptance": [
+        "Executor runs each stage in an isolated workspace before touching the target tree.",
+        "Every file change has before/after hash, rollback payload, formatter result, test selector, and run-log entry.",
+        "Partial failure triggers deterministic rollback or produces a resumable blocked state with exact failing stage.",
+        "Apply mode is impossible unless preconditions, composition, drills, policy, and affected tests all pass."
+      ],
+      "files": [
+        "generators/macro_transaction.sh",
+        "generators/macro_exec.sh",
+        "generators/run_log.sh",
+        "generators/artifact_cache.sh",
+        "tests/test_v12_transactional_macro_executor.sh"
+      ]
+    },
+    {
+      "id": "v12_macro_release_gate",
+      "wave": 5,
+      "theme": "release-quality",
+      "task": "Create a v1.2 macro release gate that proves the macro engine is safe, useful, compositional, transactional, and benchmark-backed.",
+      "priority": "critical",
+      "status": "done",
+      "deliverable": "generators/release_slo.sh v1.2 checks and generated/releases/v1.2-macro-readiness.json.",
+      "acceptance": [
+        "Gate reads operator IR, motif discovery, template synthesis, composition, plan search, transaction logs, proof bundles, outcome ledger, family rankings, promotion report, macro gauntlet, cockpit, and advisor artifacts.",
+        "Gate fails on false-safe-apply, rollback failure, non-idempotency, missing proof bundle, unpromoted trusted pack, missed affected tests, or macro gauntlet regression.",
+        "Readiness output includes stable hashes for decisive macro artifacts and clear remediation steps.",
+        "Plugin package manifest includes v1.2 macro readiness summary when present."
+      ],
+      "files": [
+        "generators/release_slo.sh",
         "tools/package_codex_plugin.sh",
-        "tests/test_plugin_package.sh"
+        "generated/releases/v1.2-macro-readiness.json",
+        "docs/RELEASE_SLO.md",
+        "tests/test_v12_macro_release_gate.sh"
       ]
     },
     {
-      "id": "plugin_release_ci",
-      "wave": 3,
-      "task": "Add CI coverage for plugin package readiness and release packaging.",
-      "priority": "medium",
+      "id": "ai_tool_competitive_pain_research",
+      "wave": 5,
+      "theme": "product-strategy",
+      "task": "Research mainstream AI coding tools and primary empirical evidence, identify cross-product pain points, and map each gap to a deterministic macro-wisdom capability that this project can implement and gate.",
+      "priority": "critical",
       "status": "done",
-      "audience": "maintainers",
-      "blocks": [],
-      "current_gap": "Plugin validation and packaging are not enforced by GitHub Actions.",
-      "deliverable": "GitHub Actions workflow or generator output that validates plugin package on PRs.",
+      "deliverable": "generators/ai_tool_pain_research.sh and generated/research/ai-tool-pain-points.json/md.",
       "acceptance": [
-        "CI runs plugin package smoke test",
-        "CI validates marketplace JSON and plugin manifest",
-        "CI checks source/bundled skill sync",
-        "CI can run package script without publishing",
-        "Workflow avoids modifying global Codex config"
+        "Research covers at least six mainstream tools and uses versioned public sources with explicit claim provenance.",
+        "Every pain point maps to a deterministic macro response, concrete artifacts, and a measurable success criterion.",
+        "Vendor documentation establishes product behavior while surveys and primary studies establish cross-product pain; inferred gaps are labeled as inference.",
+        "The report is reproducible offline, keeps AI as a leaf worker, is exposed through the plugin and MCP, and is required by the v1.2 release gate."
       ],
       "files": [
-        ".github/workflows/plugin.yml",
-        "generators/github_action.sh",
-        "tests/test_plugin_package.sh"
-      ]
-    },
-    {
-      "id": "mcp_plugin_bridge",
-      "wave": 3,
-      "task": "Bridge the command manifest to MCP/tool schemas for richer Codex tool invocation.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "agent-integrators",
-      "blocks": [],
-      "current_gap": "The project has an MCP wrapper, but the plugin does not expose command schemas or a clear route from command manifest to MCP tools.",
-      "deliverable": "Generated MCP tool schemas derived from the command manifest.",
-      "acceptance": [
-        "MCP tools/list includes plugin commands with schemas",
-        "MCP tools/call can invoke read-only plugin commands",
-        "Errors are structured and include remediation hints",
-        "No write/publish command is exposed through MCP by default",
-        "Tests cover initialize, tools/list, and one tools/call path"
-      ],
-      "files": [
-        "tools/simple_model_mcp.sh",
+        "generators/ai_tool_pain_research.sh",
+        "specs/ai-tool-pain-research.json",
+        "generated/research/ai-tool-pain-points.json",
         "codex/skills/simple-model-project-intelligence/references/command-manifest.json",
-        "tests/test_plugin_package.sh"
-      ]
-    },
-    {
-      "id": "plugin_version_policy",
-      "wave": 3,
-      "task": "Define and enforce version alignment between repo release, plugin manifest, marketplace entry, and release asset names.",
-      "priority": "medium",
-      "status": "done",
-      "audience": "maintainers",
-      "blocks": [],
-      "current_gap": "The plugin manifest now follows a documented plugin version policy, but future releases must continue enforcing that alignment.",
-      "deliverable": "Version policy plus validation script.",
-      "acceptance": [
-        "Documents whether plugin version follows repo version or independent semver",
-        "Checks release asset name against selected version policy",
-        "Checks plugin manifest version in package script",
-        "README displays current plugin version source of truth",
-        "Release notes template includes plugin version"
-      ],
-      "files": [
-        "docs/CODEX_PLUGIN.md",
-        "plugins/simple-model-project-intelligence/.codex-plugin/plugin.json",
-        "tools/package_codex_plugin.sh"
+        "tests/test_v12_ai_tool_pain_research.sh"
       ]
     }
   ]

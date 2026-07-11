@@ -115,3 +115,36 @@ does not expose one, remove or stop using the repo-local marketplace registratio
 - `jq` missing: install `jq` and rerun `doctor`.
 - Old bash on macOS: run scripts with Homebrew bash 4+.
 - Plugin changes not visible: reinstall the plugin and start a new Codex thread.
+## v1.0 Production Flow
+
+From any target repository with a `struct.json`, run:
+
+```bash
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json adopt --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json semantic-graph --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json production-benchmark --json
+```
+
+Use `tree-sitter-scan`, `lsp-symbols`, `score-calibrate`,
+`optimizer-report`, `framework-resolvers`, and `runtime-contracts` when a repo
+needs deeper evidence before macro simulation or apply.
+
+## v1.1 Confidence-Gated Flow
+
+The v1.1 flow is designed for large half-built repositories where automatic
+changes need explicit evidence and rollback proof:
+
+```bash
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json parser-tiers --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json symbol-index --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json semantic-graph-incremental --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json dynamic-edges --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json macro-preconditions --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json macro-drill --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json confidence-plan --json
+simple_model_pi.sh --target-root /path/to/repo --struct /path/to/repo/struct.json adoption-cockpit --json
+```
+
+`accuracy-scorecard` and `release-slo` gate releases against the labeled messy
+repo corpus, false-safe-apply count, macro rollback drills, parser confidence,
+and plugin command coverage.
