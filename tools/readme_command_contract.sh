@@ -52,7 +52,8 @@ for line in "${commands[@]}"; do
     case "$line" in
         git\ clone*) command -v git >/dev/null 2>&1 || missing=$((missing+1)) ;;
         cd\ *) : ;;
-        codex\ plugin*) command -v codex >/dev/null 2>&1 || missing=$((missing+1)) ;;
+        # Codex is the consumer of these documented commands, not a package-build dependency.
+        codex\ plugin*) : ;;
         *simple_model_pi.sh*)
             script=$(awk '{print $1}' <<<"$line")
             [[ -x "$ROOT/$script" ]] || { echo "[FAIL] missing executable: $script" >&2; missing=$((missing+1)); }
