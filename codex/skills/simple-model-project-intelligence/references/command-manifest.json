@@ -1452,7 +1452,7 @@
         "--json"
       ],
       "output": "release validation JSON",
-      "example": "simple_model_pi.sh self-release --version 0.6.0 --dry-run --json",
+      "example": "simple_model_pi.sh self-release --version 1.0 --dry-run --json",
       "tests": [
         "tests/test_plugin_package.sh"
       ],

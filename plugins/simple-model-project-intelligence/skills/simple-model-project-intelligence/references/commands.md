@@ -11,7 +11,7 @@ Use these commands from the `simple_model` repository root unless a wrapper comm
 - Run the plugin lifecycle gate:
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-check --json`
 - Run release validation without publishing:
-  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-release --version 0.6.0 --dry-run --json`
+  `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-release --version 1.0 --dry-run --json`
 - List deterministic optimizer macros:
   `codex/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh macros --json`
 - Generate declarative macro specs from target repo facts:

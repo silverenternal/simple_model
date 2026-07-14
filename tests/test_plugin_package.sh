@@ -12,7 +12,7 @@ TARGET="$ROOT_DIR/examples/plugin-target-repo"
 
 cd "$ROOT_DIR"
 check "marketplace json" jq -e '.name=="simple-model" and .plugins[0].name=="simple-model-project-intelligence"' .agents/plugins/marketplace.json
-check "plugin manifest json" jq -e '.name=="simple-model-project-intelligence" and .version=="0.6.0" and .skills=="./skills/"' plugins/simple-model-project-intelligence/.codex-plugin/plugin.json
+check "plugin manifest json" jq -e '.name=="simple-model-project-intelligence" and .version=="1.0" and .skills=="./skills/"' plugins/simple-model-project-intelligence/.codex-plugin/plugin.json
 check "skill frontmatter has name" grep -q '^name: simple-model-project-intelligence$' codex/skills/simple-model-project-intelligence/SKILL.md
 check "skill openai yaml parseable-ish" grep -q 'display_name: "Simple Model Project Intelligence"' codex/skills/simple-model-project-intelligence/agents/openai.yaml
 check "no plugin TODO placeholders" bash -c "! rg -n 'TODO|\\[TODO|placeholder' codex/skills/simple-model-project-intelligence plugins/simple-model-project-intelligence .agents/plugins"
@@ -35,14 +35,14 @@ check "self check severity schema" bash -c "'$WRAP' self-check --json | jq -e '.
 check "self check writes reports" bash -c "test -s generated/plugin-self-audit/plugin-self-audit.json && test -s generated/plugin-self-audit/plugin-self-audit.md && test -s generated/plugin-self-audit/latest.json"
 check "self audit history" bash -c "find generated/plugin-self-audit/history -type f -name '*.json' | grep -q ."
 check "self audit json" bash -c "'$WRAP' self-audit --json | jq -e '.ok == true'"
-check "self release dry run" bash -c "'$WRAP' self-release --version 0.6.0 --dry-run --json | jq -e '(.ok == true) and (.mode == \"dry-run\")'"
-check "self release stages" bash -c "'$WRAP' self-release --version 0.6.0 --dry-run --json | jq -e '.ok == true and (([.stages[].name] | index(\"tag-check\")) != null) and ((.rollback|length) > 0)'"
+check "self release dry run" bash -c "'$WRAP' self-release --version 1.0 --dry-run --json | jq -e '(.ok == true) and (.mode == \"dry-run\")'"
+check "self release stages" bash -c "'$WRAP' self-release --version 1.0 --dry-run --json | jq -e '.ok == true and (([.stages[].name] | index(\"tag-check\")) != null) and ((.rollback|length) > 0)'"
 check "wrong package version fails" bash -c "! bash tools/package_codex_plugin.sh --version 9.9.9"
 check "plugin demo" bash -c "bash examples/plugin-demo/run.sh | jq -e '.ok == true'"
-check "package plugin" bash -c "bash tools/package_codex_plugin.sh --version 0.6.0 | jq -e '.ok == true and ((.sha256|length) == 64)'"
-check "package zip exists" test -s dist/simple-model-project-intelligence-plugin-0.6.0.zip
-check "release manifest in zip" bash -c "zipinfo -1 dist/simple-model-project-intelligence-plugin-0.6.0.zip | grep -q 'simple-model-project-intelligence/release-manifest.json'"
-check "release manifest has file hashes" bash -c "unzip -p dist/simple-model-project-intelligence-plugin-0.6.0.zip simple-model-project-intelligence/release-manifest.json | jq -e '.schema_version == \"1.0\" and .plugin == \"simple-model-project-intelligence\" and .version == \"0.6.0\" and (.files|length > 0) and all(.files[]; .path and .sha256)'"
+check "package plugin" bash -c "bash tools/package_codex_plugin.sh --version 1.0 | jq -e '.ok == true and ((.sha256|length) == 64)'"
+check "package zip exists" test -s dist/simple-model-project-intelligence-plugin-1.0.zip
+check "release manifest in zip" bash -c "zipinfo -1 dist/simple-model-project-intelligence-plugin-1.0.zip | grep -q 'simple-model-project-intelligence/release-manifest.json'"
+check "release manifest has file hashes" bash -c "unzip -p dist/simple-model-project-intelligence-plugin-1.0.zip simple-model-project-intelligence/release-manifest.json | jq -e '.schema_version == \"1.0\" and .plugin == \"simple-model-project-intelligence\" and .version == \"1.0\" and (.files|length > 0) and all(.files[]; .path and .sha256)'"
 check "skill drift failure fixture" bash -c "printf '\n# drift fixture\n' >> plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/SKILL.md; ! bash tools/sync_codex_plugin.sh --check; bash tools/sync_codex_plugin.sh --sync"
 check "plugin docs mention update" grep -q 'Update Or Remove' docs/CODEX_PLUGIN.md
 check "readme plugin commands documented" bash -c "grep -q 'codex plugin marketplace add' README.md && grep -q 'codex plugin add simple-model-project-intelligence@simple-model' README.md && grep -q 'simple_model_pi.sh doctor' README.md && grep -q 'simple_model_pi.sh commands --json' README.md && grep -q 'simple_model_pi.sh self-check --json' README.md"

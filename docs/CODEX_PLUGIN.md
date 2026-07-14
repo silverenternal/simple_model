@@ -98,7 +98,7 @@ simple-model-project-intelligence-plugin-<plugin-version>.zip
 Build a package:
 
 ```bash
-tools/package_codex_plugin.sh --version 0.6.0
+tools/package_codex_plugin.sh --version 1.0
 ```
 
 The script validates skill sync, marketplace JSON, plugin manifest version, command
@@ -114,7 +114,7 @@ plugins/simple-model-project-intelligence/skills/simple-model-project-intelligen
 Run release validation without publishing:
 
 ```bash
-plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-release --version 0.6.0 --dry-run --json
+plugins/simple-model-project-intelligence/skills/simple-model-project-intelligence/scripts/simple_model_pi.sh self-release --version 1.0 --dry-run --json
 ```
 
 ## Update Or Remove
